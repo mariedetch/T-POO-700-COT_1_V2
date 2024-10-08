@@ -8,6 +8,17 @@ defmodule TimeManagement.UserContext do
 
   alias TimeManagement.UserContext.User
 
+
+  def get_users_by_email_and_username(email, username) do
+    query =
+      from u in User,
+        where: u.email == ^email and u.username == ^username
+
+    Repo.all(query)
+  end
+
+
+
   @doc """
   Returns the list of users.
 
