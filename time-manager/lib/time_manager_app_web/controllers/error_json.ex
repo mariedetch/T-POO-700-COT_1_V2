@@ -15,7 +15,7 @@ defmodule TimeManagementWeb.ErrorJSON do
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
 
-  def render(:"404", _assigns) do
+  def render("404.json", _assigns) do
     %{
       status_code: 404,
       message: "Ressource non trouvée",
@@ -23,7 +23,7 @@ defmodule TimeManagementWeb.ErrorJSON do
     }
   end
 
-  def render(:"400", _assigns) do
+  def render("400.json", _assigns) do
     %{
       status_code: 400,
       message: "Requête invalide",
@@ -31,7 +31,7 @@ defmodule TimeManagementWeb.ErrorJSON do
     }
   end
 
-  def render(:"500", _assigns) do
+  def render("500.json", _assigns) do
     %{
       status_code: 500,
       message: "Erreur interne du serveur",
@@ -49,7 +49,6 @@ defmodule TimeManagementWeb.ErrorJSON do
 
   defp translate_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-      # Traduction des messages d'erreur si besoin
       Enum.reduce(opts, msg, fn {key, value}, acc ->
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
