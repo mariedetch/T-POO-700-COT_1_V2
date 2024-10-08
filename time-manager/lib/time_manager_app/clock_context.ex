@@ -57,12 +57,12 @@ defmodule TimeManagement.ClockContext do
     lastestClock = get_latest_clock_by_user(user.id)
     if lastestClock == nil do
       %Clock{}
-      |> Clock.changeset(%{status: true})
+      |> Clock.changeset(%{time: DateTime.utc_now(), status: true})
       |> Ecto.Changeset.put_assoc(:user, user)
       |> Repo.insert()
     else
       %Clock{}
-      |> Clock.changeset(%{status: !lastestClock.status})
+      |> Clock.changeset(%{time: DateTime.utc_now(), status: !lastestClock.status})
       |> Ecto.Changeset.put_assoc(:user, user)
       |> Repo.insert()
     end
