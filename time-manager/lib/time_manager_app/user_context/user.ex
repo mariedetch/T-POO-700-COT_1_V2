@@ -8,7 +8,7 @@ defmodule TimeManagement.UserContext.User do
     field :username, :string
     field :email, :string
     has_many :clocks, TimeManagement.ClockContext.Clock
-    has_many :workingtimes, TimeManagement.ClockContext.WorkingTime
+    has_many :workingtimes, TimeManagement.WorkingTimeContext.WorkingTime
 
     timestamps(type: :utc_datetime)
   end
