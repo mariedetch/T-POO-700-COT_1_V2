@@ -7,8 +7,6 @@ Une API RESTful pour la gestion des fonctionnalités de l'application Time Manag
 - [Usage](#usage)
 - [Documentation de l'API](#documentation-de-lapi)
 - [Tests](#tests)
-- [Structure du projet](#structure-du-projet)
-- [Dépendances](#dépendances)
 - [Contribution](#contribution)
 ## Installation
 
@@ -49,7 +47,7 @@ mix phx.server
 ```
 
 ## Documentation de l'API
-L'api est livré avec une documentation OpenApi3.0 et une collection postaman que vous pouvez touvez dans le dossier `documentations`
+L'api est livré avec une documentation OpenApi3.0 et une collection postaman que vous pouvez touvez [ici](https://justice-league-6332.postman.co/workspace/Justice-League-Workspace~65724821-f9ed-41c5-85a9-a8ac4f84dc63/api/5ff451e6-0e76-4ab1-b065-5c85482bc741?action=share&creator=38847444&active-environment=38859705-8d4f8b65-2b14-4562-a64a-9118086a7874)
 
 ## Tests
 
