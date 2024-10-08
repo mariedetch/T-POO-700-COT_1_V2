@@ -6,6 +6,7 @@ defmodule TimeManagement.ClockContext do
   import Ecto.Query, warn: false
   alias TimeManagement.Repo
 
+  alias TimeManagement.UserContext.User
   alias TimeManagement.ClockContext.Clock
 
   @doc """
@@ -19,6 +20,52 @@ defmodule TimeManagement.ClockContext do
   """
   def list_clocks do
     Repo.all(Clock)
+  end
+
+  @doc """
+  Returns the list of clocks according to the selected user.
+
+  ## Examples
+
+      iex> list_clocks_by_user(%User{})
+      [%Clock{}, ...]
+
+  """
+  def list_clocks_by_user(%User{} = user) do
+    Repo.all(
+      from clock in Clock,
+      where: clock.user_id == ^user.id,
+      order_by: [desc: clock.inserted_at]
+    )
+  end
+
+  @doc """
+  Returns the latest clock for a user.
+  """
+  def get_latest_clock_by_user(user_id) do
+    query = Ecto.Query.from(clock in Clock,
+      where: clock.user_id == ^user_id,
+      order_by: [desc: clock.inserted_at],
+      limit: 1)
+    Repo.one(query)
+  end
+
+  @doc """
+  Clock in or clock out
+  """
+  def clock_in_or_out(%User{} = user) do
+    lastestClock = get_latest_clock_by_user(user.id)
+    if lastestClock == nil do
+      %Clock{}
+      |> Clock.changeset(%{status: true})
+      |> Ecto.Changeset.put_assoc(:user, user)
+      |> Repo.insert()
+    else
+      %Clock{}
+      |> Clock.changeset(%{status: !lastestClock.status})
+      |> Ecto.Changeset.put_assoc(:user, user)
+      |> Repo.insert()
+    end
   end
 
   @doc """

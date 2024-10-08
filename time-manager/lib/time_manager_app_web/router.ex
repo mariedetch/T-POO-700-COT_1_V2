@@ -7,6 +7,8 @@ defmodule TimeManagementWeb.Router do
 
   scope "/api", TimeManagementWeb do
     pipe_through :api
+    get "/clocks/:userId", ClockController, :index
+    post "/clocks/:userId", ClockController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
