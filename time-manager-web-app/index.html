@@ -5,9 +5,30 @@
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vite App</title>
+    <!-- Import Styles -->
+    <link rel="stylesheet" href="fonts/inter/inter.css" id="main-font-link">
+    <link rel="stylesheet" href="fonts/tabler-icons.css">
+    <link rel="stylesheet" href="fonts/feather.css">
+    <link rel="stylesheet" href="fonts/fontawesome.css">
+    <link rel="stylesheet" href="fonts/material.css">
+    <link rel="stylesheet" href="css/style.css" id="main-style-link">
   </head>
-  <body>
-    <div id="app"></div>
+  <body id="app">
+    <div></div>
     <script type="module" src="/src/main.ts"></script>
+    <script src="js/plugins/simplebar.min.js"></script>
+    <script src="js/plugins/popper.min.js"></script>
+    <script src="js/icon/custom-icon.js"></script>
+    <script src="js/plugins/feather.min.js"></script>
+    <script src="js/component.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/script.js"></script>
+    <script>layout_change('false');</script>
+    <script>layout_theme_contrast_change('false');</script>
+    <script>change_box_container('false');</script>
+    <script>layout_caption_change('true');</script>
+    <script>layout_rtl_change('false');</script>
+    <script>preset_change('preset-1');</script>
+    <script>main_layout_change('vertical');</script>
   </body>
 </html>
