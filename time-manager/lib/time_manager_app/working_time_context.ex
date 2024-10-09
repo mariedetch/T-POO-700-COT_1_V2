@@ -6,6 +6,7 @@ defmodule TimeManagement.WorkingTimeContext do
   import Ecto.Query, warn: false
   alias TimeManagement.Repo
 
+  alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
 
   @doc """
@@ -17,8 +18,12 @@ defmodule TimeManagement.WorkingTimeContext do
       [%WorkingTime{}, ...]
 
   """
-  def list_workingtimes do
-    Repo.all(WorkingTime)
+  def list_workingtimes_by_id(user_id, start_date, end_date) do
+    Repo.all(from w in WorkingTime, where: w.user_id == ^user_id and w.start >= ^start_date and w.end <= ^end_date)
+  end
+
+  def list_workingtimes(user_id) do
+    Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
   end
 
   @doc """
@@ -37,6 +42,8 @@ defmodule TimeManagement.WorkingTimeContext do
   """
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
 
+  def get_working_time!(id, user_id), do: Repo.get!(WorkingTime, id, user_id: user_id)
+
   @doc """
   Creates a working_time.
 
@@ -49,9 +56,10 @@ defmodule TimeManagement.WorkingTimeContext do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_working_time(attrs \\ %{}) do
+  def create_working_time(%User{} = user, attrs \\ %{}) do
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
   end
 

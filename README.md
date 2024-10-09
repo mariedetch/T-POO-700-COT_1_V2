@@ -7,8 +7,6 @@ Une API RESTful pour la gestion des fonctionnalités de l'application Time Manag
 - [Usage](#usage)
 - [Documentation de l'API](#documentation-de-lapi)
 - [Tests](#tests)
-- [Structure du projet](#structure-du-projet)
-- [Dépendances](#dépendances)
 - [Contribution](#contribution)
 ## Installation
 
@@ -48,96 +46,8 @@ mix ecto.migrate
 mix phx.server
 ```
 
-L'API sera accessible à http://localhost:4000.
-
-### Schéma de Réponse de l'API
-Les réponses de l'API suivent un format standard pour assurer la cohérence. Les schémas de réponse sont définis comme suit :
-
-### 1. Réponse de Succès
-
-#### a. Réponse avec un Objet Simple
-Lorsque l'API retourne un seul objet (ex. un utilisateur), la réponse est structurée comme suit :
-
-**Réponse HTTP 200 OK**
-```json
-{
-  "status_code": 200,
-  "message": "Succès",
-  "data": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john.doe@example.com"
-  }
-}
-```
-
-#### b. Réponse avec une Liste d'Objets
-Pour les réponses contenant une liste d'objets (ex. liste des utilisateurs), la structure est :
-
-**Réponse HTTP 200 OK**
-
-```json
-{
-  "status_code": 200,
-  "message": "Succès",
-  "data": [
-    {
-      "id": 1,
-      "name": "John Doe",
-      "email": "john.doe@example.com"
-    },
-    {
-      "id": 2,
-      "name": "Jane Smith",
-      "email": "jane.smith@example.com"
-    }
-  ]
-}
-```
-
-#### c. Réponse avec Pagination
-Lorsque les données sont paginées, la réponse inclut des informations sur la pagination :
-
-**Réponse HTTP 200 OK**
-
-```json
-{
-  "status_code": 200,
-  "message": "Succès",
-  "data": {
-    "items": [
-      {
-        "id": 1,
-        "name": "John Doe",
-        "email": "john.doe@example.com"
-      },
-      {
-        "id": 2,
-        "name": "Jane Smith",
-        "email": "jane.smith@example.com"
-      }
-    ],
-    "current_page": 1,
-    "last_page": 5,
-    "total_items": 50,
-    "per_page": 10
-  }
-}
-```
-
-### 2. Réponse d'Erreur
-Les erreurs sont renvoyées avec un format standard qui inclut le code d'état HTTP, un message d'erreur, et éventuellement des détails supplémentaires.
-
-```json
-{
-  "status_code": 404,
-  "message": "Ressource non trouvée",
-  "error": "Not Found"
-}
-```
-
 ## Documentation de l'API
-L'api est livré avec une documentation OpenApi3.0 et une collection postaman que vous pouvez touvez dans le dossier `documentations`
+L'api est livré avec une documentation OpenApi3.0 et une collection postaman que vous pouvez touvez [ici](https://justice-league-6332.postman.co/workspace/Justice-League-Workspace~65724821-f9ed-41c5-85a9-a8ac4f84dc63/api/5ff451e6-0e76-4ab1-b065-5c85482bc741?action=share&creator=38847444&active-environment=38859705-8d4f8b65-2b14-4562-a64a-9118086a7874)
 
 ## Tests
 
