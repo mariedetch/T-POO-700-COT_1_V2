@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 const props = defineProps({
-  modalId: String,
-  modalTitle: String
-})
+  modalId: {
+    type: String,
+    default: 'modalId'
+  },
+  modalTitle: {
+    type: String,
+    default: 'Title'
+  }
+});
+
 const formatedModalId = "#" + props.modalId
 </script>
 

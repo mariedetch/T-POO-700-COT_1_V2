@@ -44,6 +44,11 @@ defmodule TimeManagementWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
+  plug CORSPlug,
+    origin: ["http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    max_age: 86400
+
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
