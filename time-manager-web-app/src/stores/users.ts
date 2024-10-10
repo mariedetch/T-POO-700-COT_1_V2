@@ -27,7 +27,7 @@ export const useUsersStore = defineStore('users', () => {
     isLoading.value = true;
     error.value = null;
 
-    /* API.users.createUser(data).then((response) => {
+    API.users.createUser(data).then((response) => {
       users.value.push(response.data.data);
       console.log("Utilisateur crée avec succès :");
     })
@@ -36,8 +36,23 @@ export const useUsersStore = defineStore('users', () => {
     })
     .finally(() => {
       isLoading.value = false;
-    }); */
+    });
   };
+
+  const updateUser = async (userId: string, data: Partial<UserRequest>) => {
+    isLoading.value = true;
+    error.value = null;
+
+    API.users.updateUser(userId, data).then((response) => {
+      users.value.push(response.data.data);
+    })
+    .catch((error) => {
+      error.value = 'Erreur lors de la création de l\'utilisateur.';
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+  }
 
   return { users, isLoading, selectedUser, error, getUsers, createUser };
 })

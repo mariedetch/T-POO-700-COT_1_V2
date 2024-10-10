@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, toRefs } from 'vue';
+import { computed, onMounted, ref, toRefs } from 'vue';
 import { UsersList } from '@/components/features/users'
 import { useUsersStore } from '@/stores/users';
 import Modal from '@/components/shared/Modal.vue';
@@ -14,15 +14,10 @@ onMounted(async () => {
   await userStore.getUsers();
 });
 
-const onEditModalOpen = async (user: User) => {
-  selectedUser.value = user;
-  isModalOpened.value = true;
-}
-
-const user = ref({
-  username:  '',
-  email: '',
-});
+const user = computed(() => ({
+  username: selectedUser.value?.username || '',
+  email: selectedUser.value?.email || '',
+}));
 
 const errors = ref({
   username: '',
@@ -31,12 +26,17 @@ const errors = ref({
 
 const validateFields = () => {
   errors.value.username = user.value.username ? '' : 'Le nom est requis.';
-  errors.value.email = user.value.email
-    ? (/\S+@\S+\.\S+/.test(user.value.email) ? '' : 'L\'email est invalide.')
+  errors.value.email = user.value.email 
+    ? (/\S+@\S+\.\S+/.test(user.value.email as string) ? '' : 'L\'email est invalide.')
     : 'L\'email est requis.';
 
   return !errors.value.username && !errors.value.email;
 };
+
+const onEditModalOpen = async (user: User) => {
+  selectedUser.value = user;
+  isModalOpened.value = true;
+}
 
 const onSubmit = async () => {
   if (validateFields()) {
