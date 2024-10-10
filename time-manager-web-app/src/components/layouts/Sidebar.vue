@@ -1,3 +1,6 @@
+<script setup lang="ts">
+import { User } from '@/components/features/users'
+</script>
 
 <template>
   <nav class="pc-sidebar">
@@ -11,46 +14,7 @@
         </a>
       </div>
       <div class="navbar-content h-[calc(100vh_-_74px)] py-2.5">
-        <div
-          class="card pc-user-card mx-[15px] mb-[15px] bg-theme-sidebaruserbg dark:bg-themedark-sidebaruserbg"
-        >
-          <div class="card-body !p-5">
-            <div class="flex items-center">
-              <img
-                class="shrink-0 w-[45px] h-[45px] rounded-full"
-                src="@/assets/img/user/avatar-1.jpg"
-                alt="user-image"
-              />
-              <div class="ml-4 mr-2 grow">
-                <h6 class="mb-0">Jonh Smith</h6>
-                <small>Administrator</small>
-              </div>
-              <a
-                class="shrink-0 btn btn-icon inline-flex btn-link-secondary"
-                data-pc-toggle="collapse"
-                href="#pc_sidebar_userlink"
-              >
-                <i class="text-2xl leading-none ti ti-menu-deep"></i>
-              </a>
-            </div>
-            <div class="hidden pc-user-links" id="pc_sidebar_userlink">
-              <div class="pt-3 *:flex *:items-center *:py-2 *:gap-2.5 hover:*:text-primary-500">
-                <a href="#!">
-                  <i class="text-lg leading-none ti ti-user"></i> <span>My Account</span>
-                </a>
-                <a href="#!">
-                  <i class="text-lg leading-none ti ti-settings"></i>
-                  <span>Settings</span>
-                </a>
-                <a href="#!"
-                  ><i class="text-lg leading-none ti ti-lock"></i> <span>Lock Screen</span> </a
-                ><a href="#!"
-                  ><i class="text-lg leading-none ti ti-power"></i> <span>Logout</span></a
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+        <User />
         <ul class="pc-navbar">
           <li class="pc-item">
             <RouterLink to="/" class="pc-link text-black">
@@ -69,3 +33,11 @@
     </div>
   </nav>
 </template>
+
+<style scoped>
+.router-link-exact-active {
+  color: rgb(var(--colors-primary-500));
+  background-color: rgb(70 128 255 / 14%);
+  border-radius: 10px;
+}
+</style>

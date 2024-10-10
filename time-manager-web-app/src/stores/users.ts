@@ -5,22 +5,37 @@ import { ref } from "vue"
 
 export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([]);
+  const currentUser = ref<User | null>(null);
   const selectedUser = ref<User | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const getUsers = async () => {
+  const getUsers = async (email: string | null = null, username: string | null = null) => {
     isLoading.value = true;
     error.value = null;
 
     try {
-      users.value = (await API.users.getUsers()).data.data;
-      console.log("Utilisateurs récupérés avec succès :");
+      users.value = (await API.users.getUsers(email, username)).data.data;
     } catch (errors) {
-      error.value = 'Erreur lors de la récupération des utilisateurs.';
+      error.value = 'Error when retrieving users.';
     } finally {
       isLoading.value = false;
     }
+  };
+
+  const getUser = async () => {
+    isLoading.value = true;
+    error.value = null;
+
+    API.users.getUser(import.meta.env.VITE_DEFAULT_USER).then((response) => {
+      currentUser.value = response.data.data;
+    })
+    .catch((errors) => {
+      error.value = 'Error while retrieving user.';
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
   };
 
   const createUser = async (data: UserRequest) => {
@@ -29,10 +44,9 @@ export const useUsersStore = defineStore('users', () => {
 
     API.users.createUser(data).then((response) => {
       users.value.push(response.data.data);
-      console.log("Utilisateur crée avec succès :");
     })
-    .catch((error) => {
-      error.value = 'Erreur lors de la création de l\'utilisateur.';
+    .catch((errors) => {
+      error.value = 'Error when creating user.';
     })
     .finally(() => {
       isLoading.value = false;
@@ -44,15 +58,14 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null;
 
     API.users.updateUser(userId, data).then((response) => {
-      users.value.push(response.data.data);
       const updatedUser = response.data.data;
       const index = users.value.findIndex(user => user.id === userId);
         if (index !== -1) {
           users.value[index] = updatedUser;
         }
     })
-    .catch((error) => {
-      error.value = 'Erreur lors de la création de l\'utilisateur.';
+    .catch((errors) => {
+      error.value = 'Error when updating user.';
     })
     .finally(() => {
       isLoading.value = false;
@@ -64,10 +77,11 @@ export const useUsersStore = defineStore('users', () => {
     try {
       await API.users.deleteUser(userId);
       users.value = users.value.filter(user => user.id !== userId);
-    } catch (error) {
+    } catch (errors) {
+      error.value = 'Error when deleting user.';
       isLoading.value = false;
     }
   }
 
-  return { users, isLoading, selectedUser, error, getUsers, createUser, updateUser, deleteUser };
+  return { users, currentUser, isLoading, selectedUser, error, getUsers, getUser, createUser, updateUser, deleteUser };
 })

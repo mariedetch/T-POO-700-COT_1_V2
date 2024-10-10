@@ -2,12 +2,24 @@ import http from "../api";
 import type { ApiResponse } from "../types";
 import { type User, type UserRequest } from "./types";
 
-async function getUsers() {
-  return await http.get<ApiResponse<User[]>>("users");
+async function getUsers(email: string | null = null, username: string | null = null) {
+  const queryParams: Record<string, string> = {};
+
+  if (email) queryParams.email = email;
+  if (username) queryParams.username = username;
+
+  const queryString = new URLSearchParams(queryParams).toString();
+  const url = queryString ? `users?${queryString}` : "users";
+
+  return await http.get<ApiResponse<User[]>>(url);
 }
 
 async function createUser(data: UserRequest) {
   return await http.post<ApiResponse<User>>("users", data);
+}
+
+async function getUser(id: string) {
+  return await http.get<ApiResponse<User>>(`users/${id}`);
 }
 
 async function updateUser(id: string, data: Partial<UserRequest>) {
@@ -19,6 +31,7 @@ async function deleteUser(id: string) {
 }
 
 export default {
+  getUser,
   getUsers,
   createUser,
   updateUser,

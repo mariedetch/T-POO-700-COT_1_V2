@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
 import UsersPage from '@/views/UsersPage.vue'
+import UserProfilePage from '@/views/UserProfilePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,6 +20,11 @@ const router = createRouter({
           path: '/users',
           name: 'Users',
           component: UsersPage
+        },
+        {
+          path: '/my-profile',
+          name: 'User Profile',
+          component: UserProfilePage
         }
       ]
     },
