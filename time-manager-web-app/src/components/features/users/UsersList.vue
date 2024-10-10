@@ -5,10 +5,14 @@ const props = defineProps<{
   users: User[]
 }>();
 
-const emit = defineEmits(['editUser'])
+const emit = defineEmits(['editUser', 'removeUser'])
 
 const openEditModal = (user: User) => {
   emit('editUser', user)
+}
+
+const confirmDelete = (userId: string) => {
+  emit('removeUser', userId)
 }
 
 </script>
@@ -60,6 +64,7 @@ const openEditModal = (user: User) => {
                 <a
                   href="#"
                   class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-danger btn-pc-default"
+                  @click="confirmDelete(user.id)"
                   ><i class="ti ti-trash text-lg leading-none"></i
                 ></a>
               </li>

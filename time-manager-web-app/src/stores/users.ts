@@ -45,6 +45,11 @@ export const useUsersStore = defineStore('users', () => {
 
     API.users.updateUser(userId, data).then((response) => {
       users.value.push(response.data.data);
+      const updatedUser = response.data.data;
+      const index = users.value.findIndex(user => user.id === userId);
+        if (index !== -1) {
+          users.value[index] = updatedUser;
+        }
     })
     .catch((error) => {
       error.value = 'Erreur lors de la création de l\'utilisateur.';
@@ -52,7 +57,17 @@ export const useUsersStore = defineStore('users', () => {
     .finally(() => {
       isLoading.value = false;
     });
+  };
+
+  const deleteUser = async (userId: string) => {
+    isLoading.value = false;
+    try {
+      await API.users.deleteUser(userId);
+      users.value = users.value.filter(user => user.id !== userId);
+    } catch (error) {
+      isLoading.value = false;
+    }
   }
 
-  return { users, isLoading, selectedUser, error, getUsers, createUser };
+  return { users, isLoading, selectedUser, error, getUsers, createUser, updateUser, deleteUser };
 })

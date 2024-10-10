@@ -5,6 +5,7 @@ import { useUsersStore } from '@/stores/users';
 import Modal from '@/components/shared/Modal.vue';
 import { ToastrService } from '../utils/toastr';
 import { type User } from '../services/users/types';
+import Swal from 'sweetalert2';
 
 const userStore = useUsersStore();
 const { users, error, isLoading, selectedUser } = toRefs(userStore);
@@ -18,6 +19,11 @@ const user = computed(() => ({
   username: selectedUser.value?.username || '',
   email: selectedUser.value?.email || '',
 }));
+
+const modalData = {
+  title: 'Add user',
+  button: 'Add'
+};
 
 const errors = ref({
   username: '',
@@ -36,18 +42,51 @@ const validateFields = () => {
 const onEditModalOpen = async (user: User) => {
   selectedUser.value = user;
   isModalOpened.value = true;
+
+  modalData.title = 'Update user';
+  modalData.button = 'Update';
+}
+
+const onCloseModal = async () => {
+  isModalOpened.value = false;
+  selectedUser.value = null;
+  modalData.title = 'Add user';
+  modalData.button = 'Add';
+}
+
+const showDeleteConfirmation = async (userId: string) => {
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: "Cette action ne peut pas être annulée !",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler'
+  });
+
+  if (result.isConfirmed) {
+    await userStore.deleteUser(userId);
+    ToastrService.success('L\'utilisateur a été supprimé.')
+  }
 }
 
 const onSubmit = async () => {
   if (validateFields()) {
     try {
-      await userStore.createUser({user: user.value});
-      ToastrService.success('Utilisateur créé avec succès')
-      console.log('Utilisateur créé avec succès');
+      if (selectedUser.value) {
+        await userStore.updateUser(selectedUser.value.id, {user: user.value});
+        selectedUser.value = null;
+        ToastrService.success('Utilisateur mise à jour avec succès')
+      } else {
+        await userStore.createUser({user: user.value});
+        ToastrService.success('Utilisateur créé avec succès')
+      }
     } catch (error) {
-      ToastrService.error('Echec de création de l\'utilisateur')
+      ToastrService.error(`Echec de création ${selectedUser.value ? 'modification' : 'création'} de l\'utilisateur`)
     } finally {
-      isModalOpened.value = false
+      onCloseModal()
     }
   }
 };
@@ -81,14 +120,14 @@ const onSubmit = async () => {
         <div class="card table-card">
           <div class="card-body">
             <h3 class="my-5 mx-3">List of users</h3>
-            <UsersList @edit-user="onEditModalOpen" :users="users"/>
+            <UsersList @edit-user="onEditModalOpen" @remove-user="showDeleteConfirmation" :users="users"/>
           </div>
         </div>
       </div>
     </div>
     <!-- <UserForm :is-modal-open="isModalOpened" :is-loading="isLoading" @submitForm="handleCreateUser" /> -->
 
-    <Modal :isOpened="isModalOpened" modalId="createUserModal" modalTitle="Add a new user">
+    <Modal :isOpened="isModalOpened" modalId="createUserModal" :modalTitle="modalData.title">
       <form @submit.prevent="onSubmit">
         <div class="modal-body">
           <div class="mb-4">
@@ -107,7 +146,7 @@ const onSubmit = async () => {
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="isModalOpened = false" type="button" class="btn btn-secondary">
+          <button @click="onCloseModal()" type="button" class="btn btn-secondary">
             Close
           </button>
           <button v-if="isLoading" class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled" type="button" disabled="disabled">
@@ -116,7 +155,7 @@ const onSubmit = async () => {
             </span>
             Loading...
           </button>
-          <button v-else type="submit" class="btn btn-primary ltr:ml-2 trl:mr-2">Ajouter</button>
+          <button v-else type="submit" class="btn btn-primary ltr:ml-2 trl:mr-2">{{ modalData.button }}</button>
         </div>
       </form>
     </Modal>
