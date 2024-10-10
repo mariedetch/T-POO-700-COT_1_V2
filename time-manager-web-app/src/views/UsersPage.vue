@@ -4,7 +4,7 @@ import { UsersList } from '@/components/features/users'
 import { useUsersStore } from '@/stores/users';
 import Modal from '@/components/shared/Modal.vue';
 import { ToastrService } from '../utils/toastr';
-import { User } from '../services/users/types';
+import { type User } from '../services/users/types';
 
 const userStore = useUsersStore();
 const { users, error, isLoading, selectedUser } = toRefs(userStore);
@@ -26,7 +26,7 @@ const errors = ref({
 
 const validateFields = () => {
   errors.value.username = user.value.username ? '' : 'Le nom est requis.';
-  errors.value.email = user.value.email 
+  errors.value.email = user.value.email
     ? (/\S+@\S+\.\S+/.test(user.value.email as string) ? '' : 'L\'email est invalide.')
     : 'L\'email est requis.';
 
@@ -45,7 +45,7 @@ const onSubmit = async () => {
       ToastrService.success('Utilisateur créé avec succès')
       console.log('Utilisateur créé avec succès');
     } catch (error) {
-      ToastrService.success('Echec de création de l\'utilisateur')
+      ToastrService.error('Echec de création de l\'utilisateur')
     } finally {
       isModalOpened.value = false
     }

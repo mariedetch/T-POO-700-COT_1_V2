@@ -1,3 +1,7 @@
+<script setup lang="ts">
+  import ClockManager from "@/components/features/clocks/ClockManager.vue";
+</script>
+
 <template>
   <header class="pc-header">
     <div class="header-wrapper flex max-sm:px-[15px] px-[25px] grow">
@@ -22,6 +26,7 @@
       <!-- [Mobile Media Block end] -->
       <div class="ms-auto">
         <ul class="inline-flex *:min-h-header-height *:inline-flex *:items-center">
+          <ClockManager />
           <li class="dropdown pc-h-item">
             <a
               class="pc-head-link dropdown-toggle me-0"
