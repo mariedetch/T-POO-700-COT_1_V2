@@ -13,6 +13,11 @@ defmodule TimeManagementWeb.ClockController do
     render(conn, :index, clocks: clocks)
   end
 
+  def show(conn, %{"userId" => userId}) do
+    clock = ClockContext.get_latest_clock_by_user(userId)
+    render(conn, :show, clock: clock)
+  end
+
   def create(conn, %{"userId" => userId}) do
     user = UserContext.get_user!(userId)
     with {:ok, %Clock{} = clock} <- ClockContext.clock_in_or_out(user) do

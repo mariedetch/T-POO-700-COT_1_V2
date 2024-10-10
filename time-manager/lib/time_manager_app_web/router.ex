@@ -10,6 +10,7 @@ defmodule TimeManagementWeb.Router do
     resources "/users", UserController, except: [:new, :edit]
 
     get "/clocks/:userId", ClockController, :index
+    get "/clocks/:userId/latest", ClockController, :show
     post "/clocks/:userId", ClockController, :create
 
     get "/workingtime/:userID",  WorkingTimeController, :index
