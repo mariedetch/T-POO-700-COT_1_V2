@@ -1,10 +1,16 @@
-
 <script setup lang="ts">
 import { type User } from "@/services/users/types";
 
 const props = defineProps<{
   users: User[]
 }>();
+
+const emit = defineEmits(['editUser'])
+
+const openEditModal = (user: User) => {
+  emit('editUser', user)
+}
+
 </script>
 
 <template>
@@ -46,6 +52,7 @@ const props = defineProps<{
                   class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-success btn-pc-default"
                   data-pc-toggle="modal"
                   data-pc-target="#customer-edit_add-modal"
+                  @click="openEditModal(user)"
                   ><i class="ti ti-edit-circle text-lg leading-none"></i
                 ></a>
               </li>

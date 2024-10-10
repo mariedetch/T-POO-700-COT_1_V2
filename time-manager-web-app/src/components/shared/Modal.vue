@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 const props = defineProps({
   modalId: {
     type: String,
@@ -9,32 +7,35 @@ const props = defineProps({
   modalTitle: {
     type: String,
     default: 'Title'
+  },
+  isOpened: {
+    type: Boolean,
+    default: false
   }
-});
-
-const formatedModalId = "#" + props.modalId
+})
 </script>
 
 <template>
-  <div
-    :id="modalId"
-    class="modal fade"
-    role="dialog"
-    aria-labelledby="{{ modalId }}Label"
-  >
+  <div v-if="isOpened" :id="modalId" class="modal modal-mask fade anim-fall show animate" role="dialog" aria-labelledby="{{ modalId }}Label">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button
-            :data-pc-modal-dismiss="formatedModalId"
-            class="text-lg flex items-center justify-center rounded w-7 h-7 text-secondary-500 hover:bg-danger-500/10 hover:text-danger-500"
-          >
-            <i class="ti ti-x"></i>
-          </button>
         </div>
         <slot></slot>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+</style>

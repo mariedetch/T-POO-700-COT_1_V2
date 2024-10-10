@@ -5,6 +5,7 @@ import { ref } from "vue"
 
 export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([]);
+  const selectedUser = ref<User | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
@@ -20,27 +21,13 @@ export const useUsersStore = defineStore('users', () => {
     } finally {
       isLoading.value = false;
     }
-
-    /* await API.users.getUsers().then((response) => {
-      users.value = response.data.data;
-      console.log("Utilisateurs récupérés avec succès :");
-    })
-    .catch((error) => {
-      error.value = 'Erreur lors de la récupération des utilisateurs.';
-    })
-    .finally(() => {
-      isLoading.value = false;
-    }); */
   };
-  const sleep = (ms: number | undefined) => new Promise(resolve => setTimeout(resolve, ms));
 
   const createUser = async (data: UserRequest) => {
     isLoading.value = true;
     error.value = null;
 
-    await sleep(10000);
-
-    API.users.createUser(data).then((response) => {
+    /* API.users.createUser(data).then((response) => {
       users.value.push(response.data.data);
       console.log("Utilisateur crée avec succès :");
     })
@@ -49,8 +36,8 @@ export const useUsersStore = defineStore('users', () => {
     })
     .finally(() => {
       isLoading.value = false;
-    });
+    }); */
   };
 
-  return { users, isLoading, error, getUsers, createUser };
+  return { users, isLoading, selectedUser, error, getUsers, createUser };
 })
