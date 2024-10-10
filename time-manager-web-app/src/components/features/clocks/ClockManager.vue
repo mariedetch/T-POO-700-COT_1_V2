@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useClocksStore } from '@/stores/clocks';
-import { computed, toRefs } from 'vue';
+import { computed, onMounted, toRefs } from 'vue';
 import { ToastrService } from '../../../utils/toastr';
 
 const clockStore = useClocksStore();
@@ -14,11 +14,15 @@ const data = computed(() => ({
 const onClock = async () => {
   try {
     await clockStore.clock();
-    ToastrService.success(`Vous avez marquer votre ${clockIn ? 'arrivée' : 'sortie'} avec succès`)
+    ToastrService.success(`Clock effectué avec succès`)
   } catch (error) {
     ToastrService.error('Echec lors du clock! veuillez reéssayer ultérieurement')
   }
 };
+
+onMounted(async () => {
+  await clockStore.getLatestClock();
+});
 
 </script>
 

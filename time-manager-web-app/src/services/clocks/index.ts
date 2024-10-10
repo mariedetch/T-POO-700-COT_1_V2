@@ -8,10 +8,15 @@ async function getClocks() {
   return await http.get<ApiResponse<Clock[]>>(`clocks/${userId}`);
 }
 
+async function getClock() {
+  return await http.get<ApiResponse<Clock | null>>(`clocks/${userId}/latest`);
+}
+
 async function createClock() {
   return await http.post<ApiResponse<Clock>>(`clocks/${userId}`);
 }
 export default {
   getClocks,
+  getClock,
   createClock
 };

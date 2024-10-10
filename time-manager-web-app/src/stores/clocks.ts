@@ -14,9 +14,7 @@ export const useClocksStore = defineStore('clocks', () => {
       const clock = response.data.data;
       console.log(clock);
 
-      if (clock.status) {
-        startDateTime.value = null;
-      }
+      startDateTime.value = clock.status ? clock.time : null;
       clockIn.value = clock.status;
     })
     .catch((error) => {
@@ -24,5 +22,24 @@ export const useClocksStore = defineStore('clocks', () => {
     });
   };
 
-  return { startDateTime, clockIn, error, clock };
+  const getLatestClock = async () => {
+    error.value = null;
+
+    API.cloks.getClock().then((response) => {
+      const clock = response.data.data;
+
+      if (clock) {
+        startDateTime.value = clock.status ? clock.time : null;
+        clockIn.value = clock.status;
+      } else {
+        startDateTime.value = null;
+        clockIn.value = false;
+      }
+    })
+    .catch((error) => {
+      error.value = 'Erreur lors de la création de l\'utilisateur.';
+    });
+  };
+
+  return { startDateTime, clockIn, error, clock, getLatestClock };
 });
