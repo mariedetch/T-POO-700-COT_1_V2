@@ -3,6 +3,7 @@ import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
 import UsersPage from '@/views/UsersPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
+import WorkingtimesPage from '@/views/WorkingtimesPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,7 +26,13 @@ const router = createRouter({
           path: '/my-profile',
           name: 'User Profile',
           component: UserProfilePage
-        }
+        },
+        {
+          path: '/workingtimes/:userID',
+          name: 'Workingtimes',
+          component: WorkingtimesPage,
+          props: true
+        },
       ]
     },
   ]

@@ -5,6 +5,7 @@ import { ref } from "vue"
 
 export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([]);
+  const userId = import.meta.env.VITE_DEFAULT_USER;
   const currentUser = ref<User | null>(null);
   const selectedUser = ref<User | null>(null);
   const isLoading = ref(false);
@@ -23,11 +24,11 @@ export const useUsersStore = defineStore('users', () => {
     }
   };
 
-  const getUser = async () => {
+  const getUser = async (userId: string) => {
     isLoading.value = true;
     error.value = null;
 
-    API.users.getUser(import.meta.env.VITE_DEFAULT_USER).then((response) => {
+    API.users.getUser(userId).then((response) => {
       currentUser.value = response.data.data;
     })
     .catch((errors) => {
@@ -83,5 +84,5 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
-  return { users, currentUser, isLoading, selectedUser, error, getUsers, getUser, createUser, updateUser, deleteUser };
+  return { users, userId, currentUser, isLoading, selectedUser, error, getUsers, getUser, createUser, updateUser, deleteUser };
 })

@@ -3,10 +3,10 @@ import { useUsersStore } from '@/stores/users';
 import { onMounted, toRefs } from 'vue';
 
 const userStore = useUsersStore()
-const { currentUser } = toRefs(userStore)
+const { currentUser, userId } = toRefs(userStore)
 
 onMounted(async () => {
-  await userStore.getUser();
+  await userStore.getUser(userId.value);
 })
 </script>
 
