@@ -1,19 +1,30 @@
 <script setup lang="ts">
 import { type Workingtime } from "@/services/workingtimes/types";
+import Swal from 'sweetalert2';
 import { format } from 'date-fns';
 
-const props = defineProps<{
-  workingtimes: Workingtime[]
-}>();
-
+const props = defineProps<{ workingtimes: Workingtime[] }>();
 const emit = defineEmits(['editWorkingtime', 'removeWorkingtime'])
 
 const openEditModal = (workingtime: Workingtime) => {
   emit('editWorkingtime', workingtime)
 }
 
-const confirmDelete = (workingtimeId: string) => {
-  emit('removeWorkingtime', workingtimeId)
+const confirmDelete = async (userId: string) => {
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: 'Cette action ne peut pas être annulée !',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler'
+  })
+
+  if (result.isConfirmed) {
+  emit('removeWorkingtime', userId)
+  }
 }
 </script>
 

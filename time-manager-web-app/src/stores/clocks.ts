@@ -17,7 +17,7 @@ export const useClocksStore = defineStore('clocks', () => {
       startDateTime.value = clock.status ? clock.time : null;
       clockIn.value = clock.status;
     })
-    .catch((error) => {
+    .catch((errors) => {
       error.value = 'Erreur lors de la création de l\'utilisateur.';
     });
   };
@@ -36,7 +36,7 @@ export const useClocksStore = defineStore('clocks', () => {
         clockIn.value = false;
       }
     })
-    .catch((error) => {
+    .catch((errors) => {
       error.value = 'Erreur lors de la création de l\'utilisateur.';
     });
   };

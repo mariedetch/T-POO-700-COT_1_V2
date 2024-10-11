@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import { type User } from "@/services/users/types";
+import Swal from 'sweetalert2';
 
-const props = defineProps<{
-  users: User[]
-}>();
-
+const props = defineProps<{ users: User[] }>();
 const emit = defineEmits(['editUser', 'removeUser'])
 
 const openEditModal = (user: User) => {
   emit('editUser', user)
 }
 
-const confirmDelete = (userId: string) => {
-  emit('removeUser', userId)
-}
+const confirmDelete = async (userId: string) => {
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: 'Cette action ne peut pas être annulée !',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler'
+  })
 
+  if (result.isConfirmed) {
+  emit('removeUser', userId)
+  }
+}
 </script>
 
 <template>

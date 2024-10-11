@@ -15,7 +15,6 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
 
     try {
         workingtimes.value = (await API.workingtimes.getWorkingtimes(userID)).data.data;
-        console.log("Working times has been successfully recovered :");
     } catch (errors) {
       error.value = 'Error during the working times recovering';
     } finally {
@@ -23,49 +22,60 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     }
   };
 
-  const createWorkingtime= async (userID: string, data: WorkingtimeRequest) => {
+  const createWorkingtime= async (userID: string, data: WorkingtimeRequest): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
 
-    API.workingtimes.createWorkingtime(userID, data).then((response) => {
+    try {
+      const response = await API.workingtimes.createWorkingtime(userID, data);
       workingtimes.value.push(response.data.data);
-      console.log("Working time successfully created");
-    })
-    .catch((error) => {
-      error.value = 'Error during working time creation :';
-    })
-    .finally(() => {
       isLoading.value = false;
-    });
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error during working time creation';
+      isLoading.value = false;
+    }
+
+    return false;
   };
 
-  const updateWorkingtime = async (workingtimeId: string, data: Partial<WorkingtimeRequest>) => {
+  const updateWorkingtime = async (workingtimeId: string, data: Partial<WorkingtimeRequest>): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
 
-    API.workingtimes.updateWorkingtime(workingtimeId, data).then((response) => {
+    try {
+      const response = await API.workingtimes.updateWorkingtime(workingtimeId, data);
       const updatedWorkingtime = response.data.data;
       const index = workingtimes.value.findIndex(workingtime => workingtime.id === workingtimeId);
-        if (index !== -1) {
-          workingtimes.value[index] = updatedWorkingtime;
-        }
-    })
-    .catch((error) => {
-      error.value = 'Creation failed for working time';
-    })
-    .finally(() => {
+      if (index !== -1) {
+        workingtimes.value[index] = updatedWorkingtime;
+      }
       isLoading.value = false;
-    });
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error when updating working time.';
+      isLoading.value = false;
+    }
+
+    return false;
   };
 
-  const deleteWorkingtime = async (workingtimeId: string) => {
+  const deleteWorkingtime = async (workingtimeId: string): Promise<boolean> => {
     isLoading.value = false;
+
     try {
       await API.workingtimes.deleteWorkingtime(workingtimeId);
       workingtimes.value = workingtimes.value.filter(workingtime => workingtime.id !== workingtimeId);
+      isLoading.value = false;
+
+      return true;
     } catch (error) {
       isLoading.value = false;
     }
+
+    return false;
   }
 
   return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime };

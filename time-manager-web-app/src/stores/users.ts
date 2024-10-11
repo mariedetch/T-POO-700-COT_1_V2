@@ -39,49 +39,58 @@ export const useUsersStore = defineStore('users', () => {
     });
   };
 
-  const createUser = async (data: UserRequest) => {
+  const createUser = async (data: UserRequest): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
 
-    API.users.createUser(data).then((response) => {
+    try {
+      const response = await API.users.createUser(data);
       users.value.push(response.data.data);
-    })
-    .catch((errors) => {
-      error.value = 'Error when creating user.';
-    })
-    .finally(() => {
       isLoading.value = false;
-    });
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error when creating user.';
+      isLoading.value = false;
+    }
+
+    return false;
   };
 
-  const updateUser = async (userId: string, data: Partial<UserRequest>) => {
+  const updateUser = async (userId: string, data: Partial<UserRequest>): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
 
-    API.users.updateUser(userId, data).then((response) => {
+    try {
+      const response = await API.users.updateUser(userId, data);
       const updatedUser = response.data.data;
       const index = users.value.findIndex(user => user.id === userId);
-        if (index !== -1) {
-          users.value[index] = updatedUser;
-        }
-    })
-    .catch((errors) => {
-      error.value = 'Error when updating user.';
-    })
-    .finally(() => {
+      if (index !== -1) {
+        users.value[index] = updatedUser;
+      }
       isLoading.value = false;
-    });
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error when updating user.';
+      isLoading.value = false;
+    }
+
+    return false;
   };
 
-  const deleteUser = async (userId: string) => {
-    isLoading.value = false;
+  const deleteUser = async (userId: string): Promise<boolean> => {
+    isLoading.value = true;
     try {
       await API.users.deleteUser(userId);
       users.value = users.value.filter(user => user.id !== userId);
+      isLoading.value = false;
+      return true;
     } catch (errors) {
       error.value = 'Error when deleting user.';
       isLoading.value = false;
     }
+    return false;
   }
 
   return { users, userId, currentUser, isLoading, selectedUser, error, getUsers, getUser, createUser, updateUser, deleteUser };
