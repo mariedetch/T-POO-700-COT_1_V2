@@ -2,10 +2,10 @@ import Config
 
 # Configure your database
 config :time_manager_app, TimeManagement.Repo,
-  username: "postgres",
-  password: "password",
-  hostname: "localhost",
-  database: "time_manager_app_dev",
+  username: "your_pg_username",
+  password: "your_pg_password",
+  hostname: "your_pg_host",
+  database: "your_db_name",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
