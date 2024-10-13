@@ -18,7 +18,7 @@ Une API RESTful pour la gestion des fonctionnalités de l'application Time Manag
 ### Cloner le dépôt
 ```bash
 git clone git@github.com:EpitechMscProPromo2026/T-POO-700-COT_1.git
-cd T-POO-700-COT_1/time-manager
+cd T-POO-700-COT_1/time-manager-backend
 ```
 
 ### Installation des dépendances

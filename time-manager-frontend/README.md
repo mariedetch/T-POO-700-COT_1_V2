@@ -11,7 +11,7 @@ Web application for managing working hours in vueJs 3
 ### Cloner le dépôt
 ```bash
 git clone git@github.com:EpitechMscProPromo2026/T-POO-700-COT_1.git
-cd T-POO-700-COT_1/time-manager-web-app
+cd T-POO-700-COT_1/time-manager-frontend
 ```
 
 ## Recommended IDE Setup
