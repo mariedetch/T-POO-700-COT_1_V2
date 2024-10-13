@@ -1,6 +1,18 @@
-# time-manager-web-app
+# Time manager web app
 
-This template should help get you started developing with Vue 3 in Vite.
+Web application for managing working hours in vueJs 3
+
+## Installation
+
+### Prerequisites
+- NPM version `10.6.x` or higher
+- NodeJs(https://www.npmjs.com/) version `20.x.x` or higher
+
+### Cloner le dépôt
+```bash
+git clone git@github.com:EpitechMscProPromo2026/T-POO-700-COT_1.git
+cd T-POO-700-COT_1/time-manager-web-app
+```
 
 ## Recommended IDE Setup
 

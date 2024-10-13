@@ -4,8 +4,8 @@ import { type Clock } from "./types";
 
 const userId = import.meta.env.VITE_DEFAULT_USER;
 
-async function getClocks() {
-  return await http.get<ApiResponse<Clock[]>>(`clocks/${userId}`);
+async function getClocks(id: string | null = null) {
+  return await http.get<ApiResponse<Clock[]>>(`clocks/${id ?? userId}`);
 }
 
 async function getClock() {

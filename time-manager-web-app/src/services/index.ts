@@ -4,6 +4,6 @@ import workingtimeService from "./workingtimes";
 
 export const API = {
   users: userService,
-  cloks: clockService,
+  clocks: clockService,
   workingtimes: workingtimeService
 };
