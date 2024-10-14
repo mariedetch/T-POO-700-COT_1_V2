@@ -1,54 +1,62 @@
-name: Deploy Backend and Frontend to Heroku
+name: Deploy Phoenix Backend to Heroku
 
 on:
   push:
     branches:
-      - main  # Déclencher le déploiement lorsque du code est poussé sur la branche main
+      - main
 
 jobs:
-  deploy:
+  deploy-backend:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout the code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Installer le CLI Heroku
-    - name: Install Heroku CLI
-      run: curl https://cli-assets.heroku.com/install.sh | sh
+    - name: Set up Elixir
+      uses: actions/setup-elixir@v1
+      with:
+        otp-version: '24.x'
+        elixir-version: '1.15.x'
 
-    # Authentification avec Heroku Container Registry
-    - name: Log in to Heroku Container Registry
+    # Authentification à Heroku CLI
+    - name: Log in to Heroku CLI
       env:
         HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
-      run: echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
-      
-    - name: Login to Heroku
+        HEROKU_EMAIL: "mariella.detchenou@epitech.eu"
+      run: |
+        echo "machine api.heroku.com" > ~/.netrc
+        echo "  login $HEROKU_EMAIL" >> ~/.netrc
+        echo "  password $HEROKU_API_KEY" >> ~/.netrc
+        echo "machine git.heroku.com" >> ~/.netrc
+        echo "  login $HEROKU_EMAIL" >> ~/.netrc
+        echo "  password $HEROKU_API_KEY" >> ~/.netrc
+        heroku auth:token
+
+    # Authentification Docker pour Heroku
+    - name: Log in to Heroku Docker Registry
       env:
         HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
-      run: echo $HEROKU_API_KEY | heroku auth:token --api-key
+      run: |
+        echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
 
-    # --- Backend Deployment ---
-    - name: Build and Push Backend Docker Image
+    # Construction de l'image Docker
+    - name: Build Docker image for Backend
       working-directory: ./time-manager-backend
+      run: docker build --file Dockerfile --tag registry.heroku.com/time-manager-api/web .
+
+    # Pousser l'image vers le registre de conteneurs Heroku
+    - name: Push Docker image to Heroku Container Registry
+      working-directory: ./time-manager-backend
+      run: docker push registry.heroku.com/time-manager-api/web
+
+    # Lancer le déploiement de l'application
+    - name: Release the Backend Application on Heroku
       run: |
-        docker build -t registry.heroku.com/time-manager-api/web .
-        docker push registry.heroku.com/time-manager-api/web
+        heroku container:release web --app time-manager-api
 
-    - name: Release Backend to Heroku
-      run: heroku container:release web -a time-manager-api
-
-    # --- Frontend Deployment ---
-    - name: Build and Push Frontend Docker Image
-      working-directory: ./time-manager-frontend
+    # Exécuter les migrations de la base de données
+    - name: Run database migrations
       run: |
-        docker build -t registry.heroku.com/time-manager-web-app/web .
-        docker push registry.heroku.com/time-manager-web-app/web
+        heroku run mix ecto.migrate --app ${{ secrets.HEROKU_APP_NAME }}
 
-    - name: Release Frontend to Heroku
-      run: heroku container:release web -a time-manager-web-app
-
-    # Configuration de la base de données pour le backend
-    - name: Set up Database Config for Backend
-      run: |
-        heroku config:set DATABASE_URL=$(heroku config:get DATABASE_URL --app time-manager-api) -a time-manager-api
