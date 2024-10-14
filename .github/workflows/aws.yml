@@ -14,9 +14,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - run: docker-compose -f docker-compose.yaml build --parallel
+    - run: docker compose -f docker-compose.yml build --parallel
     - run: docker tag time-manager-frontend marieloujo/time-manager-frontend:latest
     - run: docker tag time-manager-frontend marieloujo/time-manager-backend:latest
-    - run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - run: echo "LU5ez5A9LXZgh93" | docker login -u "marieloujo" --password-stdin
     - run: docker push marieloujo/time-manager-frontend:latest
     - run: docker push marieloujo/time-manager-backend:latest
