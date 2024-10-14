@@ -13,11 +13,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Elixir
-      uses: actions/setup-elixir@v2
-      with:
-        otp-version: '24.x'
-        elixir-version: '1.15.x'
+    # Installer le CLI Heroku
+    - name: Install Heroku CLI
+      run: curl https://cli-assets.heroku.com/install.sh | sh
 
     # Authentification à Heroku CLI
     - name: Log in to Heroku CLI
