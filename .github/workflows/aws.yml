@@ -22,6 +22,11 @@ jobs:
       env:
         HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
       run: echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
+      
+    - name: Login to Heroku
+      env:
+        HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
+      run: echo $HEROKU_API_KEY | heroku auth:token --api-key
 
     # --- Backend Deployment ---
     - name: Build and Push Backend Docker Image
