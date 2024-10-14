@@ -9,9 +9,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
 
   def index(conn, %{"userID" => user_id, "start" => start_date, "end" => end_date}) do
     user = UserContext.get_user!(user_id)
-    start_dt = NaiveDateTime.from_iso8601!(start_date)
-    end_dt = NaiveDateTime.from_iso8601!(end_date)
-    
+
     workingtime = WorkingTimeContext.list_workingtimes_by_id(user.id, start_date, end_date)
     render(conn, :index, workingtime: workingtime)
   end

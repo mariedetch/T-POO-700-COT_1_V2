@@ -89,7 +89,7 @@ const onSubmit = async () => {
             v-if="isLoading"
             class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled"
             type="button"
-            disabled="disabled"
+            :disabled="true"
           >
             <span
               class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent"

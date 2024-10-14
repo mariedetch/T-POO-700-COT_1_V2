@@ -74,7 +74,7 @@ const onSubmit = async () => {
         <button @click="emit('closeModalForm')" type="button" class="btn btn-secondary">
           Close
         </button>
-        <button v-if="isLoading" class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled" type="button" disabled="disabled">
+        <button v-if="isLoading" class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled" type="button" :disabled="true">
           <span class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent" role="status">
             <span class="sr-only">Loading...</span>
           </span>

@@ -1,8 +1,18 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, toRefs } from 'vue';
-import Chart from 'chart.js/auto';
-import axios from 'axios';
+import { Chart } from 'chart.js/auto';
 import { useClocksStore } from '@/stores/clocks';
+
+interface TimeRange {
+  start: number | null;
+  end: number | null;
+}
+
+interface TimeRecord {
+  date: string;
+  startTime: number | null;
+  endTime: number | null;
+}
 
 const props = defineProps({
   userId: String
@@ -11,8 +21,8 @@ const clockStore = useClocksStore();
 const { clocks } = toRefs(clockStore);
 
 
-const times = ref([]);  // Contiendra les paires (start, end) pour chaque journée
-const chart = ref(null); // Stocke la référence au graphique
+const times = ref<TimeRecord[]>([]);  // Contiendra les paires (start, end) pour chaque journée
+const chart = ref<any>(null); // Stocke la référence au graphique
 
 const fetchData = async () => {
     // if (props.userId) {
@@ -21,7 +31,7 @@ const fetchData = async () => {
             await clockStore.getClocks();
 
             if (clocks.value) {
-                const groupedTimes = {};
+                const groupedTimes: { [date: string]: TimeRange } = {};
 
             // Traiter les données pour regrouper par paires de start et end par date
                 clocks.value.forEach(item => {
@@ -45,14 +55,14 @@ const fetchData = async () => {
                 times.value = Object.entries(groupedTimes)
                     .filter(([date, times]) => times.start !== null && times.end !== null)
                     .map(([date, times]) => ({
-                    date,
-                    startTime: times.start,
-                    endTime: times.end
+                        date,
+                        startTime: times.start,
+                        endTime: times.end
                     }))
-                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-            // Créer le graphique une fois que les données sont prêtes
-            createChart();
+                // Créer le graphique une fois que les données sont prêtes
+                createChart();
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des données:', error);
@@ -61,75 +71,75 @@ const fetchData = async () => {
 }
 
 // Requête déclenchée à chaque changement de l'ID utilisateur
-watch(() => props.userId, fetchData);
+// watch(() => props.userId, fetchData);
 
 onMounted(fetchData);
 
 // Fonction pour créer le graphique
 const createChart = () => {
-    const ctx = document.getElementById('myChart_2'); // Sélection du canvas
+    const ctx = document.getElementById('myChart_2') as HTMLCanvasElement;
     if (chart.value) {
-    chart.value.destroy(); // Si un graphique existe déjà, on le détruit pour en recréer un nouveau
+        chart.value.destroy();
     }
 
     chart.value = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: times.value.map(time => time.date),
-        datasets: [{
-            label: 'Plage horaire',
-            data: times.value.map(time => [time.startTime, time.endTime]),
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 2,
-            borderRadius: 10,
-            borderSkipped: false,
-            barPercentage: 0.6,
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-        x: {
-            title: {
-            display: true,
-            text: 'Dates',
-            },
+        type: 'bar',
+        data: {
+            labels: times.value.map(time => time.date),
+            datasets: [{
+                label: 'Plage horaire',
+                data: times.value.map(time => [time.startTime, time.endTime]),
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                borderRadius: 10,
+                borderSkipped: false,
+                barPercentage: 0.6,
+            }]
         },
-        y: {
-            beginAtZero: true,
-            min: 0,
-            max: 24 * 60, // 24 heures en minutes
-            title: {
-            display: true,
-            text: 'Heures',
+        options: {
+            responsive: true,
+            scales: {
+            x: {
+                title: {
+                display: true,
+                text: 'Dates',
+                },
             },
-            ticks: {
-                stepSize: 180, // Intervalles d'une heure
-                callback: function(value) {
-                    const hours = Math.floor(value / 60);
-                    const minutes = value % 60;
-                    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            y: {
+                beginAtZero: true,
+                min: 0,
+                max: 24 * 60, // 24 heures en minutes
+                title: {
+                display: true,
+                text: 'Heures',
+                },
+                ticks: {
+                    stepSize: 180, // Intervalles d'une heure
+                    callback: function(value: string | number) {
+                        const hours = Math.floor(Number(value) / 60);
+                        const minutes = Number(value) % 60;
+                        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    }
+                },
+            }
+            }, // scale
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                    label: function(context) {
+                        const value = context.raw as [number, number];
+                        const formatTime = (minutes: number) => {
+                            const hours = Math.floor(minutes / 60);
+                            const mins = minutes % 60;
+                            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+                        };
+                        return `Plage horaire : De ${formatTime(value[0])} à ${formatTime(value[1])}`;
+                    }
+                    }
                 }
             },
         }
-        }, // scale
-        plugins: {
-            tooltip: {
-                callbacks: {
-                label: function(context) {
-                    const value = context.raw;
-                    const formatTime = (minutes) => {
-                        const hours = Math.floor(minutes / 60);
-                        const mins = minutes % 60;
-                        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-                    };
-                    return `Plage horaire : De ${formatTime(value[0])} à ${formatTime(value[1])}`;
-                }
-                }
-            }
-        }, // plugins 
-    } // option 
     });
 };
 </script>
