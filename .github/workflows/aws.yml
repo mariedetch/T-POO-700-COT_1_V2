@@ -56,5 +56,5 @@ jobs:
     # Exécuter les migrations de la base de données
     - name: Run database migrations
       run: |
-        heroku run mix ecto.migrate --app ${{ secrets.HEROKU_APP_NAME }}
+        heroku run mix ecto.migrate --app time-manager-api
 
