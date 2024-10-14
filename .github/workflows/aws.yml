@@ -1,41 +1,49 @@
-name: Deploy to AWS EC2
+name: Deploy Backend and Frontend to Heroku
 
 on:
   push:
     branches:
-      - main  # ou toute autre branche que vous souhaitez utiliser
+      - main  # Déclencher le déploiement lorsque du code est poussé sur la branche main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout the code
+      uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    # Installer le CLI Heroku
+    - name: Install Heroku CLI
+      run: curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: marieloujo
-          password: Joan20012508
+    # Authentification avec Heroku Container Registry
+    - name: Log in to Heroku Container Registry
+      env:
+        HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
+      run: echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
 
-      - name: Build and push Docker images
-        run: |
-          docker build -t time-manager-frontend ./time-manager-frontend
-          docker build -t time-manager-backend ./time-manager-backend
+    # --- Backend Deployment ---
+    - name: Build and Push Backend Docker Image
+      working-directory: ./time-manager-backend
+      run: |
+        docker build -t registry.heroku.com/time-manager-api/web .
+        docker push registry.heroku.com/time-manager-api/web
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+    - name: Release Backend to Heroku
+      run: heroku container:release web -a time-manager-api
 
-      - name: Deploy to AWS EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.AWS_EC2_IP }} << 'EOF'
-            docker-compose -f /path/to/docker-compose.yml down
-            docker-compose -f /path/to/docker-compose.yml pull
-            docker-compose -f /path/to/docker-compose.yml up -d --build
-          EOF
+    # --- Frontend Deployment ---
+    - name: Build and Push Frontend Docker Image
+      working-directory: ./time-manager-frontend
+      run: |
+        docker build -t registry.heroku.com/time-manager-web-app/web .
+        docker push registry.heroku.com/time-manager-web-app/web
+
+    - name: Release Frontend to Heroku
+      run: heroku container:release web -a time-manager-web-app
+
+    # Configuration de la base de données pour le backend
+    - name: Set up Database Config for Backend
+      run: |
+        heroku config:set DATABASE_URL=$(heroku config:get DATABASE_URL --app time-manager-api) -a time-manager-api
