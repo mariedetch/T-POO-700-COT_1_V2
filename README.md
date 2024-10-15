@@ -1,4 +1,4 @@
-# Time Manager
+# Time Manager App
 
 **Time Manager** est une application web de gestion du temps au sein de l'entreprise. Elle permet aux employés, managers, et au directeur général de gérer leurs horaires de travail, suivre les performances d'équipe, et visualiser des tableaux de bord personnels et d'équipe.
 
