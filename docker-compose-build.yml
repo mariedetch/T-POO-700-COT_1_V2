@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # frontend:
+  #   image: time-manager-frontend
+  #   build:
+  #     context: ./time-manager-frontend
+  #     dockerfile: Dockerfile
+  #   container_name: time-manager-frontend
+  #   ports:
+  #     - "8080:80"
+  #   networks:
+  #     - app_net
+
+  api:
+    build:
+      context: ./time-manager-backend
+      dockerfile: Dockerfile
+    container_name: time-manager-backend
+    ports:
+      - "4000:4000"
+    environment:
+      MY_DATABASE_URL: "postgres://ufg7ivcc4vjqr0:p05e803bb79615c777db7a2ff44978cfe89fd30137c37ed82f6cf310851313baf@c9mq4861d16jlm.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d1jlk71pu23nbr"
+      SECRET_KEY_BASE: "cGFMwXKImwcdyDGCZhsZPprFxBb37FbQqRoUa+plpZtmGX3bm8+HvwDiivYojwLT"
+      PORT: 4000
+    # depends_on:
+    #   - db
+    networks:
+      - app_net
+
+  db:
+    image: postgres:14
+    container_name: time-manager-database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: time_manager_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_net
+
+networks:
+  app_net:
+
+volumes:
+  db_data:
