@@ -45,4 +45,6 @@ ENV MIX_ENV=prod \
 # Exposer le port de l'application
 EXPOSE 4000
 
+CMD ["sh", "-c", "mix ecto.migrate"]
+
 CMD ["sh", "bin/time_manager_app", "start"]

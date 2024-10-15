@@ -1,6 +1,7 @@
-FROM node:20-alpine as build-stage
+FROM node:20 AS build
 
 WORKDIR /app
+
 COPY package*.json ./
 
 RUN npm install
@@ -9,12 +10,12 @@ COPY . .
 
 RUN npm run build
 
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+FROM nginx:alpine
 
-# Nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 
-EXPOSE 80
+COPY --from=build /app/dist /usr/share/nginx/html
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080
+
+CMD ["sh", "-c", "envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]

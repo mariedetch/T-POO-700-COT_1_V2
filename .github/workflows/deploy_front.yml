@@ -1,0 +1,53 @@
+name: Deploy Vue.js Application with Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Installer le CLI Heroku
+    - name: Install Heroku CLI
+      run: curl https://cli-assets.heroku.com/install.sh | sh
+
+    # Authentification à Heroku CLI
+    - name: Log in to Heroku CLI
+      env:
+        HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
+        HEROKU_EMAIL: "mariella.detchenou@epitech.eu"
+      run: |
+        echo "machine api.heroku.com" > ~/.netrc
+        echo "  login $HEROKU_EMAIL" >> ~/.netrc
+        echo "  password $HEROKU_API_KEY" >> ~/.netrc
+        echo "machine git.heroku.com" >> ~/.netrc
+        echo "  login $HEROKU_EMAIL" >> ~/.netrc
+        echo "  password $HEROKU_API_KEY" >> ~/.netrc
+        heroku auth:token
+
+    # Authentification Docker pour Heroku
+    - name: Log in to Heroku Docker Registry
+      env:
+        HEROKU_API_KEY: "HRKU-a40e9aa6-e9e1-44f5-8f26-aa1395ee1f33"
+      run: |
+        echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
+
+    - name: Build Docker Image
+      working-directory: ./time-manager-frontend
+      run: |
+        docker build -t registry.heroku.com/time-manager-web-app/web .
+
+    - name: Push Docker Image to Heroku
+      working-directory: ./time-manager-frontend
+      run: |
+        docker push registry.heroku.com/time-manager-web-app/web
+
+    - name: Release Heroku App
+      run: |
+        heroku container:release web --app time-manager-web-app
