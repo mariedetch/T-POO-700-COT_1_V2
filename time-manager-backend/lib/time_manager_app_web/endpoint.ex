@@ -45,7 +45,7 @@ defmodule TimeManagementWeb.Endpoint do
     json_decoder: Phoenix.json_library()
 
   plug CORSPlug,
-    origin: ["http://localhost:5173"],
+    origin: System.get_env("CORS_ORIGIN") || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     max_age: 86400
 

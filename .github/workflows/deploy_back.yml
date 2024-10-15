@@ -1,4 +1,4 @@
-name: Deploy the fontend (Time Manager Frontend)
+name: Deploy the backend (Time Manager Backend)
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - main
 
 jobs:
-  build:
+  deploy-backend:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     # Installer le CLI Heroku
@@ -38,16 +38,22 @@ jobs:
       run: |
         echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
 
-    - name: Build Docker Image
-      working-directory: ./time-manager-frontend
-      run: |
-        docker build -t registry.heroku.com/time-manager-web-app/web .
+    # Construction de l'image Docker
+    - name: Build Docker image for Backend
+      working-directory: ./time-manager-backend
+      run: docker build --file Dockerfile --tag registry.heroku.com/time-manager-api/web .
 
-    - name: Push Docker Image to Heroku
-      working-directory: ./time-manager-frontend
-      run: |
-        docker push registry.heroku.com/time-manager-web-app/web
+    # Pousser l'image vers le registre de conteneurs Heroku
+    - name: Push Docker image to Heroku Container Registry
+      working-directory: ./time-manager-backend
+      run: docker push registry.heroku.com/time-manager-api/web
 
-    - name: Release Heroku App
+    # Lancer le déploiement de l'application
+    - name: Release the Backend Application on Heroku
       run: |
-        heroku container:release web --app time-manager-web-app
+        heroku container:release web --app time-manager-api
+
+    # Exécuter les migrations de la base de données
+    - name: Run database migrations
+      run: |
+        heroku run mix ecto.migrate --app time-manager-api
