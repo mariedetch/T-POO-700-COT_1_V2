@@ -36,6 +36,7 @@ const confirmDelete = async (userId: string) => {
           <th>#</th>
           <th>Start</th>
           <th>End</th>
+          <th>Duration</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
@@ -50,6 +51,7 @@ const confirmDelete = async (userId: string) => {
             </div>
           </td>
           <td>{{ format(workingtime.end, 'yyyy-MM-dd HH:mm') }}</td>
+          <td></td>
           <td class="text-center">
             <ul class="flex items-center mr-auto mb-0">
               <li class="list-inline-item">

@@ -29,7 +29,18 @@ const fetchData = async () => {
         try {
             // Récupérer les données depuis l'API
             await clockStore.getClocks();
+            // fonction pour ordonner les dates de clock
+            const parseDate = (dateString: string) => {
+                const [day, month, year] = dateString.split('/').map(Number);
+                return new Date(year, month - 1, day); // Mois sont 0-indexés en JavaScript
+            };
 
+            // Fonction de tri améliorée de clock
+            const sortByDate = (a: TimeRecord, b: TimeRecord) => {
+                const dateA = parseDate(a.date);
+                const dateB = parseDate(b.date);
+                return dateA.getTime() - dateB.getTime();
+            };
             if (clocks.value) {
                 const groupedTimes: { [date: string]: TimeRange } = {};
 
@@ -59,7 +70,7 @@ const fetchData = async () => {
                         startTime: times.start,
                         endTime: times.end
                     }))
-                    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    .sort(sortByDate);
 
                 // Créer le graphique une fois que les données sont prêtes
                 createChart();
@@ -77,7 +88,7 @@ onMounted(fetchData);
 
 // Fonction pour créer le graphique
 const createChart = () => {
-    const ctx = document.getElementById('myChart_2') as HTMLCanvasElement;
+    const ctx = document.getElementById('myChart_1') as HTMLCanvasElement;
     if (chart.value) {
         chart.value.destroy();
     }
@@ -89,8 +100,8 @@ const createChart = () => {
             datasets: [{
                 label: 'Plage horaire',
                 data: times.value.map(time => [time.startTime, time.endTime]),
-                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(255, 165, 0, 0.5)',
+                borderColor: 'rgba(255, 165, 0, 1)',
                 borderWidth: 2,
                 borderRadius: 10,
                 borderSkipped: false,
@@ -146,6 +157,6 @@ const createChart = () => {
 
 <template>
   <div>
-    <canvas id="myChart_2" width="500" height="300"></canvas>
+    <canvas id="myChart_1" height="175"></canvas>
   </div>
 </template>

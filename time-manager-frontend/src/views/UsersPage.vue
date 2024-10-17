@@ -26,10 +26,9 @@ const onDeleted = async (userId: string) => {
   }
 }
 
-const onFiltered = async () => {
+const onFiltered = async () => { 
   await userStore.getUsers(filterData.email, filterData.username)
 }
-
 
 onMounted(async () => {
   await userStore.getUsers()

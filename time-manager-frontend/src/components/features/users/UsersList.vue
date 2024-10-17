@@ -53,11 +53,12 @@ const confirmDelete = async (userId: string) => {
             <ul class="flex items-center mr-auto mb-0">
               <li class="list-inline-item">
                 <RouterLink :to="`/workingtimes/${user.id}`"
-                  class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-secondary btn-pc-default"
+                  class="px-4 py-2 bg-gray-200 rounded-lg inline-flex items-center justify-center btn-link-secondary btn-pc-default"
                   data-pc-toggle="modal"
-                  data-pc-target="#customer-modal"
-                  ><i class="ti ti-eye text-lg leading-none"></i
-                >
+                  data-pc-target="#customer-modal">
+                  <small>
+                    Working times
+                  </small><!-- <i class="ti ti-eye text-lg leading-none"></i> -->
                 </RouterLink>
               </li>
               <li class="list-inline-item">

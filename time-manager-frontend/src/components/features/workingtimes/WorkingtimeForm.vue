@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, toRefs } from 'vue'
-import Modal from '@/components/shared/Modal.vue'
+import { computed, onMounted, ref, watch, toRefs } from 'vue';
+import Modal from '@/components/shared/Modal.vue';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
-import { ToastrService } from '@/utils/toastr'
+import { ToastrService } from '@/utils/toastr';
 import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 
@@ -10,7 +10,6 @@ const workingtimeStore = useWorkingtimesStore();
 const emit = defineEmits(['closeModalForm'])
 const props = defineProps({ isModalOpened: Boolean, userID: String })
 const errors = ref({ start: '', end: '' })
-const config = ref({ enableTime: true, dateFormat: 'Y-m-d H:i' });
 const { selectedWorkingtime, isLoading } = toRefs(workingtimeStore)
 
 const workingtime = computed(() => ({
@@ -19,7 +18,7 @@ const workingtime = computed(() => ({
 }))
 
 const modalData = computed(() => ({
-  title: selectedWorkingtime.value ? `Update a working time` : 'Add new user',
+  title: selectedWorkingtime.value ? `Update a working time` : 'Add new working time',
   button: selectedWorkingtime.value ? 'Update' : 'Add'
 }))
 
@@ -36,16 +35,83 @@ const create = async () => {
   }
 }
 
+const validateFields = () => {
+  let valid = true;
+
+  errors.value.start = '';
+  errors.value.end = '';
+
+  const now = new Date().getTime();
+  const startTime = new Date(workingtime.value.start).getTime();
+  const endTime = new Date(workingtime.value.end).getTime();
+
+  if (!workingtime.value.start) {
+    errors.value.start = 'Start time is required';
+    valid = false;
+  } else if (startTime < now) {
+    errors.value.start = 'Start time must be in the future';
+    valid = false;
+  }
+
+  if (!workingtime.value.end) {
+    errors.value.end = 'End time is required';
+    valid = false;
+  } else if (endTime < now) {
+    errors.value.end = 'End time must be in the future';
+    valid = false;
+  }
+
+  if (startTime >= endTime) {
+    errors.value.start = 'Start time must be before end time';
+    errors.value.end = 'End time must be after start time';
+    valid = false;
+  }
+  return valid;
+}
+
+
+const disabledDates = ref<{ from: string | Date; to: string | Date }[]>([]);
+const fetchDisabledDates = async () => {
+  try {
+    const workingtimes = await workingtimeStore.getWorkingtimes(props.userID || '');
+    console.log(workingtimes  );
+    
+    if (workingtimes && Array.isArray(workingtimes)) {
+      disabledDates.value = workingtimes.map((wt: { start: string | Date, end: string | Date }) => {
+        return {
+          from: typeof wt.start === 'string' ? wt.start.split('T')[0] : wt.start.toISOString().split('T')[0],
+          to: typeof wt.end === 'string' ? wt.end.split('T')[0] : wt.end.toISOString().split('T')[0],
+        };
+      });
+      console.log("Enfin, disabledDates:", disabledDates.value);
+    }
+  } catch (error) {
+    console.error('Error fetching working times:', error);
+  }
+}
+
+const config = ref({
+  enableTime: true,
+  dateFormat: 'Y-m-d H:i',
+  minDate: "today",
+  disable: [] as { from: string | Date; to: string | Date }[],
+});
+
+onMounted(async () => {
+  await fetchDisabledDates();
+  config.value.disable = disabledDates.value;
+  console.log("Config updated:", config.value);
+});
+
 const onSubmit = async () => {
-  // if (validateFields()) {
+  if (validateFields()) {
     if (selectedWorkingtime.value) {
       await update(selectedWorkingtime.value.id)
     } else {
       await create()
     }
-
     emit('closeModalForm')
-  // }
+  }
 }
 
 </script>
@@ -74,7 +140,7 @@ const onSubmit = async () => {
         <button @click="emit('closeModalForm')" type="button" class="btn btn-secondary">
           Close
         </button>
-        <button v-if="isLoading" class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled" type="button" :disabled="true">
+        <button v-if="isLoading" class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled" type="button" disabled="disabled">
           <span class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent" role="status">
             <span class="sr-only">Loading...</span>
           </span>

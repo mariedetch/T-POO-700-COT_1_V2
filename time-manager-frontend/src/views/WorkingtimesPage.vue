@@ -4,14 +4,22 @@ import { useRoute } from 'vue-router';
 import { WorkingtimesList, WorkingtimeForm } from '@/components/features/workingtimes'
 import { ToastrService } from '../utils/toastr';
 import { type Workingtime } from '../services/workingtimes/types';
+import { useUsersStore } from '@/stores/users';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
+import flatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 
 const route = useRoute();
 const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
 
+const userStore = useUsersStore();
+
 const workingtimeStore = useWorkingtimesStore();
 const { workingtimes, error, selectedWorkingtime } = toRefs(workingtimeStore);
+const filterData = { start: null, end: null }
 const isFormOpened = ref(false);
+
+const config = ref({ enableTime: true, dateFormat: 'Y-m-d H:i' });
 
 const onEditModalOpen = async (workingtime: Workingtime) => {
   selectedWorkingtime.value = workingtime;
@@ -29,8 +37,15 @@ const deleteWorkingtime = async (workingtimeId: string) => {
   }
 }
 
+const { currentUser } = toRefs(userStore)
+
+const onFiltered = async () => {
+  await workingtimeStore.getWorkingtimes(userID, filterData.start, filterData.end)
+}
+
 onMounted(async () => {
   await workingtimeStore.getWorkingtimes(userID);
+  await userStore.getUser(userID);
 });
 </script>
 
@@ -43,7 +58,7 @@ onMounted(async () => {
           <li class="breadcrumb-item" aria-current="page">Working times</li>
         </ul>
         <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">Working time Management</h2>
+          <h2 class="mb-0">{{ currentUser?.username }} working times</h2>
           <div class="text-right p-4 pb-sm-2">
             <a
               href="#"
@@ -60,13 +75,39 @@ onMounted(async () => {
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">
         <div class="card table-card">
-          <div class="card-body">
+          <div class="card-header flex items-center justify-between">
             <h3 class="my-5 mx-3">List of working times of</h3>
-            <WorkingtimesList @edit-workingtime="onEditModalOpen" @remove-workingtime="deleteWorkingtime" :workingtimes="workingtimes"/>
+            <div class="flex sm:flex-col gap-2">
+              <flat-pickr 
+                v-model="filterData.start" 
+                @blur="onFiltered()"
+                :config="config" 
+                class="form-control" 
+                id="start" 
+                name="start"
+                placeholder="Search by start time..."
+              />
+              <flat-pickr 
+                v-model="filterData.end" 
+                @blur="onFiltered()"
+                :config="config" 
+                class="form-control" 
+                id="end" 
+                name="end"
+                placeholder="Search by end time..."
+              />
+            </div>
+          </div>
+          <div class="card-body">
+            <WorkingtimesList 
+              @edit-workingtime="onEditModalOpen" 
+              @remove-workingtime="deleteWorkingtime" 
+              :workingtimes="workingtimes"
+            />
           </div>
         </div>
       </div>
     </div>
-    <WorkingtimeForm :is-modal-opened="isFormOpened" :userID="userID" @close-modal-form="onCloseModal"/>
+    <WorkingtimeForm :is-modal-opened="isFormOpened" :userID=userID @close-modal-form="onCloseModal"/>
   </main>
 </template>
