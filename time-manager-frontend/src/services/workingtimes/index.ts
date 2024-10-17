@@ -10,8 +10,10 @@ async function getWorkingtimes(userID: string | null = null, start: string | nul
   if (start) queryParams.start = start;
   if (end) queryParams.end = end;
 
+  const userId = userID ?? defaultUserId;
+
   const queryString = new URLSearchParams(queryParams).toString();
-  const url = queryString ? `workingtimes/${userID}?${queryString}` : `workingtime/${userID}`;
+  const url = queryString ? `workingtimes/${userId}?${queryString}` : `workingtime/${userId}`;
   return await http.get<ApiResponse<Workingtime[]>>(url);
 }
 
