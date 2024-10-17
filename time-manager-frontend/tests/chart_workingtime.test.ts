@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { nextTick, reactive } from 'vue';
-import WorkingtimeChart from '../src/components/features/dashboard/WorkingChart';
+import WorkingtimeChart from '../src/components/features/dashboard/WorkingChart.vue';
 import { useWorkingtimesStore } from '../src/stores/workingtimes';
 import Chart from 'chart.js/auto';
 
