@@ -18,7 +18,6 @@ defmodule TimeManagementWeb.UserJSON do
   defp data(%User{} = user) do
     %{
       id: user.id,
-      username: user.username,
       email: user.email
     }
   end
