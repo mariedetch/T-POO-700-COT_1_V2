@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useUsersStore } from '@/stores/users';
-import { onMounted, toRefs } from 'vue';
+import { onMounted, toRefs, ref } from 'vue';
+import type { User } from '@/services/users/types';
+import { CredentialService } from '@/utils/credentials';
 
-const userStore = useUsersStore()
-const { currentUser, userId } = toRefs(userStore)
+const currentUser = ref<User | null>(null);
 
 onMounted(async () => {
-  await userStore.getUser(userId.value);
+  currentUser.value = CredentialService.getUser();
 })
 </script>
 
@@ -22,7 +22,7 @@ onMounted(async () => {
           alt="user-image"
         />
         <div class="ml-4 mr-2 grow">
-          <h6 class="mb-0">{{ currentUser?.username }}</h6>
+          <h6 class="mb-0">{{ currentUser?.firstname + ' ' + currentUser?.lastname }}</h6>
           <small>{{ currentUser?.email }}</small>
         </div>
         <a
@@ -43,8 +43,6 @@ onMounted(async () => {
             <span>Settings</span>
           </a>
           <a href="#!"
-            ><i class="text-lg leading-none ti ti-lock"></i> <span>Lock Screen</span> </a
-          ><a href="#!"
             ><i class="text-lg leading-none ti ti-power"></i> <span>Logout</span></a
           >
         </div>

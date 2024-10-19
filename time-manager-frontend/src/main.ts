@@ -5,6 +5,7 @@ import 'vue-toast-notification/dist/theme-bootstrap.css';
 
 import App from './App.vue'
 import router from './router'
+import './vee-validate.config'
 
 const app = createApp(App)
 

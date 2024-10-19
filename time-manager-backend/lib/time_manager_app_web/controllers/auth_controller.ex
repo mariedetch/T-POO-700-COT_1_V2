@@ -14,7 +14,19 @@ defmodule TimeManagementWeb.AuthController do
         # Set the JWT in an HTTP-only cookie
         conn
         |> put_resp_cookie("access_token", token, http_only: true, secure: true)
-        |> json(%{status_code: 200, status: "Success", data: %{csrf_token: csrf_token}})
+        |> json(%{
+          status_code: 200,
+          status: "OK",
+          data: %{
+            csrf_token: csrf_token,
+            user: %{
+              id: user.id,
+              firstname: user.firstname,
+              lastname: user.lastname,
+              email: user.email,
+              role: user.role
+            }
+          }})
 
       {:error, :user_not_found} ->
         conn

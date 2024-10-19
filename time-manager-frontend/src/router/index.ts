@@ -9,7 +9,8 @@ import LoginPage from '@/views/auth/LoginPage.vue'
 import ForgotPasswordPage from '@/views/auth/ForgotPasswordPage.vue'
 import ResetPasswordPage from '@/views/auth/ResetPasswordPage.vue'
 import ActivationPage from '@/views/auth/ActivationPage.vue'
-import Test from '@/views/auth/Test.vue'
+import { ToastrService } from '@/utils/toastr'
+import { CredentialService } from '@/utils/credentials'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,22 +20,14 @@ const router = createRouter({
       component: AuthLayout,
 
       children: [
-
+        {
+          path: '',
+          redirect: '/auth/login'
+        },
         {
           path: 'login',
           name: 'login',
           component: LoginPage
-        },
-        
-          {
-            path: 'test',
-            name: 'test',
-            component: Test
-          },
-        
-        {
-          path: '',
-          redirect: '/auth/login'
         },
         {
           path: 'forgotpassword',
@@ -61,29 +54,42 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'home',
-          component: DashboardPage
+          name: 'Dashboard',
+          component: DashboardPage,
+          meta: { requiresAuth: true }
         },
-
         {
           path: 'users',
           name: 'users',
-          component: UsersPage
+          component: UsersPage,
+          meta: { requiresAuth: true }
         },
         {
           path: 'my-profile',
           name: 'user-profile',
-          component: UserProfilePage
+          component: UserProfilePage,
+          meta: { requiresAuth: true }
         },
         {
           path: 'workingtimes/:userID',
           name: 'workingtimes',
           component: WorkingtimesPage,
+          meta: { requiresAuth: true },
           props: true
         },
       ]
     },
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!CredentialService.isAuthentificated()) {
+      ToastrService.error('You are not logged yet')
+      return next({ name: 'login' });
+    }
+  }
+  next();
+});
 
 export default router
