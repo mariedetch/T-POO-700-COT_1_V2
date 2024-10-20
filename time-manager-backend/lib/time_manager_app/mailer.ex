@@ -3,7 +3,7 @@ defmodule TimeManagement.Mailer do
   import Swoosh.Email
 
   def send_reset_password_email(email, reset_token) do
-    reset_url = "https://example.com/reset_password?token=#{reset_token}"
+    reset_url = "http://localhost:5173/auth/resetpassword?email=#{email}&token=#{reset_token}"
 
     new()
     |> to(email)

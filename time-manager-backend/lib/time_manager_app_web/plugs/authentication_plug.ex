@@ -6,8 +6,8 @@ defmodule TimeManagementWeb.Plugs.AuthenticationPlug do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    csrf_token = get_req_header(conn, "x-xsrf-token") |> List.first()
-    access_token = get_req_header(conn, "authorization") |> List.first()
+    csrf_token = get_req_header(conn, "c-xsrf-token") |> List.first()
+    access_token = conn.req_cookies["access_token"]
 
     case {csrf_token, access_token} do
       {nil, _} ->
@@ -30,12 +30,11 @@ defmodule TimeManagementWeb.Plugs.AuthenticationPlug do
         })
         |> halt()
 
-      {csrf_token, "Bearer " <> access_token} ->
+      {csrf_token, access_token} ->
         case TokenHelper.verify_token(access_token) do
           {:ok, claims} ->
-            # Vérification du CSRF token dans le JWT
             if claims["c-xsrf-token"] == csrf_token do
-              conn  # Si les tokens sont valides, continuer la requête
+              conn
             else
               conn
               |> put_status(:unauthorized)

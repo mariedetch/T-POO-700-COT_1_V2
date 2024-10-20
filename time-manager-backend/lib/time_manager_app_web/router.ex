@@ -14,6 +14,7 @@ defmodule TimeManagementWeb.Router do
 
     post "/login", AuthController, :login
     post "/forgot-password", AuthController, :forgot_password
+    post "/verify-token/:email/:token", AuthController, :verify_token
     post "/reset-password/:token", AuthController, :reset_password
     post "/activate-account/:token", AuthController, :activate_account
   end

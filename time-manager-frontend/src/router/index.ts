@@ -54,7 +54,7 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'Dashboard',
+          name: 'dashboard',
           component: DashboardPage,
           meta: { requiresAuth: true }
         },
@@ -85,7 +85,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!CredentialService.isAuthentificated()) {
-      ToastrService.error('You are not logged yet')
       return next({ name: 'login' });
     }
   }

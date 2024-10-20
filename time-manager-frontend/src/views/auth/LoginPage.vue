@@ -10,10 +10,15 @@ const errors = ref({ email: '', password: '' });
 const router = useRouter();
 
 const signIn = async (values: any) => {
+  const data: LoginRequest = {
+    ...values,
+    password: btoa(values.password)
+  }
+
   try {
-    const response = await API.auth.login(values as unknown as LoginRequest);
+    const response = await API.auth.login(data);
     CredentialService.saveCredentials(response.data.data);
-    router.push({ name: 'Dashboard' });
+    router.push({ name: 'dashboard' });
   } catch (error: any) {
     if (error.status === 404) errors.value.email = "Email not exist"
     else if (error.status === 401) errors.value.password = "Incorect password"
@@ -37,7 +42,7 @@ const signIn = async (values: any) => {
         rules="required|email"
       />
       <ErrorMessage name="email" class="error-message" />
-      <div class="error-message" id="bouncer-error_password">{{ errors.email }}</div>
+      <div class="error-message">{{ errors.email }}</div>
     </div>
     <div class="mb-4">
       <label class="form-label">Password</label>
@@ -49,7 +54,7 @@ const signIn = async (values: any) => {
         rules="required|min:8"
       />
       <ErrorMessage name="password" class="error-message" />
-      <div class="error-message" id="bouncer-error_password">{{ errors.password }}</div>
+      <div class="error-message">{{ errors.password }}</div>
     </div>
     <div class="flex mt-1 justify-between items-center flex-wrap">
       <div class="form-check">

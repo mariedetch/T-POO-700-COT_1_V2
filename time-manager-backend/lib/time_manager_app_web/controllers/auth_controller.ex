@@ -6,14 +6,14 @@ defmodule TimeManagementWeb.AuthController do
   action_fallback TimeManagementWeb.FallbackController
 
   def login(conn, %{"email" => email, "password" => password}) do
-    case UserContext.authenticate_user(email, password) do
+    case UserContext.authenticate_user(email, Base.decode64!(password)) do
       {:ok, user} ->
         csrf_token = TokenHelper.generate_csrf_token()
         {:ok, token, _claims} = TokenHelper.generate_token(user, csrf_token)
 
         # Set the JWT in an HTTP-only cookie
         conn
-        |> put_resp_cookie("access_token", token, http_only: true, secure: true)
+        |> put_resp_cookie("access_token", token, http_only: true, secure: true, max_age: 3600)
         |> json(%{
           status_code: 200,
           status: "OK",
@@ -46,23 +46,52 @@ defmodule TimeManagementWeb.AuthController do
   end
 
   def forgot_password(conn, %{"email" => email}) do
-    case UserContext.find_by_email(email) do
-      {:error, :user_not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{status_code: 404, status: "Not Found", message: "User not found"})
+    user = UserContext.find_by_email!(email)
+    {:ok, token, _claims} = TokenHelper.generate_reset_token(user.id, user.email)
 
-      {:ok, user} ->
-        {:ok, token, _claims} = TokenHelper.generate_reset_token(user.id, user.email)
-        Mailer.send_reset_password_email(user.email, token)
+    Mailer.send_reset_password_email(user.email, token)
 
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      status_code: 200,
+      status: "OK",
+      message: "Reset password instructions sent to your email"
+    })
+  end
+
+  def verify_token(conn, %{"token" => token, "email" => email}) do
+    case TokenHelper.verify_token(token) do
+      {:ok, claims} ->
+        if claims["email"] == email do
+          conn
+          |> put_status(:ok)
+          |> json(%{
+            status_code: 200,
+            message: "Token verified successfully",
+            status: "Ok"
+          })
+          |> halt()
+        else
+          conn
+          |> put_status(:bad_request)
+          |> json(%{
+            status_code: 400,
+            message: "Verification token mismatch",
+            error: "Bad Request"
+          })
+          |> halt()
+        end
+
+      {:error, _reason} ->
         conn
-        |> put_status(:ok)
+        |> put_status(:bad_request)
         |> json(%{
-          status_code: 200,
-          status: "OK",
-          message: "Reset password instructions sent to your email"
+          status_code: 400,
+          message: "Invalid or expired token",
+          error: "Bad Request"
         })
+        |> halt()
     end
   end
 
@@ -70,7 +99,7 @@ defmodule TimeManagementWeb.AuthController do
     case TokenHelper.verify_token(token) do
       {:ok, claims} ->
         user_id = claims["sub"]
-        case UserContext.reset_password(user_id, password) do
+        case UserContext.reset_password(user_id, Base.decode64!(password)) do
           {:ok, _user} ->
             conn
             |> put_status(:ok)

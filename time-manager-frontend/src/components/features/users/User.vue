@@ -2,8 +2,15 @@
 import { onMounted, toRefs, ref } from 'vue';
 import type { User } from '@/services/users/types';
 import { CredentialService } from '@/utils/credentials';
+import { useRouter } from 'vue-router';
 
 const currentUser = ref<User | null>(null);
+const router = useRouter();
+
+function logout() {
+  CredentialService.clearCredentials();
+  router.push({ name: 'dashboard' });
+}
 
 onMounted(async () => {
   currentUser.value = CredentialService.getUser();
@@ -42,7 +49,7 @@ onMounted(async () => {
             <i class="text-lg leading-none ti ti-settings"></i>
             <span>Settings</span>
           </a>
-          <a href="#!"
+          <a href="#!" @click="logout"
             ><i class="text-lg leading-none ti ti-power"></i> <span>Logout</span></a
           >
         </div>
