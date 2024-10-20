@@ -1,4 +1,4 @@
-import { instance as http } from "../api";
+import http from "../api";
 import type { ApiResponse } from "../types";
 import { type User, type UserRequest } from "./types";
 

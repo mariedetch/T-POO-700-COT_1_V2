@@ -7,18 +7,20 @@ const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'c-xsrf-token': CredentialService.getToken() ?? ''
+    'Accept': 'application/json'
   },
   withCredentials: true
 });
 
-const defaultInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
+instance.interceptors.request.use((config) => {
+  const csrfToken = CredentialService.getToken() ?? '';
+  if (csrfToken) {
+    config.headers['c-xsrf-token'] = csrfToken;
   }
+  console.log(config.withCredentials)
+  return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 instance.interceptors.response.use(
@@ -31,8 +33,13 @@ instance.interceptors.response.use(
       ToastrService.error("Session expired");
       router.push({ name: 'login' });
     }
+
+    else if (error && error.status === 403) {
+      router.push({ name: 'forbidden' });
+    }
+
     return Promise.reject(error);
   }
 );
 
-export { instance, defaultInstance }
+export default instance;

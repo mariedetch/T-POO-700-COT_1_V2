@@ -20,7 +20,7 @@ const signIn = async (values: any) => {
     <div class="mb-4">
       <h3 class="mb-2"><b>Login with your email</b></h3>
     </div>
-    <div class="error-message">{{ error }}</div>
+    <div class="error-message mb-3">{{ error }}</div>
     <div class="mb-3">
       <label class="form-label">Email Address</label>
       <Field

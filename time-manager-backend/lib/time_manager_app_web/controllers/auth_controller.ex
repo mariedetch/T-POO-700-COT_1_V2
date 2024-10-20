@@ -35,8 +35,8 @@ defmodule TimeManagementWeb.AuthController do
 
       {:error, :invalid_password} ->
         conn
-        |> put_status(:unauthorized)
-        |> json(%{status_code: 401, status: "Unauthorize", message: "Invalid credentials"})
+        |> put_status(:unprocessable_entity)
+        |> json(%{status_code: 422, status: "Unprocessable Entity", message: "Invalid credentials"})
 
       _ ->
         conn

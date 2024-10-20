@@ -1,4 +1,4 @@
-import { defaultInstance as http } from "../api";
+import http from "../api";
 import type { ApiResponse } from "../types";
 import type { LoginRequest } from "./types";
 import type { LoginResponse } from './types';

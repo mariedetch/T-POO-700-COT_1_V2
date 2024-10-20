@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
       CredentialService.saveCredentials(response.data.data);
     } catch (errors: any) {
       if (errors.status === 404) error.value = "Email not exist"
-      else if (errors.status === 401) error.value = "Incorect password"
+      else if (errors.status === 422) error.value = "Incorect password"
       else error.value = "An error occure please try again!"
     } finally {
       isLoading.value = false;
