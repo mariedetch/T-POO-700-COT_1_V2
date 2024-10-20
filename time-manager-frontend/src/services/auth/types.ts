@@ -9,3 +9,9 @@ export interface LoginResponse {
   csrf_token: string,
   user: User
 }
+
+export enum UserRole {
+  GENERAL_MANAGER = 'GENERAL_MANAGER',
+  MANAGER = 'MANAGER',
+  EMPLOYEE = 'EMPLOYEE',
+}

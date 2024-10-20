@@ -1,29 +1,17 @@
 <script setup lang="ts">
 import { Form, Field, ErrorMessage } from 'vee-validate'
-import { API } from "@/services";
-import type { LoginRequest } from '@/services/auth/types';
-import { ref } from 'vue';
+import { toRefs } from 'vue';
 import { useRouter } from 'vue-router';
-import { CredentialService } from '@/utils/credentials';
+import { useAuthStore } from '@/stores/auth';
 
-const errors = ref({ email: '', password: '' });
 const router = useRouter();
 
-const signIn = async (values: any) => {
-  const data: LoginRequest = {
-    ...values,
-    password: btoa(values.password)
-  }
+const authStore = useAuthStore();
+const { isLoading, error } = toRefs(authStore);
 
-  try {
-    const response = await API.auth.login(data);
-    CredentialService.saveCredentials(response.data.data);
-    router.push({ name: 'dashboard' });
-  } catch (error: any) {
-    if (error.status === 404) errors.value.email = "Email not exist"
-    else if (error.status === 401) errors.value.password = "Incorect password"
-    else errors.value.email = "An error occure please try again!"
-  }
+const signIn = async (values: any) => {
+  await authStore.login(values);
+  router.push({ name: 'dashboard' });
 }
 </script>
 
@@ -32,6 +20,7 @@ const signIn = async (values: any) => {
     <div class="mb-4">
       <h3 class="mb-2"><b>Login with your email</b></h3>
     </div>
+    <div class="error-message">{{ error }}</div>
     <div class="mb-3">
       <label class="form-label">Email Address</label>
       <Field
@@ -42,7 +31,6 @@ const signIn = async (values: any) => {
         rules="required|email"
       />
       <ErrorMessage name="email" class="error-message" />
-      <div class="error-message">{{ errors.email }}</div>
     </div>
     <div class="mb-4">
       <label class="form-label">Password</label>
@@ -54,7 +42,6 @@ const signIn = async (values: any) => {
         rules="required|min:8"
       />
       <ErrorMessage name="password" class="error-message" />
-      <div class="error-message">{{ errors.password }}</div>
     </div>
     <div class="flex mt-1 justify-between items-center flex-wrap">
       <div class="form-check">
@@ -68,7 +55,21 @@ const signIn = async (values: any) => {
       </RouterLink>
     </div>
     <div class="mt-4">
-      <button type="submit" class="btn btn-primary w-full">Login</button>
+      <button
+        v-if="isLoading"
+        class="btn btn-primary lh-1 inline-flex w-full items-center gap-3 disabled"
+        type="button"
+        :disabled="true"
+      >
+        <span
+          class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent"
+          role="status"
+        >
+          <span class="sr-only">Loading...</span>
+        </span>
+        Loading...
+      </button>
+      <button v-else type="submit" class="btn btn-primary w-full">Login</button>
     </div>
   </Form>
 </template>

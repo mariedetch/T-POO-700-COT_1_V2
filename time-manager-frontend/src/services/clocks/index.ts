@@ -1,4 +1,4 @@
-import http from "../api";
+import { instance as http } from "../api";
 import type { ApiResponse } from "../types";
 import { type Clock } from "./types";
 

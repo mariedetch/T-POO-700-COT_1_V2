@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { onMounted, toRefs, ref } from 'vue';
-import type { User } from '@/services/users/types';
+import { toRefs } from 'vue';
 import { CredentialService } from '@/utils/credentials';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
-const currentUser = ref<User | null>(null);
+const authStore = useAuthStore();
+const { authUser } = toRefs(authStore);
+
 const router = useRouter();
 
 function logout() {
   CredentialService.clearCredentials();
   router.push({ name: 'dashboard' });
 }
-
-onMounted(async () => {
-  currentUser.value = CredentialService.getUser();
-})
 </script>
 
 <template>
@@ -29,8 +27,8 @@ onMounted(async () => {
           alt="user-image"
         />
         <div class="ml-4 mr-2 grow">
-          <h6 class="mb-0">{{ currentUser?.firstname + ' ' + currentUser?.lastname }}</h6>
-          <small>{{ currentUser?.email }}</small>
+          <h6 class="mb-0">{{ authUser?.firstname + ' ' + authUser?.lastname }}</h6>
+          <small>{{ authUser?.email }}</small>
         </div>
         <a
           class="shrink-0 btn btn-icon inline-flex btn-link-secondary"

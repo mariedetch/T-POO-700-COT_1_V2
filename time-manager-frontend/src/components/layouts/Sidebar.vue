@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { User } from '@/components/features/users'
+import { UserRole } from '@/services/auth/types'
+import { useAuthStore } from '@/stores/auth';
+import { toRefs } from 'vue';
+
+const authStore = useAuthStore();
+const { authUser } = toRefs(authStore);
+
+const hasRole = (role: string) => {
+  return authUser.value && authUser.value.role === role;
+};
 </script>
 
 <template>
@@ -23,7 +33,7 @@ import { User } from '@/components/features/users'
             </RouterLink>
           </li>
           <li class="pc-item">
-            <RouterLink to="/users" class="pc-link text-black">
+            <RouterLink to="/users" v-if="hasRole(UserRole.GENERAL_MANAGER)" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-users"></i>
               <span class="pc-mtext">Users</span>
             </RouterLink>
