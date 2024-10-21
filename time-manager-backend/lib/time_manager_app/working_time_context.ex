@@ -67,6 +67,17 @@ defmodule TimeManagement.WorkingTimeContext do
     |> Repo.insert()
   end
 
+  def create_working_times_for_users(users, attrs \\ %{}) do
+    IO. inspect(users)
+    users
+    |> Enum.map(fn user ->
+      case create_working_time(user, attrs) do
+        nil -> {:error, "User not found"}
+        user -> {:ok, user}
+      end
+    end)
+  end
+
   @doc """
   Updates a working_time.
 

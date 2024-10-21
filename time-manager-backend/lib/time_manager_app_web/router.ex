@@ -7,7 +7,12 @@ defmodule TimeManagementWeb.Router do
 
   scope "/api", TimeManagementWeb do
     pipe_through :api
-    resources "/users", UserController, except: [:new, :edit]
+    get "/users",  UserController, :index
+    get "/users/:id",  UserController, :show
+    post "/users", UserController, :create
+    put "/users/promote/:id", UserController, :promote
+    put  "/users/:id", UserController, :update
+    delete "/users/:id", UserController, :delete
 
     get "/clocks/:userId", ClockController, :index
     get "/clocks/:userId/latest", ClockController, :show
@@ -16,6 +21,7 @@ defmodule TimeManagementWeb.Router do
     get "/workingtime/:userID",  WorkingTimeController, :index
     get "/workingtime/:userID/:id",  WorkingTimeController, :show
     post "/workingtime/:userID", WorkingTimeController, :create
+    post "/workingtimes", WorkingTimeController, :create_for_users
     put  "/workingtime/:id", WorkingTimeController, :update
     delete "/workingtime/:id", WorkingTimeController, :delete
   end
