@@ -23,10 +23,15 @@ defmodule TimeManagementWeb.Router do
     pipe_through [:api, :authenticated]
 
     resources "/users", UserController, except: [:new, :edit]
+    resources "/teams", TeamController, except: [:new, :edit] do
+      resources "/members", MemberController, only: [:index, :create]
+    end
 
-    get "/clocks/:userId", ClockController, :index
-    get "/clocks/:userId/latest", ClockController, :show
-    post "/clocks/:userId", ClockController, :create
+    resources "/members", MemberController, only: [:delete]
+
+    get "/clocks", ClockController, :index
+    get "/clocks/latest", ClockController, :show
+    post "/clocks", ClockController, :create
 
     get "/workingtime/:userID",  WorkingTimeController, :index
     get "/workingtime/:userID/:id",  WorkingTimeController, :show

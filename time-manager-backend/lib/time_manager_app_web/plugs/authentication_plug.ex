@@ -1,7 +1,7 @@
 defmodule TimeManagementWeb.Plugs.AuthenticationPlug do
   import Plug.Conn
   import Phoenix.Controller
-  alias TimeManagement.TokenHelper
+  alias TimeManagement.{UserContext, TokenHelper}
 
   def init(opts), do: opts
 
@@ -34,7 +34,9 @@ defmodule TimeManagementWeb.Plugs.AuthenticationPlug do
         case TokenHelper.verify_token(access_token) do
           {:ok, claims} ->
             if claims["c-xsrf-token"] == csrf_token do
+              user = UserContext.get_user!(claims["sub"])
               conn
+              |> assign(:current_user, user)
             else
               conn
               |> put_status(:unauthorized)
