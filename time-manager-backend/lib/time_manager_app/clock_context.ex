@@ -47,7 +47,13 @@ defmodule TimeManagement.ClockContext do
       where: clock.user_id == ^user_id,
       order_by: [desc: clock.inserted_at],
       limit: 1)
-    Repo.one(query)
+    case Repo.one(query) do
+      nil ->
+        {:error, :not_found}
+
+      clock ->
+        {:ok, clock}
+    end
   end
 
   @doc """

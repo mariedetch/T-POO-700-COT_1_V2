@@ -48,6 +48,16 @@ defmodule TimeManagement.WorkingTimeContext do
     |> Repo.preload(:user)
   end
 
+  #######  Mon nouveau get_working_time indépendant du user =======================
+  def get_working_time_2!(id) do
+    Repo.get!(WorkingTime, id)
+  end
+
+  def get_working_time!(id) do
+    Repo.get!(WorkingTime, id)
+    |> Repo.preload(:user)
+  end
+
   @doc """
   Creates a working_time.
 

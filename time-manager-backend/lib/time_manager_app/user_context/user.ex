@@ -32,6 +32,17 @@ defmodule TimeManagement.UserContext.User do
     |> validate_length(:matricule, min: 6)
   end
 
+  def password_reset_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:password])
+    |> validate_required([:password])
+    |> validate_length(:password, min: 8)
+    |> validate_format(:password, ~r/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])/,
+        message: "must include at least one uppercase letter, one lowercase letter, one number, and one special character"
+      )
+    |> put_password_hash()
+  end
+
   defp put_password_hash(changeset) do
     if changeset.valid? do
       change(changeset, password: Bcrypt.hash_pwd_salt(get_change(changeset, :password)))

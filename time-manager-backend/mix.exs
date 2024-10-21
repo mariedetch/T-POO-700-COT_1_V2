@@ -56,7 +56,8 @@ defmodule TimeManagement.MixProject do
       {:bandit, "~> 1.5"},
       {:cors_plug, "~> 3.0"},
       {:bcrypt_elixir, "~> 3.2"},
-      {:timex,  "~> 3.7"}
+      {:joken, "~> 2.5"},
+      {:jose, "~> 1.11"}
     ]
   end
 
@@ -78,7 +79,7 @@ defmodule TimeManagement.MixProject do
         "tailwind time_manager_app --minify",
         "esbuild time_manager_app --minify",
         "phx.digest"
-      ]
+      ],
     ]
   end
 end
