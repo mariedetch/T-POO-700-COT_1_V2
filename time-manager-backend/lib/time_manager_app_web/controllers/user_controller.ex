@@ -11,15 +11,13 @@ defmodule TimeManagementWeb.UserController do
     email = Map.get(params, "email")
     firstname = Map.get(params, "firstname")
     lastname = Map.get(params, "lastname")
-    matricule = Map.get(params, "matricule")
     role = Map.get(params, "role")
 
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "10") |> String.to_integer()
 
-    {users, total_count} = UserContext.get_users_by_search(conn.assigns.current_user, page, per_page, email, firstname, lastname, matricule, role)
+    {users, total_count} = UserContext.get_users_by_search(conn.assigns.current_user, page, per_page, email, firstname, lastname, role)
 
-    users = UserContext.get_users_by_search(email, firstname, lastname, matricule, role)
     render(conn, :index, users: users, total_count: total_count, page: page, per_page: per_page)
   end
 
