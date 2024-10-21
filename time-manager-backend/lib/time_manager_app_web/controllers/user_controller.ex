@@ -5,7 +5,7 @@ defmodule TimeManagementWeb.UserController do
   alias TimeManagement.UserContext.User
 
   action_fallback TimeManagementWeb.FallbackController
-  plug TimeManagementWeb.Plugs.TeamsAuthorizeAccess
+  plug TimeManagementWeb.Plugs.UsersAuthorizeAccess
 
   def index(conn, params) do
     email = Map.get(params, "email")
