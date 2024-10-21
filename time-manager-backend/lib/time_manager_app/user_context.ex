@@ -1,5 +1,4 @@
 defmodule TimeManagement.UserContext do
-  use Timex
   @moduledoc """
   The UserContext context.
   """

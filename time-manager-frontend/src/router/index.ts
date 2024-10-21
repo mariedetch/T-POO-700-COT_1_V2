@@ -3,13 +3,11 @@ import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
 import List_Team_Members_Page from '@/views/List_Team_Members_Page.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
-import WorkingtimesPage from '@/views/WorkingtimesPage.vue'
 import UsersCalendar from '@/views/UsersCalendar.vue'
 import List_Teams_Page from '@/views/List_Teams_Page.vue'
 import List_Employees_Page from '@/views/List_Employees_Page.vue'
 import List_All_Teams_Page from '@/views/List_All_Teams_Page.vue'
 import ForbiddenPage from '@/views/ForbiddenPage.vue'
-import UsersPage from '@/views/UsersPage.vue'
 import WorkingtimesPage from '@/views/WorkingtimesPage.vue'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
@@ -88,12 +86,14 @@ const router = createRouter({
         {
           path: '/calendrier',
           name: 'calendrier',
-          component: UsersCalendar
+          component: UsersCalendar,
+        },
+        /* {
           path: 'users',
           name: 'users',
           component: UsersPage,
           meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER] }
-        },
+        }, */
         {
           path: 'my-profile',
           name: 'user-profile',
