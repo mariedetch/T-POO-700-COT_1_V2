@@ -50,6 +50,8 @@ defmodule TimeManagement.UserContext do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def find_by_email!(email), do: Repo.get_by!(User, email: email)
+
   @doc """
   Creates a user.
 
@@ -113,5 +115,24 @@ defmodule TimeManagement.UserContext do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def authenticate_user(email, password) do
+    case Repo.get_by(User, email: email) do
+      nil -> {:error, :user_not_found}
+      user ->
+        if Bcrypt.verify_pass(password, user.password) do
+          {:ok, user}
+        else
+          {:error, :invalid_password}
+        end
+    end
+  end
+
+  def reset_password(user_id, new_password) do
+    user = Repo.get(User, user_id)
+    user
+    |> User.changeset(%{password: new_password})
+    |> Repo.update()
   end
 end

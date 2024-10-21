@@ -7,10 +7,23 @@
 # General application configuration
 import Config
 
+config :joken, default_signer: "MY_SECRET_KEY"
+
 config :time_manager_app,
   namespace: TimeManagement,
   ecto_repos: [TimeManagement.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
+
+config :time_manager_app, TimeManagement.TokenHelper,
+  secret_key: "MY_SECRET_KEY"
+
+config :time_manager_app, TimeManagement.Mailer,
+  adapter: Swoosh.Adapters.SMTP,
+  relay: "sandbox.smtp.mailtrap.io",
+  username: "8b1e55d2d1c7c7",
+  password: "1811187d7fd4c6",
+  tls: :if_available,
+  auth: :if_available
 
 # Configures the endpoint
 config :time_manager_app, TimeManagementWeb.Endpoint,

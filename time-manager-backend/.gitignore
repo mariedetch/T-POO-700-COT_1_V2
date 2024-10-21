@@ -7,6 +7,7 @@
 # The directory Mix downloads your dependencies sources to.
 /deps/
 /config/dev.exs
+/config/keys/*
 
 # Where 3rd-party dependencies like ExDoc output generated docs.
 /doc/
@@ -36,3 +37,4 @@ time_manager_app-*.tar
 npm-debug.log
 /assets/node_modules/
 
+.env
