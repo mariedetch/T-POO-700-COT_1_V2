@@ -6,6 +6,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
   alias TimeManagement.UserContext
 
   action_fallback TimeManagementWeb.FallbackController
+  plug TimeManagementWeb.Plugs.TeamsAuthorizeAccess
 
   def index(conn, %{"userID" => user_id, "start" => start_date, "end" => end_date}) do
     user = UserContext.get_user!(user_id)
