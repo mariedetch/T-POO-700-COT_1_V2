@@ -1,6 +1,7 @@
 defmodule TimeManagement.UserContext.User do
   use Ecto.Schema
   import Ecto.Changeset
+  import Bcrypt
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -28,7 +29,7 @@ defmodule TimeManagement.UserContext.User do
     |> unique_constraint(:matricule)
     |> unique_constraint(:tel)
     |> validate_length(:password, min: 8)
-    |> put_password_hash()
+    |> validate_length(:matricule, min: 6)
   end
 
   def password_reset_changeset(user, attrs) do

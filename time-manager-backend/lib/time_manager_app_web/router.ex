@@ -36,6 +36,7 @@ defmodule TimeManagementWeb.Router do
     get "/workingtime/:userID",  WorkingTimeController, :index
     get "/workingtime/:userID/:id",  WorkingTimeController, :show
     post "/workingtime/:userID", WorkingTimeController, :create
+    post "/workingtimes", WorkingTimeController, :create_for_users
     put  "/workingtime/:id", WorkingTimeController, :update
     delete "/workingtime/:id", WorkingTimeController, :delete
   end

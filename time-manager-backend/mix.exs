@@ -55,9 +55,9 @@ defmodule TimeManagement.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:cors_plug, "~> 3.0"},
+      {:bcrypt_elixir, "~> 3.2"},
       {:joken, "~> 2.5"},
-      {:jose, "~> 1.11"},
-      {:bcrypt_elixir, "~> 3.0"}
+      {:jose, "~> 1.11"}
     ]
   end
 
