@@ -1,153 +1,108 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, toRefs } from 'vue';
+import { ref, watch, computed } from 'vue';
 import Modal from '@/components/shared/Modal.vue';
-import { useWorkingtimesStore } from '@/stores/workingtimes';
-import { ToastrService } from '@/utils/toastr';
-import flatPickr from 'vue-flatpickr-component';
-import 'flatpickr/dist/flatpickr.css';
 
-const workingtimeStore = useWorkingtimesStore();
-const emit = defineEmits(['closeModalForm'])
-const props = defineProps({ isModalOpened: Boolean, userID: String })
-const errors = ref({ start: '', end: '' })
-const { selectedWorkingtime, isLoading } = toRefs(workingtimeStore)
-
-const workingtime = computed(() => ({
-  start: selectedWorkingtime.value?.start || '',
-  end: selectedWorkingtime.value?.end || '',
-}))
-
-const modalData = computed(() => ({
-  title: selectedWorkingtime.value ? `Update a working time` : 'Add new working time',
-  button: selectedWorkingtime.value ? 'Update' : 'Add'
-}))
-
-const update = async (id: string) => {
-  if (await workingtimeStore.updateWorkingtime(id, { workingtime: workingtime.value })) {
-    selectedWorkingtime.value = null
-    ToastrService.success('Working time has been successfully updated')
-  }
-}
-
-const create = async () => {
-  if (await workingtimeStore.createWorkingtime(props.userID || '', { workingtime: workingtime.value })) {
-    ToastrService.success('Working time has been successfully created')
-  }
-}
-
-const validateFields = () => {
-  let valid = true;
-
-  errors.value.start = '';
-  errors.value.end = '';
-
-  const now = new Date().getTime();
-  const startTime = new Date(workingtime.value.start).getTime();
-  const endTime = new Date(workingtime.value.end).getTime();
-
-  if (!workingtime.value.start) {
-    errors.value.start = 'Start time is required';
-    valid = false;
-  } else if (startTime < now) {
-    errors.value.start = 'Start time must be in the future';
-    valid = false;
-  }
-
-  if (!workingtime.value.end) {
-    errors.value.end = 'End time is required';
-    valid = false;
-  } else if (endTime < now) {
-    errors.value.end = 'End time must be in the future';
-    valid = false;
-  }
-
-  if (startTime >= endTime) {
-    errors.value.start = 'Start time must be before end time';
-    errors.value.end = 'End time must be after start time';
-    valid = false;
-  }
-  return valid;
-}
-
-
-const disabledDates = ref<{ from: string | Date; to: string | Date }[]>([]);
-const fetchDisabledDates = async () => {
-  try {
-    const workingtimes = await workingtimeStore.getWorkingtimes(props.userID || '');
-    console.log(workingtimes  );
-    
-    if (workingtimes && Array.isArray(workingtimes)) {
-      disabledDates.value = workingtimes.map((wt: { start: string | Date, end: string | Date }) => {
-        return {
-          from: typeof wt.start === 'string' ? wt.start.split('T')[0] : wt.start.toISOString().split('T')[0],
-          to: typeof wt.end === 'string' ? wt.end.split('T')[0] : wt.end.toISOString().split('T')[0],
-        };
-      });
-      console.log("Enfin, disabledDates:", disabledDates.value);
-    }
-  } catch (error) {
-    console.error('Error fetching working times:', error);
-  }
-}
-
-const config = ref({
-  enableTime: true,
-  dateFormat: 'Y-m-d H:i',
-  minDate: "today",
-  disable: [] as { from: string | Date; to: string | Date }[],
+const props = defineProps({
+  workingtime: Object,
+  isOpened: Boolean
 });
 
-onMounted(async () => {
-  await fetchDisabledDates();
-  config.value.disable = disabledDates.value;
-  console.log("Config updated:", config.value);
+const emit = defineEmits(['close', 'submit']);
+
+const formData = ref({
+  id: null,
+  start: '',
+  end: ''
 });
 
-const onSubmit = async () => {
-  if (validateFields()) {
-    if (selectedWorkingtime.value) {
-      await update(selectedWorkingtime.value.id)
+
+watch(() => props.workingtime, (newVal) => {
+  if (newVal) {
+    if (newVal.id) {
+      // Mode édition : utiliser les valeurs existantes
+      formData.value = {
+        id: newVal.id,
+        start: formatDateForInput(newVal.start),
+        end: formatDateForInput(newVal.end)
+      };
     } else {
-      await create()
+      // Mode création : définir les heures par défaut
+      const startDate = new Date(newVal.start);
+      const endDate = new Date(newVal.start);
+      
+      startDate.setHours(8, 0, 0, 0);  // 08:00
+      endDate.setHours(10, 0, 0, 0);   // 10:00
+      
+      formData.value = {
+        id: null,
+        start: formatDateForInput(startDate.toISOString()),
+        end: formatDateForInput(endDate.toISOString())
+      };
     }
-    emit('closeModalForm')
   }
+}, { immediate: true, deep: true });
+
+// function formatDateForInput(dateString: string): string {
+//   return new Date(dateString).toISOString().slice(0, 16);
+// }
+
+// function formatDateForAPI(dateString: string): string {
+//   return new Date(dateString).toISOString().slice(0, 19);
+// }
+
+function formatDateForInput(dateString: string): string {
+  const date = new Date(dateString);
+  return date.getFullYear() + '-' +
+         String(date.getMonth() + 1).padStart(2, '0') + '-' +
+         String(date.getDate()).padStart(2, '0') + 'T' +
+         String(date.getHours()).padStart(2, '0') + ':' +
+         String(date.getMinutes()).padStart(2, '0');
 }
 
+function formatDateForAPI(dateString: string): string {
+  const date = new Date(dateString);
+  return date.getFullYear() + '-' +
+         String(date.getMonth() + 1).padStart(2, '0') + '-' +
+         String(date.getDate()).padStart(2, '0') + 'T' +
+         String(date.getHours()).padStart(2, '0') + ':' +
+         String(date.getMinutes()).padStart(2, '0') + ':' +
+         String(date.getSeconds()).padStart(2, '0');
+}
+
+function submitForm() {
+  const formattedData = {
+    workingtime: {
+      id: formData.value.id,
+      start: formatDateForAPI(formData.value.start),
+      end: formatDateForAPI(formData.value.end)
+    }
+  };
+  emit('submit', formattedData);
+}
+
+const modalTitle = computed(() => formData.value.id ? 'Edit WorkingTime' : 'Add WorkingTime');
 </script>
 
 <template>
-  <Modal :isOpened="isModalOpened" modalId="createWorkingtimeModal" :modalTitle="modalData.title">
-    <form @submit.prevent="onSubmit">
-      <div class="modal-body">
-        <div class="mb-4">
-          <label class="form-label" for="start">Start time</label>
-          <flat-pickr v-model="workingtime.start" :config="config" class="form-control" id="start" placeholder="Enter start"/>
-
-          <small v-if="errors.start" id="start-error-msg" class="form-text">
-            <div class="error-message" id="bouncer-error_start">{{ errors.start }}</div>
-          </small>
+  <Modal :isOpened="isOpened" modalId="workingTimeModal" :modalTitle="modalTitle">
+    <div class="modal-body">
+      <form @submit.prevent="submitForm">
+        <input type="hidden" v-model="formData.id">
+        <div class="mb-3">
+          <label for="start" class="form-label">Start Time:</label>
+          <input type="datetime-local" id="start" v-model="formData.start" class="form-control" required>
         </div>
-        <div class="mb-4">
-          <label class="form-label" for="end">End time</label>
-          <flat-pickr v-model="workingtime.end" :config="config" class="form-control" id="end" placeholder="Enter end"/>
-          <small v-if="errors.end" id="end-error-msg" class="form-text">
-            <div class="error-message" id="bouncer-error_end">{{ errors.end }}</div>
-          </small>
+        <div class="mb-3">
+          <label for="end" class="form-label">End Time:</label>
+          <input type="datetime-local" id="end" v-model="formData.end" class="form-control" required>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button @click="emit('closeModalForm')" type="button" class="btn btn-secondary">
-          Close
-        </button>
-        <button v-if="isLoading" class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled" type="button" disabled="disabled">
-          <span class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent" role="status">
-            <span class="sr-only">Loading...</span>
-          </span>
-          Loading...
-        </button>
-        <button v-else type="submit" class="btn btn-primary ltr:ml-2 trl:mr-2">{{ modalData.button }}</button>
-      </div>
-    </form>
+        <div class="modal-footer">
+          <div class="ms-auto">
+            <button type="submit" class="btn btn-primary me-2">Save</button>
+            <button type="button" class="btn btn-secondary" @click="$emit('close')">Cancel</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </Modal>
 </template>

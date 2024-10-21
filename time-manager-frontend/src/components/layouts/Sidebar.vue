@@ -33,9 +33,34 @@ const hasRole = (role: string) => {
             </RouterLink>
           </li>
           <li class="pc-item">
-            <RouterLink to="/users" v-if="hasRole(UserRole.GENERAL_MANAGER)" class="pc-link text-black">
+            <RouterLink to="/calendrier" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-calendar"></i>
+              <span class="pc-mtext">Mon calendrier</span>
+            </RouterLink>
+          </li>
+          <!-- <li class="pc-item">
+            <RouterLink to="/team" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-users"></i>
-              <span class="pc-mtext">Users</span>
+              <span class="pc-mtext">My team</span>
+            </RouterLink>
+            <RouterLink to="/users" v-if="hasRole(UserRole.GENERAL_MANAGER)" class="pc-link text-black">
+          </li> -->
+          <li class="pc-item">
+            <RouterLink to="/teams" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-users"></i>
+              <span class="pc-mtext">My teams</span>
+            </RouterLink>
+          </li>
+          <li class="pc-item">
+            <RouterLink to="/employees" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-users-group"></i>
+              <span class="pc-mtext">All employees</span>
+            </RouterLink>
+          </li>
+          <li class="pc-item">
+            <RouterLink to="/all_teams" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-sitemap"></i>
+              <span class="pc-mtext">All Teams</span>
             </RouterLink>
           </li>
         </ul>
