@@ -5,6 +5,40 @@ import Linechart from '@/components/features/dashboard/Linechart.vue'
 </script>
 
 <template>
+  <div class="page-header-title flex flex-row justify-between items-center">
+    <h2 class="mb-5">Statistics</h2>
+  </div>
+  <div class="grid grid-cols-12 gap-x-6">
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+      <div class="card group social-widget-card bg-primary-500">
+          <div class="card-body">
+              <h3 class="text-white m-0">1165 +</h3>
+              <span class="mt-2.5 text-white">Total hours worked</span>
+          </div>
+      </div>
+    </div>
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+      <div class="card group social-widget-card bg-info-500">
+          <div class="card-body">
+              <h3 class="text-white m-0">1165 +</h3>
+              <span class="mt-2.5 text-white">Number of delays</span>
+          </div>
+      </div>
+    </div>
+    <div class="col-span-12 xl:col-span-3 md:col-span-6">
+      <div class="card group social-widget-card bg-success-500">
+          <div class="card-body">
+              <h3 class="text-white m-0">1165 +</h3>
+              <span class="mt-2.5 text-white">Number of absences</span>
+          </div>
+      </div>
+    </div>
+  </div>
+    
+
+  <div class="page-header-title flex flex-row justify-between items-center">
+    <h2 class="mb-5">Charts</h2>
+  </div>
   <div class="grid grid-cols-12 gap-x-6">
     <!-- First chart -->
     <div class="col-span-12 lg:col-span-6">

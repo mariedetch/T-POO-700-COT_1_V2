@@ -57,7 +57,7 @@ const confirmDelete = async (userId: string) => {
                   data-pc-toggle="modal"
                   data-pc-target="#customer-modal">
                   <small>
-                    Working times
+                    Workingtimes
                   </small><!-- <i class="ti ti-eye text-lg leading-none"></i> -->
                 </RouterLink>
               </li>

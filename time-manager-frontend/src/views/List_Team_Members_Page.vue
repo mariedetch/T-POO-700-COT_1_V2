@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, toRefs } from 'vue'
-import { UsersList, UserForm } from '@/components/features/users'
+import { UserForm } from '@/components/features/users'
+import TeamMembersList from '../components/features/teams/TeamMembersList.vue'
 import { useUsersStore } from '@/stores/users'
 import { ToastrService } from '../utils/toastr'
 import { type User } from '../services/users/types'
@@ -42,10 +43,11 @@ onMounted(async () => {
       <div class="page-block">
         <ul class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-          <li class="breadcrumb-item" aria-current="page">Users</li>
+          <li class="breadcrumb-item"><router-link to="/teams">My teams</router-link></li>
+          <li class="breadcrumb-item" aria-current="page">Team Members</li>
         </ul>
         <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">User Management</h2>
+          <h2 class="mb-0">Team : {Name}</h2>
           <div class="text-right p-4 pb-sm-2">
             <a
               href="#"
@@ -63,7 +65,7 @@ onMounted(async () => {
       <div class="col-span-12">
         <div class="card table-card">
           <div class="card-header flex items-center justify-between">
-            <h3>List of users</h3>
+            <h3>List of team Members</h3>
             <div class="flex sm:flex-col gap-2">
               <input
                 v-model="filterData.email"
@@ -84,7 +86,7 @@ onMounted(async () => {
             </div>
           </div>
           <div class="card-body">
-            <UsersList
+            <TeamMembersList
               @edit-user="onModalOpen"
               @remove-user="onDeleted"
               :users="users"
