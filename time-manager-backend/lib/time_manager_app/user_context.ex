@@ -8,7 +8,7 @@ defmodule TimeManagement.UserContext do
 
   alias TimeManagement.UserContext.User
 
-  def get_users_by_search(%User{} = authUser, page \\ 1, page_size \\ 10, email \\ nil, firstname \\ nil, lastname \\ nil, matricule \\ nil, role \\ nil) do
+  def get_users_by_search(%User{} = authUser, page \\ 1, page_size \\ 10, email \\ nil, firstname \\ nil, lastname \\ nil, role \\ nil) do
     query =
       from(t in User,
         where: is_nil(t.deleted_at),
@@ -18,7 +18,6 @@ defmodule TimeManagement.UserContext do
     query = where_email_user(query, email)
     query = where_firstname(query, firstname)
     query = where_lastname(query, lastname)
-    query = where_matricule(query, matricule)
     query = where_role(query, role)
 
     users =
@@ -46,9 +45,6 @@ defmodule TimeManagement.UserContext do
 
   defp where_firstname(query, nil), do: query
   defp where_firstname(query, firstname), do: from(u in query, where: u.firstname == ^firstname)
-
-  defp where_matricule(query, nil), do: query
-  defp where_matricule(query, matricule), do: from(u in query, where: u.matricule == ^matricule)
 
   defp where_role(query, nil), do: query
   defp  where_role(query, role), do: from(u in query, where: u.role == ^role)
