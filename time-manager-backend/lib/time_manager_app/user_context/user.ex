@@ -16,13 +16,14 @@ defmodule TimeManagement.UserContext.User do
     has_many :clocks, TimeManagement.ClockContext.Clock
     has_many :workingtimes, TimeManagement.WorkingTimeContext.WorkingTime
 
+    field :deleted_at, :utc_datetime
     timestamps(type: :utc_datetime)
   end
 
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:matricule, :firstname, :lastname, :email, :tel, :password, :role])
+    |> cast(attrs, [:matricule, :firstname, :lastname, :email, :tel, :password, :role, :deleted_at])
     |> validate_required([:matricule, :firstname, :lastname, :email, :role])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
