@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import All_Employees_List from '../components/features/teams/All_Employees_List.vue';
+import EmployeeList from '@/components/features/users/EmployeeList.vue';
 
 // List Teams Page permet de lister toutes les équipes d'un manager
-// Cette view utile le component TeamsList.vue qui affiche juste les équipes 
+// Cette view utile le component TeamsList.vue qui affiche juste les équipes
 </script>
 
 <template>
@@ -26,12 +26,12 @@ import All_Employees_List from '../components/features/teams/All_Employees_List.
               <h3>List of all employees</h3>
             </div>
             <div class="card-body">
-                <All_Employees_List/>
+                <EmployeeList/>
             </div>
           </div>
         </div>
       </div>
-  
+
 
     </main>
   </template>
