@@ -5,13 +5,33 @@ defmodule TimeManagementWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", TimeManagementWeb do
-    pipe_through :api
-    resources "/users", UserController, except: [:new, :edit]
+  pipeline :authenticated do
+    plug TimeManagementWeb.Plugs.AuthenticationPlug
+  end
 
-    get "/clocks/:userId", ClockController, :index
-    get "/clocks/:userId/latest", ClockController, :show
-    post "/clocks/:userId", ClockController, :create
+  scope "/api/auth", TimeManagementWeb do
+    pipe_through :api
+
+    post "/login", AuthController, :login
+    post "/forgot-password", AuthController, :forgot_password
+    post "/verify-token/:email/:token", AuthController, :verify_token
+    post "/reset-password/:token", AuthController, :reset_password
+    post "/activate-account/:token", AuthController, :activate_account
+  end
+
+  scope "/api", TimeManagementWeb do
+    pipe_through [:api, :authenticated]
+
+    resources "/users", UserController, except: [:new, :edit]
+    resources "/teams", TeamController, except: [:new, :edit] do
+      resources "/members", MemberController, only: [:index, :create]
+    end
+
+    resources "/members", MemberController, only: [:delete]
+
+    get "/clocks", ClockController, :index
+    get "/clocks/latest", ClockController, :show
+    post "/clocks", ClockController, :create
 
     get "/workingtime/:userID",  WorkingTimeController, :index
     get "/workingtime/:userID/:id",  WorkingTimeController, :show

@@ -22,11 +22,10 @@ defmodule TimeManagementWeb.FallbackController do
     |> render("400.json")
   end
 
-  # Gestion des erreurs de validation (400 Bad Request)
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
-    |> put_status(:unprocessable_entity)  # 422 Unprocessable Entity
-    |> put_view(TimeManagementWeb.ErrorJSON)
-    |> render("error.json", changeset: changeset)
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: TimeManagementWeb.ChangesetJSON)
+    |> render(:error, changeset: changeset)
   end
 end
