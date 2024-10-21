@@ -8,14 +8,34 @@ defmodule TimeManagement.UserContext do
 
   alias TimeManagement.UserContext.User
 
-  def get_users_by_search(email \\ nil, firstname \\ nil, lastname \\ nil, matricule \\ nil, role \\ nil) do
-    User
-    |> where_email_user(email)
-    |> where_firstname(firstname)
-    |> where_lastname(lastname)
-    |> where_matricule(matricule)
-    |> where_role(role)
-    |> Repo.all()
+  def get_users_by_search(%User{} = authUser, page \\ 1, page_size \\ 10, email \\ nil, firstname \\ nil, lastname \\ nil, matricule \\ nil, role \\ nil) do
+    query =
+      from(t in User,
+        where: is_nil(t.deleted_at),
+        order_by: [asc: t.inserted_at]
+      )
+
+    query = where_email_user(query, email)
+    query = where_firstname(query, firstname)
+    query = where_lastname(query, lastname)
+    query = where_matricule(query, matricule)
+    query = where_role(query, role)
+
+    users =
+      query
+      |> limit(^page_size)
+      |> offset(^((page - 1) * page_size))
+      |> Repo.all()
+
+    users =
+      if authUser.role == :GENERAL_MANAGER do
+        Repo.preload(users, :manager)
+      else
+        users
+      end
+
+    total_count = count_users(authUser)
+    {users, total_count}
   end
 
   defp where_email_user(query, nil), do: query
@@ -32,6 +52,15 @@ defmodule TimeManagement.UserContext do
 
   defp where_role(query, nil), do: query
   defp  where_role(query, role), do: from(u in query, where: u.role == ^role)
+
+  defp count_users(%User{} = authUser) do
+    query =
+      from(t in User,
+        where: is_nil(t.deleted_at)
+      )
+
+    Repo.aggregate(query, :count, :id)
+  end
 
   @doc """
   Returns the list of users.
@@ -62,8 +91,13 @@ defmodule TimeManagement.UserContext do
 
   """
   def get_user!(id) do
-    Repo.get!(User, id)
+    User
+    |> where([t], is_nil(t.deleted_at))
+    |> Repo.get!(User, id)
   end
+
+  def is_deleted?(%User{deleted_at: nil}), do: false
+  def is_deleted?(%User{}), do: true
 
   def find_by_email!(email), do: Repo.get_by!(User, email: email)
 
@@ -79,10 +113,12 @@ defmodule TimeManagement.UserContext do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+  def create_user(%User{} = authUser, attrs \\ %{}) do
+    if authUser.role == :GENERAL_MANAGER do
+      %User{}
+      |> User.changeset(attrs)
+      |> Repo.insert()
+    end
   end
 
   @doc """
@@ -116,7 +152,9 @@ defmodule TimeManagement.UserContext do
 
   """
   def delete_user(%User{} = user) do
-    Repo.delete(user)
+    user
+    |> Ecto.Changeset.change(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
+    |> Repo.update()
   end
 
   @doc """

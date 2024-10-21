@@ -6,7 +6,6 @@ defmodule TimeManagement.UserContext.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
-    field :matricule, :integer
     field :firstname, :string
     field :lastname, :string
     field :email, :string
@@ -16,20 +15,20 @@ defmodule TimeManagement.UserContext.User do
     has_many :clocks, TimeManagement.ClockContext.Clock
     has_many :workingtimes, TimeManagement.WorkingTimeContext.WorkingTime
 
+    field :deleted_at, :utc_datetime
+    field :activated_at, :utc_datetime
     timestamps(type: :utc_datetime)
   end
 
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:matricule, :firstname, :lastname, :email, :tel, :password, :role])
+    |> cast(attrs, [:matricule, :firstname, :lastname, :email, :tel, :password, :role, :deleted_at])
     |> validate_required([:matricule, :firstname, :lastname, :email, :role])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
-    |> unique_constraint(:matricule)
     |> unique_constraint(:tel)
     |> validate_length(:password, min: 8)
-    |> validate_length(:matricule, min: 6)
   end
 
   def password_reset_changeset(user, attrs) do
