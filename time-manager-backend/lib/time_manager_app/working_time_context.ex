@@ -8,6 +8,7 @@ defmodule TimeManagement.WorkingTimeContext do
 
   alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
+  alias TimeManagement.Teams
 
   @doc """
   Returns the list of workingtimes.
@@ -26,6 +27,53 @@ defmodule TimeManagement.WorkingTimeContext do
   def list_workingtimes(user_id) do
     Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
     |> Repo.preload(:user)
+  end
+
+  def list_workingtime(%User{} = authUser) do
+    query =
+      from(t in Workingtime,
+        where: is_nil(t.deleted_at),
+        order_by: [asc: t.inserted_at]
+      )
+
+    query = apply_user_filter(query, authUser)
+    workingtime =
+      query
+      |> Repo.all()
+
+    {workingtime}
+  end
+
+  def list_workingtime_by_team(%User{} = authUser, %Team{} = team) do
+    query =
+      from(t in Workingtime,
+        where: is_nil(t.deleted_at),
+        order_by: [asc: t.inserted_at]
+      )
+
+    query = apply_user_filter(query, authUser)
+    query = apply_team_filter(query, team)
+    workingtime =
+      query
+      |> Repo.all()
+
+    {workingtime}
+  end
+
+  defp apply_user_filter(query, %User{id: user_id}) do
+    from(t in query, where: t.user_id == ^user_id)
+  end
+
+  defp apply_user_filter(query, _authUser) do
+    query
+  end
+
+  defp apply_team_filter(query, %Team{id: team_id}) do
+    from(t in query, where: t.team_id == ^team_id)
+  end
+
+  defp apply_team_filter(query, _team) do
+    query
   end
 
   @doc """
