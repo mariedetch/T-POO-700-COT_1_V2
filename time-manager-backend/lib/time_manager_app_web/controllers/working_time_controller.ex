@@ -4,8 +4,21 @@ defmodule TimeManagementWeb.WorkingTimeController do
   alias TimeManagement.WorkingTimeContext
   alias TimeManagement.WorkingTimeContext.WorkingTime
   alias TimeManagement.UserContext
+  alias TimeManagement.Teams
 
   action_fallback TimeManagementWeb.FallbackController
+  plug TimeManagementWeb.Plugs.WorkingtimesAuthorizeAccess
+
+  def list(conn) do
+    workingtime = WorkingTimeContext.list_workingtime(conn.assigns.current_user)
+    render(conn, :index, workingtime: workingtime)
+  end
+
+  def list_by_team(conn, %{"team_id" =>  team_id}) do
+    team = Teams.get_team!(team_id)
+    workingtime = WorkingTimeContext.list_workingtime_by_team(conn.assigns.current_user, team)
+    render(conn, :index, workingtime: workingtime)
+  end
 
   def index(conn, %{"userID" => user_id, "start" => start_date, "end" => end_date}) do
     user = UserContext.get_user!(user_id)
@@ -21,18 +34,22 @@ defmodule TimeManagementWeb.WorkingTimeController do
     render(conn, :index, workingtime: workingtime)
   end
 
-  def create(conn, %{"userID" => user_id, "workingtime" =>  workingtime_params}) do
+  def create(conn, %{"team_id" => team_id, "userID" => user_id, "workingtime" =>  workingtime_params}) do
     user = UserContext.get_user!(user_id)
-    with {:ok, %WorkingTime{} = working_time} <- WorkingTimeContext.create_working_time(user, workingtime_params) do
+    team = Teams.get_team!(team_id)
+    current_user = conn.assigns.current_user
+    with {:ok, %WorkingTime{} = working_time} <- WorkingTimeContext.create_working_time(current_user, team, user, workingtime_params) do
       conn
       |> put_status(:created)
       |> render(:show, working_time: working_time)
     end
   end
 
-  def create_for_users(conn, %{"userIDs" => user_ids, "workingtime" => workingtime_params}) do
+  def create_for_users(conn, %{"team_id" => team_id, "userIDs" => user_ids, "workingtime" => workingtime_params}) do
     users = Enum.map(user_ids, fn user_id -> UserContext.get_user!(user_id) end)
-    working_time_results = WorkingTimeContext.create_working_times_for_users(users, workingtime_params)
+    team = Teams.get_team!(team_id)
+    current_user = conn.assigns.current_user
+    working_time_results = WorkingTimeContext.create_working_times_for_users(current_user, team, users, workingtime_params)
     errors = Enum.filter(working_time_results, fn
       {:error, _changeset} -> true
       _ -> false

@@ -9,6 +9,7 @@ defmodule TimeManagement.Teams.Team do
     field :description, :string
     belongs_to :manager, TimeManagement.UserContext.User
     belongs_to :created_by, TimeManagement.UserContext.User
+    has_many :workingtimes, TimeManagement.WorkingTimeContext.WorkingTime
 
     field :deleted_at, :utc_datetime
     timestamps(type: :utc_datetime)

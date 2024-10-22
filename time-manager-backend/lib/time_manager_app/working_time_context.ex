@@ -8,6 +8,8 @@ defmodule TimeManagement.WorkingTimeContext do
 
   alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
+  alias TimeManagement.Teams.Team
+  alias TimeManagement.Members.Member
 
   @doc """
   Returns the list of workingtimes.
@@ -26,6 +28,53 @@ defmodule TimeManagement.WorkingTimeContext do
   def list_workingtimes(user_id) do
     Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
     |> Repo.preload(:user)
+  end
+
+  def list_workingtime(%User{} = authUser) do
+    query =
+      from(t in Workingtime,
+        where: is_nil(t.deleted_at),
+        order_by: [asc: t.inserted_at]
+      )
+
+    query = apply_user_filter(query, authUser)
+    workingtime =
+      query
+      |> Repo.all()
+
+    {workingtime}
+  end
+
+  def list_workingtime_by_team(%User{} = authUser, %Team{} = team) do
+    query =
+      from(t in Workingtime,
+        where: is_nil(t.deleted_at),
+        order_by: [asc: t.inserted_at]
+      )
+
+    query = apply_user_filter(query, authUser)
+    query = apply_team_filter(query, team)
+    workingtime =
+      query
+      |> Repo.all()
+
+    {workingtime}
+  end
+
+  defp apply_user_filter(query, %User{id: user_id}) do
+    from(t in query, where: t.user_id == ^user_id)
+  end
+
+  defp apply_user_filter(query, _authUser) do
+    query
+  end
+
+  defp apply_team_filter(query, %Team{id: team_id}) do
+    from(t in query, where: t.team_id == ^team_id)
+  end
+
+  defp apply_team_filter(query, _team) do
+    query
   end
 
   @doc """
@@ -70,21 +119,68 @@ defmodule TimeManagement.WorkingTimeContext do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_working_time(%User{} = user, attrs \\ %{}) do
-    %WorkingTime{}
-    |> WorkingTime.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:user, user)
-    |> Repo.insert()
+  def create_working_time(current_user, team, user, attrs \\ %{}) do
+    case current_user.role do
+      :MANAGER ->
+        %WorkingTime{}
+        |> WorkingTime.changeset(attrs)
+        |> Ecto.Changeset.put_assoc(:user, user)
+        |> Ecto.Changeset.put_assoc(:team, team)
+        |> Repo.insert()
+      :GENERAL_MANAGER ->
+        %WorkingTime{}
+        |> WorkingTime.changeset(attrs)
+        |> Ecto.Changeset.put_assoc(:user, user)
+        |> Ecto.Changeset.put_assoc(:team, team)
+        |> Repo.insert()
+      _ ->
+        {:error, "You're not allowed to create that workingtime"}
+    end
   end
 
-  def create_working_times_for_users(users, attrs \\ %{}) do
-    IO. inspect(users)
+  def create_working_times_for_users(current_user, %Team{id: team_id} = team, users, attrs \\ %{}) do
+    case current_user.role do
+      :MANAGER ->
+        case all_users_belong_to_team?(team_id, users) do
+          true ->
+            users
+            |> Enum.map(fn user ->
+              case create_working_time(current_user, team, user, attrs) do
+                nil -> {:error, "User not found"}
+                user -> {:ok, user}
+              end
+            end)
+
+          false ->
+            {:error, "Not all users belong to the same team"}
+        end
+      :GENERAL_MANAGER ->
+        case all_users_belong_to_team?(team_id, users) do
+          true ->
+            users
+            |> Enum.map(fn user ->
+              case create_working_time(current_user, team, user, attrs) do
+                nil -> {:error, "User not found"}
+                user -> {:ok, user}
+              end
+            end)
+
+          false ->
+            {:error, "Not all users belong to the same team"}
+        end
+      _ ->
+        {:error, "You're not allowed to create that workingtime"}
+    end
+  end
+
+  defp all_users_belong_to_team?(team_id, users) do
     users
-    |> Enum.map(fn user ->
-      case create_working_time(user, attrs) do
-        nil -> {:error, "User not found"}
-        user -> {:ok, user}
-      end
+    |> Enum.all?(fn user ->
+      query = from(m in Member,
+        where: m.user_id == ^user.id and m.team_id == ^team_id,
+        select: m.id
+      )
+      Repo.exists?(query)
     end)
   end
 
