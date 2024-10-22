@@ -58,16 +58,6 @@ defmodule TimeManagementWeb.Plugs.AuthenticationPlug do
             })
             |> halt()
         end
-
-      _ ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{
-          status_code: 401,
-          message: "Unauthorized access",
-          error: "Unauthorized"
-        })
-        |> halt()
     end
   end
 end

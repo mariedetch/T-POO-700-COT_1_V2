@@ -32,7 +32,7 @@ defmodule TimeManagement.WorkingTimeContext do
 
   def list_workingtime(%User{} = authUser) do
     query =
-      from(t in Workingtime,
+      from(t in WorkingTime,
         where: is_nil(t.deleted_at),
         order_by: [asc: t.inserted_at]
       )
@@ -47,7 +47,7 @@ defmodule TimeManagement.WorkingTimeContext do
 
   def list_workingtime_by_team(%User{} = authUser, %Team{} = team) do
     query =
-      from(t in Workingtime,
+      from(t in WorkingTime,
         where: is_nil(t.deleted_at),
         order_by: [asc: t.inserted_at]
       )

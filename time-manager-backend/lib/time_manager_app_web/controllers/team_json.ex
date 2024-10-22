@@ -1,6 +1,5 @@
 defmodule TimeManagementWeb.TeamJSON do
   alias TimeManagement.Teams.Team
-  alias TimeManagement.UserContext.User
 
   @doc """
   Renders a list of teams.
