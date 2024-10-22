@@ -2,13 +2,13 @@
 import { onMounted, toRefs, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import WorkingtimeForm from '@/components/features/workingtimes/WorkingtimeForm.vue';
-import WorkingtimeInfo from '@/components/features/workingtimes/WorkingtimeInfo.vue'; // Assurez-vous d'importer le nouveau composant
+import WorkingtimeInfo from '@/components/features/workingtimes/WorkingtimeInfo.vue';
 import { useUsersStore } from '@/stores/users';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list'
+import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';

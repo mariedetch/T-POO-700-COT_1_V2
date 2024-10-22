@@ -4,14 +4,11 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
-import frLocale from '@fullcalendar/core/locales/fr'
 import Modal from '../components/shared/Modal.vue'
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
-  locales: [frLocale],
-  locale: 'fr',
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
