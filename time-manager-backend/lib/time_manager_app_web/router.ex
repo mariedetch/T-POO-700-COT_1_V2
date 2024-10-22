@@ -22,7 +22,11 @@ defmodule TimeManagementWeb.Router do
   scope "/api", TimeManagementWeb do
     pipe_through [:api, :authenticated]
 
-    resources "/users", UserController, except: [:new, :edit] do
+    get "/accounts/profile/self", UserController, :show_profile
+    put "/accounts/profile/self", UserController, :update_profile
+    delete "/accounts/profile/self", UserController, :delete_account
+
+    resources "/users", UserController, only: [:index, :create, :show, :delete] do
       get "/clocks", ClockController, :list_clocks_by_user
     end
 
