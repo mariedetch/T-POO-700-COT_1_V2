@@ -1,7 +1,7 @@
 defmodule TimeManagementWeb.UserController do
   use TimeManagementWeb, :controller
 
-  alias TimeManagement.UserContext
+  alias TimeManagement.{UserContext, Teams}
   alias TimeManagement.UserContext.User
 
   action_fallback TimeManagementWeb.FallbackController
@@ -14,6 +14,12 @@ defmodule TimeManagementWeb.UserController do
     role = Map.get(params, "role")
 
     users = UserContext.get_users_by_search(email, firstname, lastname, matricule, role)
+    render(conn, :index, users: users)
+  end
+
+  def list_users_not_in_team(conn, %{"team_id" => team_id}) do
+    users = Teams.list_users_not_in_team(team_id)
+
     render(conn, :index, users: users)
   end
 
