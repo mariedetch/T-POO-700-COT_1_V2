@@ -35,7 +35,7 @@ defmodule TimeManagementWeb.Router do
 
     get "/workingtime/:userID",  WorkingTimeController, :index
     get "/workingtimes",  WorkingTimeController, :list #list les working times du user connecté
-    get "/workingtime/:team_id", WorkingTimeController, :list_by_team #lister les working times par team
+    get "/workingtime/team/:team_id", WorkingTimeController, :list_by_team #lister les working times par team
     get "/workingtime/:userID/:id",  WorkingTimeController, :show
     post "/workingtime/:team_id/:userID", WorkingTimeController, :create #créer pour un user d'une team donné
     post "/workingtime/:team_id", WorkingTimeController, :create_for_users #créer un working times pour plusieurs users
