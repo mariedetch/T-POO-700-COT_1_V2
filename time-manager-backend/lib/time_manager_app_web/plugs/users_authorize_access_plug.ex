@@ -17,11 +17,15 @@ defmodule TimeManagementWeb.Plugs.UsersAuthorizeAccess do
       |> halt()
     end
 
-    if !is_authorized_for_user_action?(user) do
-      conn
-      |> put_status(:forbidden)
-      |> json(%{error: "Access forbidden: You are not authorized to perform this action on the user."})
-      |> halt()
+    case conn.params do
+      %{"id" => user_id} ->
+        if !is_authorized_for_user_action?(user, user_id) do
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Access forbidden: You are not authorized to perform this action on the user."})
+          |> halt()
+        end
+      _ -> conn
     end
 
     conn
@@ -31,6 +35,12 @@ defmodule TimeManagementWeb.Plugs.UsersAuthorizeAccess do
   defp is_authorized_for_user_list?(%User{role: :GENERAL_MANAGER}), do: true
   defp is_authorized_for_user_list?(_), do: false
 
-  defp is_authorized_for_user_action?(%User{role: :GENERAL_MANAGER}), do: true
+  defp is_authorized_for_user_action?(%User{role: :GENERAL_MANAGER}, _user_id), do: true
+  defp is_authorized_for_user_action?(%User{id: userID}, user_id) do
+    case User |> Repo.get(user_id) do
+      %User{id: ^userID} -> true
+      _ -> false
+    end
+  end
   defp is_authorized_for_user_action?(_, _), do: false
 end

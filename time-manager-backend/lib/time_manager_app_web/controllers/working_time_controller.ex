@@ -4,9 +4,21 @@ defmodule TimeManagementWeb.WorkingTimeController do
   alias TimeManagement.WorkingTimeContext
   alias TimeManagement.WorkingTimeContext.WorkingTime
   alias TimeManagement.UserContext
+  alias TimeManagement.Teams
 
   action_fallback TimeManagementWeb.FallbackController
   plug TimeManagementWeb.Plugs.TeamsAuthorizeAccess
+
+  def list(conn) do
+    workingtime = WorkingTimeContext.list_workingtime(conn.assigns.current_user)
+    render(conn, :index, workingtime: workingtime)
+  end
+
+  def list_by_team(conn, %{"team_id" =>  team_id}) do
+    team = Teams.get_team!(id)
+    workingtime = WorkingTimeContext.list_workingtime_by_team(conn.assigns.current_user, team)
+    render(conn, :index, workingtime: workingtime)
+  end
 
   def index(conn, %{"userID" => user_id, "start" => start_date, "end" => end_date}) do
     user = UserContext.get_user!(user_id)

@@ -8,6 +8,7 @@ defmodule TimeManagement.WorkingTimeContext.WorkingTime do
     field :start, :naive_datetime
     field :end, :naive_datetime
     belongs_to :user, TimeManagement.UserContext.User
+    belongs_to :team,  TimeManagement.Teams.Team
 
     field :deleted_at, :utc_datetime
     timestamps(type: :utc_datetime)
