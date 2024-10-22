@@ -6,8 +6,8 @@ defmodule TimeManagement.WorkingTimeContext do
   import Ecto.Query, warn: false
   alias TimeManagement.Repo
 
-  alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
+  alias TimeManagement.UserContext.User
   alias TimeManagement.Teams.Team
   alias TimeManagement.Members.Member
 
