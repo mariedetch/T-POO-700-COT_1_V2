@@ -80,9 +80,10 @@ defmodule TimeManagement.UserContext do
 
   """
   def get_user!(id) do
-    User
-    |> where([t], is_nil(t.deleted_at))
-    |> Repo.get!(User, id)
+    # User
+    # |> where([u], is_nil(u.deleted_at))
+    # |>
+    Repo.get!(User, id)
   end
 
   def is_deleted?(%User{deleted_at: nil}), do: false
