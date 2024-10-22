@@ -8,7 +8,7 @@ defmodule TimeManagement.WorkingTimeContext do
 
   alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
-  alias TimeManagement.Teams.Teams
+  alias TimeManagement.Teams.Team
   alias TimeManagement.Members.Member
 
   @doc """

@@ -39,7 +39,7 @@ defmodule TimeManagementWeb.Plugs.WorkingtimesAuthorizeAccess do
   defp is_authorized_for_workingtime_action?(%User{role: :GENERAL_MANAGER}, _workingtime_id), do: true
   defp is_authorized_for_workingtime_action?(%User{id: user_id}, workingtime_id) do
     case WorkingTime |> Repo.get(workingtime_id) do
-      %WorkingTIme{user_id: ^user_id} -> true
+      %WorkingTime{user_id: ^user_id} -> true
       _ -> false
     end
   end

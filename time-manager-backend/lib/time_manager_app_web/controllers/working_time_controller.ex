@@ -15,7 +15,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
   end
 
   def list_by_team(conn, %{"team_id" =>  team_id}) do
-    team = Teams.get_team!(id)
+    team = Teams.get_team!(team_id)
     workingtime = WorkingTimeContext.list_workingtime_by_team(conn.assigns.current_user, team)
     render(conn, :index, workingtime: workingtime)
   end
