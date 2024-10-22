@@ -90,6 +90,14 @@ defmodule TimeManagement.ClockContext do
   """
   def get_clock!(id), do: Repo.get!(Clock, id)
 
+  def list_clocks_grouped_by_day(user_id) do
+    clocks = from(c in Clock, where: c.user_id == ^user_id, order_by: [asc: c.time])
+    |> Repo.all()
+
+    clocks
+    |> Enum.group_by(fn clock -> NaiveDateTime.to_date(clock.time) end)
+  end
+
   @doc """
   Creates a clock.
 
