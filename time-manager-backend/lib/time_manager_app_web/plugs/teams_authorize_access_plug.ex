@@ -19,15 +19,24 @@ defmodule TimeManagementWeb.Plugs.TeamsAuthorizeAccess do
           |> json(%{error: "Access forbidden: You are not authorized to perform this action on the team."})
           |> halt()
         end
+      %{"team" => _team_params} ->
+        if !is_authorized_to_create_team?(user) do
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Access forbidden: You are not authorized to create a new team."})
+          |> halt()
+        else
+          conn
+        end
       _ -> conn
     end
 
     conn
   end
 
-  defp is_authorized_for_team_list?(%User{role: :MANAGER}), do: true
-  defp is_authorized_for_team_list?(%User{role: :GENERAL_MANAGER}), do: true
-  defp is_authorized_for_team_list?(_), do: false
+  defp is_authorized_to_create_team?(%User{role: :GENERAL_MANAGER}), do: true
+  defp is_authorized_to_create_team?(%User{role: :MANAGER}), do: true
+  defp is_authorized_to_create_team?(_user), do: false
 
   defp is_authorized_for_team_action?(%User{role: :GENERAL_MANAGER}, _team_id), do: true
   defp is_authorized_for_team_action?(%User{id: user_id}, team_id) do

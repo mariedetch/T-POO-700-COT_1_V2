@@ -14,6 +14,7 @@ defmodule TimeManagement.UserContext.User do
     field :role, Ecto.Enum, values: [:GENERAL_MANAGER, :MANAGER, :EMPLOYEE]
     has_many :clocks, TimeManagement.ClockContext.Clock
     has_many :workingtimes, TimeManagement.WorkingTimeContext.WorkingTime
+    many_to_many :teams, TimeManagement.Teams.Team, join_through: "members", on_delete: :delete_all
 
     field :deleted_at, :utc_datetime
     field :activated_at, :utc_datetime

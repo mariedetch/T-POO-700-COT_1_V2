@@ -116,30 +116,23 @@ defmodule TimeManagement.Teams do
   """
   def create_team(%User{} = authUser, attrs \\ %{}) do
     manager = check_manager(authUser, attrs)
+    user_ids = Map.get(attrs, "user_ids", nil)
 
-    team = %Team{}
+    {:ok, team} = %Team{}
       |> Team.changeset(attrs)
       |> Ecto.Changeset.put_assoc(:created_by, authUser)
       |> Ecto.Changeset.put_assoc(:manager, manager)
       |> Repo.insert()
 
-    # case attrs.user_ids do
-    #   _ ->
-    #     case Members.add_members_to_team(team.id, attrs.user_ids, authUser.id) do
-    #       {:ok, _successful_inserts} -> team
-    #       _ -> {:error, team}
-    #     end
-    # else
-    #   team
-    # end
-
-    case attrs.user_ids do
+    case user_ids do
       _ ->
-        case Members.add_members_to_team(team.id, attrs.user_ids, authUser.id) do
-          {:ok, _successful_inserts} -> team
+        case Members.add_members_to_team(team.id, user_ids, authUser.id) do
+          {:ok, _successful_inserts} -> {:ok, team}
           _ -> {:error, team}
         end
     end
+
+    {:ok, team}
   end
 
   def check_manager(auth_user, attrs) do

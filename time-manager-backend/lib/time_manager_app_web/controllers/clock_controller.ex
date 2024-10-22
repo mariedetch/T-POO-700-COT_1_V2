@@ -7,8 +7,12 @@ defmodule TimeManagementWeb.ClockController do
   action_fallback TimeManagementWeb.FallbackController
 
   def index(conn, _params) do
-    user = conn.assigns.current_user
-    clocks = ClockContext.list_clocks_by_user(user)
+    clocks = ClockContext.list_clocks_grouped_by_day(conn.assigns.current_user.id)
+    render(conn, :index, clocks: clocks)
+  end
+
+  def list_clocks_by_user(conn, %{"user_id" => user_id}) do
+    clocks = ClockContext.list_clocks_grouped_by_day(user_id)
     render(conn, :index, clocks: clocks)
   end
 
