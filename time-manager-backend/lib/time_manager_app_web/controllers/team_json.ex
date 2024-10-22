@@ -23,38 +23,28 @@ defmodule TimeManagementWeb.TeamJSON do
     %{data: data(team)}
   end
 
+  defp data(%{team: %Team{} = team, member_count: member_count}) do
+    team_json = data(team)
+    Map.put(team_json, :member_count, member_count)
+  end
+
   defp data(%Team{} = team) do
-    manager_data =
-      case team.manager do
-        %User{} = manager ->
-          %{
-            id: manager.id,
-            firstname: manager.firstname,
-            lastname: manager.lastname,
-            email: manager.email
-          }
-        _ -> nil
-      end
-
-    created_by_data =
-      case team.created_by do
-        %User{} = created_by ->
-          %{
-            id: created_by.id,
-            firstname: created_by.firstname,
-            lastname: created_by.lastname,
-            email: created_by.email
-          }
-        _ -> nil
-      end
-
     %{
       id: team.id,
       name: team.name,
       description: team.description,
       inserted_at: team.inserted_at,
-      manager: manager_data,
-      created_by: created_by_data,
+      updated_at: team.updated_at,
+      manager: if Ecto.assoc_loaded?(team.manager) do
+        %{
+          id: team.manager.id,
+          firstname: team.manager.firstname,
+          lastname: team.manager.lastname,
+          email: team.manager.email
+        }
+      else
+        nil
+      end
     }
   end
 end

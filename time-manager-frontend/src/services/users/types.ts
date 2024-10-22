@@ -3,7 +3,7 @@ export interface User {
   firstname: String,
   lastname: String,
   email: String,
-  role: String
+  role: string
 }
 
 export interface UserRequest {

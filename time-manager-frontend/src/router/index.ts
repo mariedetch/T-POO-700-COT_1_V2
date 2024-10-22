@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
-import List_Team_Members_Page from '@/views/List_Team_Members_Page.vue'
+import TeamMembersPage from '@/views/TeamMembersPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
-import UsersCalendar from '@/views/UsersCalendar.vue'
-import List_Teams_Page from '@/views/List_Teams_Page.vue'
-import List_Employees_Page from '@/views/List_Employees_Page.vue'
-import List_All_Teams_Page from '@/views/List_All_Teams_Page.vue'
+import UsersCalendarPage from '@/views/UsersCalendarPage.vue'
+import MyCalendarPage from '@/views/MyCalendarPage.vue'
+import TeamsPage from '@/views/TeamsPage.vue'
+import StaffPage from '@/views/StaffPage.vue'
+import EmployeePage from '@/views/EmployeePage.vue'
 import ForbiddenPage from '@/views/ForbiddenPage.vue'
-import WorkingtimesPage from '@/views/WorkingtimesPage.vue'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
 import ForgotPasswordPage from '@/views/auth/ForgotPasswordPage.vue'
@@ -64,29 +64,54 @@ const router = createRouter({
           meta: { requiresAuth: true}
         },
         {
-          path: '/team_members',
-          name: 'List_Team_Members_Page',
-          component: List_Team_Members_Page // Lister les membres d'une équipe précise
+          path: 'dashboard/:userID',
+          name: 'user-dashboard',
+          component: DashboardPage,
+          props: true,
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER]}
+        },
+        {
+          path: '/calendar',
+          name: 'calendar',
+          component: MyCalendarPage,
+          meta: { requiresAuth: true}
+        },
+        {
+          path: 'calendar/:userID',
+          name: 'user-calendar',
+          component: MyCalendarPage,
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER] },
+          props: true
+        },
+        {
+          path: '/agenda',
+          name: 'agenda',
+          component: UsersCalendarPage,
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER]}
         },
         {
           path: '/teams',
           name: 'teams',
-          component: List_Teams_Page // Lister les teams d'un manager précis
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER ] },
+          component: TeamsPage // Lister toutes les équipes de l'entreprise ou du manager
+        },
+        {
+          path: '/teams/:id',
+          name: 'team-members',
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER ]},
+          component: TeamMembersPage // Lister les membres d'une équipe précise
+        },
+        {
+          path: '/staff',
+          name: 'staff',
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER ]},
+          component: StaffPage // Lister le personnel de l'entreprise
         },
         {
           path: '/employees',
           name: 'employees',
-          component: List_Employees_Page // Lister tous les employés de l'entreprise
-        },
-        {
-          path: '/all_teams',
-          name: 'all_teams',
-          component: List_All_Teams_Page // Lister toutes les équipes de l'entreprise
-        },
-        {
-          path: '/calendrier',
-          name: 'calendrier',
-          component: UsersCalendar,
+          meta: { requiresAuth: true, roles: [UserRole.MANAGER ]},
+          component: EmployeePage // Lister tous les employés du manager
         },
         /* {
           path: 'users',
@@ -99,13 +124,6 @@ const router = createRouter({
           name: 'user-profile',
           component: UserProfilePage,
           meta: { requiresAuth: true}
-        },
-        {
-          path: 'workingtimes/:userID',
-          name: 'workingtimes',
-          component: WorkingtimesPage,
-          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER] },
-          props: true
         },
         {
           path: 'forbidden',
