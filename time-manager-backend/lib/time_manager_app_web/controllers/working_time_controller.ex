@@ -9,7 +9,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
   action_fallback TimeManagementWeb.FallbackController
   plug TimeManagementWeb.Plugs.WorkingtimesAuthorizeAccess
 
-  def list(conn) do
+  def list(conn, _params) do
     workingtime = WorkingTimeContext.list_workingtime(conn.assigns.current_user)
     render(conn, :index, workingtime: workingtime)
   end

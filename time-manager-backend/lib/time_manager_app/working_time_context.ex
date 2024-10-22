@@ -33,16 +33,13 @@ defmodule TimeManagement.WorkingTimeContext do
   def list_workingtime(%User{} = authUser) do
     query =
       from(t in WorkingTime,
+        where: t.user_id == ^authUser.id,
         where: is_nil(t.deleted_at),
         order_by: [asc: t.inserted_at]
       )
 
-    query = apply_user_filter(query, authUser)
-    workingtime =
-      query
-      |> Repo.all()
-
-    {workingtime}
+    query
+    |> Repo.all()
   end
 
   def list_workingtime_by_team(%User{} = authUser, %Team{} = team) do
