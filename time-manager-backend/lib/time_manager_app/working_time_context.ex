@@ -8,7 +8,8 @@ defmodule TimeManagement.WorkingTimeContext do
 
   alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
-  alias TimeManagement.Teams
+  alias TimeManagement.Teams.Teams
+  alias TimeManagement.Members.Member
 
   @doc """
   Returns the list of workingtimes.
@@ -118,21 +119,56 @@ defmodule TimeManagement.WorkingTimeContext do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_working_time(%User{} = user, attrs \\ %{}) do
+  def create_working_time(current_user, team, user, attrs \\ %{}) do
+    case cerrent_user.role do
+      :MANAGER ->
+        %WorkingTime{}
+        |> WorkingTime.changeset(attrs)
+        |> Ecto.Changeset.put_assoc(:user, user)
+        |> Ecto.Changeset.put_assoc(:team, team)
+        |> Repo.insert()
+      :GENERAL_MANAGER ->
+        %WorkingTime{}
+        |> WorkingTime.changeset(attrs)
+        |> Ecto.Changeset.put_assoc(:user, user)
+        |> Ecto.Changeset.put_assoc(:team, team)
+        |> Repo.insert()
+      _ ->
+        {:error, "You're not allowed to create that workingtime"}
+    end
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:user, user)
+    |> Ecto.Changeset.put_assoc(:team, team)
     |> Repo.insert()
   end
 
-  def create_working_times_for_users(users, attrs \\ %{}) do
-    IO. inspect(users)
+  def create_working_times_for_users(%Team{id: team_id} = team, users, attrs \\ %{}) do
+    IO.inspect(users)
+
+    case all_users_belong_to_team?(team_id, users) do
+      true ->
+        users
+        |> Enum.map(fn user ->
+          case create_working_time(team, user, attrs) do
+            nil -> {:error, "User not found"}
+            user -> {:ok, user}
+          end
+        end)
+
+      false ->
+        {:error, "Not all users belong to the same team"}
+    end
+  end
+
+  defp all_users_belong_to_team?(team_id, users) do
     users
-    |> Enum.map(fn user ->
-      case create_working_time(user, attrs) do
-        nil -> {:error, "User not found"}
-        user -> {:ok, user}
-      end
+    |> Enum.all?(fn user ->
+      query = from(m in Member,
+        where: m.user_id == ^user.id and m.team_id == ^team_id,
+        select: m.id
+      )
+      Repo.exists?(query)
     end)
   end
 
