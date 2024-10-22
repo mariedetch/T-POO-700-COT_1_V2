@@ -17,6 +17,11 @@ async function getWorkingtimes(userID: string | null = null, start: string | nul
   return await http.get<ApiResponse<Workingtime[]>>(url);
 }
 
+// Get workingtimes for current user
+async function getCurrentUserWorkingtimes() {
+  return await http.get<ApiResponse<Workingtime[]>>('workingtimes');
+}
+
 async function getWorkingtime(userID: string, id: string) {
     return await http.get<ApiResponse<Workingtime[]>>(`workingtime/${userID}/${id}`);
   }
@@ -39,4 +44,5 @@ export default {
   createWorkingtime,
   updateWorkingtime,
   deleteWorkingtime,
+  getCurrentUserWorkingtimes
 };

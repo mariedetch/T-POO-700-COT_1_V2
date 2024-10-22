@@ -99,7 +99,7 @@ const onSubmit = async () => {
               id="role"
               class="form-select"
               rules="required">
-              <option v-if="user.role == null" value="">Select a role</option>
+              <option value="">Select a role</option>
               <option value="EMPLOYEE">Employee</option>
               <option value="MANAGER">Manager</option>
             </Field>

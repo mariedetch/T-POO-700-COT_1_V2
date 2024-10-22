@@ -1,10 +1,14 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, toRefs, computed, onMounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import Modal from '../components/shared/Modal.vue'
+import { useWorkingtimesStore } from '@/stores/workingtimes';
+
+const workingtimeStore = useWorkingtimesStore();
+const { workingtimes } = toRefs(workingtimeStore);
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
@@ -14,20 +18,12 @@ const calendarOptions = ref({
     center: 'title',
     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
   },
-  events: [
-    {
-      title: 'Événement 1',
-      date: '2024-10-20',
-      start: '2024-10-20T10:00:00',
-      end: '2024-10-20T17:00:00'
-    },
-    {
-      title: 'Événement 2',
-      date: '2024-10-22',
-      start: '2024-10-22T14:00:00',
-      end: '2024-10-22T15:00:00'
-    }
-  ],
+  events: computed(() => workingtimes.value.map(wt => ({
+    id: wt.id,
+    title: 'WorkingTime',
+    start: wt.start,
+    end: wt.end
+  }))),
   dayMaxEvents: true,
   weekends: true,
   selectable: true, // Permet la sélection de dates
@@ -45,6 +41,24 @@ function handleEventClick(clickInfo) {
 function closeModal() {
   isModalOpen.value = false
 }
+
+const formattedStartTime = computed(() => {
+  if (selectedEvent.value) {
+    return new Date(selectedEvent.value.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  return '';
+});
+
+const formattedEndTime = computed(() => {
+  if (selectedEvent) {
+    return new Date(selectedEvent.value.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  return '';
+});
+
+onMounted(async () => {
+  await workingtimeStore.getCurrentUserWorkingtimes();
+});
 </script>
 
 <template>
@@ -85,17 +99,7 @@ function closeModal() {
                   </div>
                   <div class="event-detail me_bold">
                     <i class="ti ti-clock"></i>
-                    <span>
-                      {{
-                        selectedEvent.start
-                          ? new Date(selectedEvent.start).toLocaleTimeString()
-                          : ''
-                      }}
-                      -
-                      {{
-                        selectedEvent.end ? new Date(selectedEvent.end).toLocaleTimeString() : ''
-                      }}</span
-                    >
+                    <span> {{selectedEvent.end ? formattedStartTime : '' }} - {{selectedEvent.end ? formattedEndTime : ''}} </span>
                   </div>
                   <div class="event-detail">
                     <i class="ti ti-notes"></i>

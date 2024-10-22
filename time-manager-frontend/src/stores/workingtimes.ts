@@ -23,7 +23,22 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
       isLoading.value = false;
     }
   };
-
+  // Workingtime for current user
+  const getCurrentUserWorkingtimes = async () => {
+    isLoading.value = true;
+    error.value = null;
+  
+    try {
+      const response = await API.workingtimes.getCurrentUserWorkingtimes();
+      workingtimes.value = response.data.data;
+      return workingtimes.value;
+    } catch (errors) {
+      error.value = 'Error while retrieving your working times';
+      return [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
   const createWorkingtime= async (userID: string, data: WorkingtimeRequest): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
@@ -80,5 +95,5 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     return false;
   }
 
-  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime };
+  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime, getCurrentUserWorkingtimes };
 })

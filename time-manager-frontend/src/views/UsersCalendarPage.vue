@@ -47,7 +47,8 @@ const calendarOptions = ref({
     id: wt.id,
     title: 'WorkingTime',
     start: wt.start,
-    end: wt.end
+    end: wt.end,
+    team:wt.team_id
   }))),
   select: handleDateSelect,
   eventClick: handleEventClick
@@ -74,11 +75,6 @@ function closeModal() {
   isDetailModalOpened.value = false;
   selectedWorkingtime.value = null;
 }
-
-// async function addWorkingtime(workingtime) {
-//   await workingtimeStore.createWorkingtime(userID, workingtime);
-//   closeModal();
-// }
 
 async function handleWorkingtimeSubmit(workingtime: { workingtime: Workingtime }) {
   const id_workingtime = workingtime.workingtime.id ;
