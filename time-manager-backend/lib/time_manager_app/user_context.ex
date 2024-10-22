@@ -26,14 +26,7 @@ defmodule TimeManagement.UserContext do
       |> offset(^((page - 1) * page_size))
       |> Repo.all()
 
-    users =
-      if authUser.role == :GENERAL_MANAGER do
-        Repo.preload(users, :manager)
-      else
-        users
-      end
-
-    total_count = count_users(authUser)
+    total_count = count_users()
     {users, total_count}
   end
 
@@ -49,7 +42,7 @@ defmodule TimeManagement.UserContext do
   defp where_role(query, nil), do: query
   defp  where_role(query, role), do: from(u in query, where: u.role == ^role)
 
-  defp count_users(%User{} = authUser) do
+  defp count_users() do
     query =
       from(t in User,
         where: is_nil(t.deleted_at)
@@ -87,9 +80,10 @@ defmodule TimeManagement.UserContext do
 
   """
   def get_user!(id) do
-    User
-    |> where([t], is_nil(t.deleted_at))
-    |> Repo.get!(User, id)
+    # User
+    # |> where([u], is_nil(u.deleted_at))
+    # |>
+    Repo.get!(User, id)
   end
 
   def is_deleted?(%User{deleted_at: nil}), do: false

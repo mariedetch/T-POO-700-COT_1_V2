@@ -23,8 +23,8 @@ defmodule TimeManagement.UserContext.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:matricule, :firstname, :lastname, :email, :tel, :password, :role, :deleted_at])
-    |> validate_required([:matricule, :firstname, :lastname, :email, :role])
+    |> cast(attrs, [:firstname, :lastname, :email, :tel, :password, :role, :deleted_at])
+    |> validate_required([:firstname, :lastname, :email, :role])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> unique_constraint(:tel)
