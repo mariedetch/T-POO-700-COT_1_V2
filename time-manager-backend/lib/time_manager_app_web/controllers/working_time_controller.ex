@@ -30,6 +30,24 @@ defmodule TimeManagementWeb.WorkingTimeController do
     end
   end
 
+  def create_for_users(conn, %{"userIDs" => user_ids, "workingtime" => workingtime_params}) do
+    users = Enum.map(user_ids, fn user_id -> UserContext.get_user!(user_id) end)
+    working_time_results = WorkingTimeContext.create_working_times_for_users(users, workingtime_params)
+    errors = Enum.filter(working_time_results, fn
+      {:error, _changeset} -> true
+      _ -> false
+    end)
+    if errors == [] do
+      conn
+      |> put_status(:created)
+      |> json(%{message: "Working times created successfully for all users."})
+    else
+      conn
+      |> put_status(:unprocessable_entity)
+      |> json(%{errors: "Some working times could not be created."})
+    end
+  end
+
   def show(conn, %{"userID" => user_id, "id" => id}) do
     user = UserContext.get_user!(user_id)
     working_time = WorkingTimeContext.get_working_time!(id, user.id)
@@ -37,7 +55,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
   end
 
   def update(conn, %{"id" => id, "workingtime" => working_time_params}) do
-    working_time = WorkingTimeContext.get_working_time!(id)
+    working_time = WorkingTimeContext.get_working_time_2!(id) # j'utilise la nouvelle fonction get_working_time_2
 
     with {:ok, %WorkingTime{} = working_time} <- WorkingTimeContext.update_working_time(working_time, working_time_params) do
       render(conn, :show, working_time: working_time)
@@ -45,7 +63,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
   end
 
   def delete(conn, %{"id" => id}) do
-    working_time = WorkingTimeContext.get_working_time!(id)
+    working_time = WorkingTimeContext.get_working_time_2!(id) # j'utilise la nouvelle fonction get_working_time_2
 
     with {:ok, %WorkingTime{}} <- WorkingTimeContext.delete_working_time(working_time) do
       send_resp(conn, :no_content, "")

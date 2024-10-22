@@ -4,8 +4,13 @@ defmodule TimeManagementWeb.ClockJSON do
   @doc """
   Renders a list of clocks.
   """
-  def index(%{clocks: clocks}) do
-    %{data: for(clock <- clocks, do: data(clock))}
+  def index(%{clocks: grouped_clocks}) do
+    %{data: for {day, clocks_on_day} <- grouped_clocks do
+      %{
+        day: day,
+        clocks: for(clock <- clocks_on_day, do: data(clock))
+      }
+    end}
   end
 
   @doc """

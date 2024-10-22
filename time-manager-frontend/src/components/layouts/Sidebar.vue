@@ -1,5 +1,18 @@
 <script setup lang="ts">
 import { User } from '@/components/features/users'
+import { UserRole } from '@/services/auth/types'
+import { useAuthStore } from '@/stores/auth';
+import { toRefs } from 'vue';
+
+const authStore = useAuthStore();
+const { authUser } = toRefs(authStore);
+
+const hasRole = (role: string | string[]) => {
+  if (Array.isArray(role)) {
+    return authUser.value && role.includes(authUser.value.role);
+  }
+  else return authUser.value && authUser.value.role === role;
+};
 </script>
 
 <template>
@@ -23,11 +36,48 @@ import { User } from '@/components/features/users'
             </RouterLink>
           </li>
           <li class="pc-item">
-            <RouterLink to="/users" class="pc-link text-black">
-              <i class="text-xl mr-2 ti ti-users"></i>
-              <span class="pc-mtext">Users</span>
+            <RouterLink :to="{ name: 'calendar'}" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-calendar-month"></i>
+              <span class="pc-mtext">My Calendar</span>
             </RouterLink>
           </li>
+          <li class="pc-item" v-if="hasRole([UserRole.GENERAL_MANAGER, UserRole.MANAGER])">
+            <RouterLink :to="{ name: 'agenda' }" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-calendar-week"></i>
+              <span class="pc-mtext">General Agenda</span>
+            </RouterLink>
+          </li>
+          <li class="pc-item" v-if="hasRole(UserRole.GENERAL_MANAGER)">
+            <RouterLink :to="{ name: 'staff' }" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-users"></i>
+              <span class="pc-mtext">Staff</span>
+            </RouterLink>
+          </li>
+          <li class="pc-item" v-if="hasRole([UserRole.GENERAL_MANAGER, UserRole.MANAGER])">
+            <RouterLink :to="{ name: 'teams' }" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-sitemap"></i>
+              <span class="pc-mtext">Teams</span>
+            </RouterLink>
+          </li>
+          <li class="pc-item" v-if="hasRole(UserRole.MANAGER)">
+            <RouterLink :to="{ name: 'employees' }" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-users"></i>
+              <span class="pc-mtext">Employees</span>
+            </RouterLink>
+          </li>
+          <li class="pc-item">
+            <RouterLink :to="{ name: 'employees' }" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-alarm"></i>
+              <span class="pc-mtext">My Punctualities</span>
+            </RouterLink>
+          </li>
+          <!-- <li class="pc-item">
+            <RouterLink to="/team" class="pc-link text-black">
+              <i class="text-xl mr-2 ti ti-users"></i>
+              <span class="pc-mtext">My team</span>
+            </RouterLink>
+            <RouterLink to="/users" v-if="hasRole(UserRole.GENERAL_MANAGER)" class="pc-link text-black">
+          </li> -->
         </ul>
       </div>
     </div>

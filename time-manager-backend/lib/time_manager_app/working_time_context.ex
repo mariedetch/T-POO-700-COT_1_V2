@@ -20,10 +20,12 @@ defmodule TimeManagement.WorkingTimeContext do
   """
   def list_workingtimes_by_id(user_id, start_date, end_date) do
     Repo.all(from w in WorkingTime, where: w.user_id == ^user_id and w.start >= ^start_date and w.end <= ^end_date)
+    |> Repo.preload(:user)
   end
 
   def list_workingtimes(user_id) do
     Repo.all(from w in WorkingTime, where: w.user_id == ^user_id)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -40,9 +42,21 @@ defmodule TimeManagement.WorkingTimeContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_working_time!(id), do: Repo.get!(WorkingTime, id)
 
-  def get_working_time!(id, user_id), do: Repo.get!(WorkingTime, id, user_id: user_id)
+  def get_working_time!(id, user_id) do
+    Repo.get!(WorkingTime, id, user_id: user_id)
+    |> Repo.preload(:user)
+  end
+
+  #######  Mon nouveau get_working_time indépendant du user =======================
+  def get_working_time_2!(id) do
+    Repo.get!(WorkingTime, id)
+  end
+
+  def get_working_time!(id) do
+    Repo.get!(WorkingTime, id)
+    |> Repo.preload(:user)
+  end
 
   @doc """
   Creates a working_time.
@@ -61,6 +75,17 @@ defmodule TimeManagement.WorkingTimeContext do
     |> WorkingTime.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
+  end
+
+  def create_working_times_for_users(users, attrs \\ %{}) do
+    IO. inspect(users)
+    users
+    |> Enum.map(fn user ->
+      case create_working_time(user, attrs) do
+        nil -> {:error, "User not found"}
+        user -> {:ok, user}
+      end
+    end)
   end
 
   @doc """

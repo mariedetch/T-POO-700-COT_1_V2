@@ -3,23 +3,33 @@ defmodule TimeManagementWeb.ClockController do
 
   alias TimeManagement.ClockContext
   alias TimeManagement.ClockContext.Clock
-  alias TimeManagement.UserContext
 
   action_fallback TimeManagementWeb.FallbackController
 
-  def index(conn, %{"userId" => userId}) do
-    user = UserContext.get_user!(userId)
-    clocks = ClockContext.list_clocks_by_user(user)
+  def index(conn, _params) do
+    clocks = ClockContext.list_clocks_grouped_by_day(conn.assigns.current_user.id)
     render(conn, :index, clocks: clocks)
   end
 
-  def show(conn, %{"userId" => userId}) do
-    clock = ClockContext.get_latest_clock_by_user(userId)
-    render(conn, :show, clock: clock)
+  def list_clocks_by_user(conn, %{"user_id" => user_id}) do
+    clocks = ClockContext.list_clocks_grouped_by_day(user_id)
+    render(conn, :index, clocks: clocks)
   end
 
-  def create(conn, %{"userId" => userId}) do
-    user = UserContext.get_user!(userId)
+  def show(conn, _params) do
+    case ClockContext.get_latest_clock_by_user(conn.assigns.current_user.id) do
+      {:ok, clock} ->
+        render(conn, :show, clock: clock)
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "Clock not found for the given user"})
+    end
+  end
+
+  def create(conn, _params) do
+    user = conn.assigns.current_user
     with {:ok, %Clock{} = clock} <- ClockContext.clock_in_or_out(user) do
       conn
       |> put_status(:created)

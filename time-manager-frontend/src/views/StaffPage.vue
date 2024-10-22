@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import StaffList from '@/components/features/users/StaffList.vue';
 import { onMounted, ref, toRefs } from 'vue'
-import { UsersList, UserForm } from '@/components/features/users'
+import { UserForm } from '@/components/features/users'
 import { useUsersStore } from '@/stores/users'
 import { ToastrService } from '../utils/toastr'
 import { type User } from '../services/users/types'
@@ -30,41 +31,41 @@ const onFiltered = async () => {
   await userStore.getUsers(filterData.email, filterData.username)
 }
 
-
 onMounted(async () => {
   await userStore.getUsers()
 })
 
 </script>
 
+
 <template>
-  <main>
-    <div class="page-header">
-      <div class="page-block">
-        <ul class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-          <li class="breadcrumb-item" aria-current="page">Users</li>
-        </ul>
-        <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">User Management</h2>
-          <div class="text-right p-4 pb-sm-2">
-            <a
-              href="#"
-              class="btn btn-primary d-inline-flex align-items-center gap-2"
-              @click="onModalOpen()"
-            >
-              <i class="ti ti-plus f-18"></i> Add User</a
-            >
+    <main>
+      <div class="page-header">
+        <div class="page-block">
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item"><router-link to="#">All Staff</router-link></li>
+          </ul>
+          <div class="page-header-title flex flex-row justify-between items-center">
+            <h2 class="mb-0">Staff management</h2>
+            <div class="text-right p-4 pb-sm-2">
+              <a
+                href="#"
+                class="btn btn-primary d-inline-flex align-items-center gap-2"
+                @click="onModalOpen()"
+              >
+                <i class="ti ti-plus f-18"></i> Add Employee</a
+              >
+            </div>
           </div>
         </div>
       </div>
-    </div>
     <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">
         <div class="card table-card">
           <div class="card-header flex items-center justify-between">
-            <h3>List of users</h3>
+            <h3>List of employees</h3>
             <div class="flex sm:flex-col gap-2">
               <input
                 v-model="filterData.email"
@@ -85,7 +86,7 @@ onMounted(async () => {
             </div>
           </div>
           <div class="card-body">
-            <UsersList
+            <StaffList
               @edit-user="onModalOpen"
               @remove-user="onDeleted"
               :users="users"
@@ -95,6 +96,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <UserForm :is-modal-opened="isUserFormOpened" @close-modal-form="onCloseModal"/>
-  </main>
-</template>
+
+      <UserForm :is-modal-opened="isUserFormOpened" @close-modal-form="onCloseModal"/>
+    </main>
+  </template>

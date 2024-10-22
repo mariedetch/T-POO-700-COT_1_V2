@@ -20,5 +20,6 @@ defmodule TimeManagementWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :time_manager_app
+  # use Gettext, otp_app: :time_manager_app
+  use Gettext, backend: TimeManagementWeb.Gettext
 end

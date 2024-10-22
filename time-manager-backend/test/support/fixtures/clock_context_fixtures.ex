@@ -8,13 +8,14 @@ defmodule TimeManagement.ClockContextFixtures do
   Generate a clock.
   """
   def clock_fixture(attrs \\ %{}) do
+    user_id = attrs[:user_id]
+    IO.inspect("aaaaaaaaa #{user_id} tchieeee")
     {:ok, clock} =
-      attrs
-      |> Enum.into(%{
+      TimeManagement.ClockContext.create_clock(attrs |> Enum.into(%{
+        user_id: user_id,
         status: true,
         time: ~N[2024-10-07 15:33:00]
-      })
-      |> TimeManagement.ClockContext.create_clock()
+      }))
 
     clock
   end

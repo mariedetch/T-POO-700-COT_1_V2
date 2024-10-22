@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { useUsersStore } from '@/stores/users';
-import { onMounted, toRefs } from 'vue';
+import { toRefs } from 'vue';
+import { CredentialService } from '@/utils/credentials';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
-const userStore = useUsersStore()
-const { currentUser, userId } = toRefs(userStore)
+const authStore = useAuthStore();
+const { authUser } = toRefs(authStore);
 
-onMounted(async () => {
-  await userStore.getUser(userId.value);
-})
+const router = useRouter();
+
+function logout() {
+  CredentialService.clearCredentials();
+  router.push({ name: 'dashboard' });
+}
 </script>
 
 <template>
@@ -22,8 +27,8 @@ onMounted(async () => {
           alt="user-image"
         />
         <div class="ml-4 mr-2 grow">
-          <h6 class="mb-0">{{ currentUser?.username }}</h6>
-          <small>{{ currentUser?.email }}</small>
+          <h6 class="mb-0">{{ authUser?.firstname + ' ' + authUser?.lastname }}</h6>
+          <small>{{ authUser?.email }}</small>
         </div>
         <a
           class="shrink-0 btn btn-icon inline-flex btn-link-secondary"
@@ -42,9 +47,7 @@ onMounted(async () => {
             <i class="text-lg leading-none ti ti-settings"></i>
             <span>Settings</span>
           </a>
-          <a href="#!"
-            ><i class="text-lg leading-none ti ti-lock"></i> <span>Lock Screen</span> </a
-          ><a href="#!"
+          <a href="#!" @click="logout"
             ><i class="text-lg leading-none ti ti-power"></i> <span>Logout</span></a
           >
         </div>

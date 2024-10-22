@@ -8,18 +8,30 @@ defmodule TimeManagement.UserContext do
 
   alias TimeManagement.UserContext.User
 
-  def get_users_by_email_and_username(email \\ nil, username \\ nil) do
+  def get_users_by_search(email \\ nil, firstname \\ nil, lastname \\ nil, matricule \\ nil, role \\ nil) do
     User
     |> where_email_user(email)
-    |> where_username(username)
+    |> where_firstname(firstname)
+    |> where_lastname(lastname)
+    |> where_matricule(matricule)
+    |> where_role(role)
     |> Repo.all()
   end
 
   defp where_email_user(query, nil), do: query
   defp where_email_user(query, email), do: from(u in query, where: u.email == ^email)
 
-  defp where_username(query, nil), do: query
-  defp where_username(query, username), do: from(u in query, where: u.username == ^username)
+  defp where_lastname(query, nil), do: query
+  defp where_lastname(query, lastname), do: from(u in query, where: u.lastname == ^lastname)
+
+  defp where_firstname(query, nil), do: query
+  defp where_firstname(query, firstname), do: from(u in query, where: u.firstname == ^firstname)
+
+  defp where_matricule(query, nil), do: query
+  defp where_matricule(query, matricule), do: from(u in query, where: u.matricule == ^matricule)
+
+  defp where_role(query, nil), do: query
+  defp  where_role(query, role), do: from(u in query, where: u.role == ^role)
 
   @doc """
   Returns the list of users.
@@ -31,7 +43,8 @@ defmodule TimeManagement.UserContext do
 
   """
   def list_users do
-    Repo.all(User)
+    User
+    |> Repo.all(User)
   end
 
   @doc """
@@ -48,7 +61,11 @@ defmodule TimeManagement.UserContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id) do
+    Repo.get!(User, id)
+  end
+
+  def find_by_email!(email), do: Repo.get_by!(User, email: email)
 
   @doc """
   Creates a user.
@@ -103,6 +120,24 @@ defmodule TimeManagement.UserContext do
   end
 
   @doc """
+  Promote a user.
+
+  ## Examples
+
+      iex> promote_user(user)
+      {:ok, %User{}}
+
+      iex> promote_user(user)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def promote_user(%User{role: :EMPLOYEE} = user) do
+    user
+    |> User.changeset(%{role: :MANAGER})
+    |> Repo.update()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 
   ## Examples
@@ -113,5 +148,24 @@ defmodule TimeManagement.UserContext do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def authenticate_user(email, password) do
+    case Repo.get_by(User, email: email) do
+      nil -> {:error, :user_not_found}
+      user ->
+        if Bcrypt.verify_pass(password, user.password) do
+          {:ok, user}
+        else
+          {:error, :invalid_password}
+        end
+    end
+  end
+
+  def reset_password(user_id, new_password) do
+    user = Repo.get(User, user_id)
+    user
+    |> User.changeset(%{password: new_password})
+    |> Repo.update()
   end
 end

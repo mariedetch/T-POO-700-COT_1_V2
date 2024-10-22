@@ -46,7 +46,9 @@ defmodule TimeManagementWeb.Endpoint do
 
   plug CORSPlug,
     origin: System.get_env("CORS_ORIGIN") || "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    headers: ["Authorization", "Content-Type", "C-XSRF-TOKEN"],
+    credentials: true,
     max_age: 86400
 
   plug Plug.MethodOverride

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type User } from "@/services/users/types";
+import { UserRole } from '@/services/auth/types'
 import Swal from 'sweetalert2';
 
 const props = defineProps<{ users: User[] }>();
@@ -33,8 +34,10 @@ const confirmDelete = async (userId: string) => {
       <thead>
         <tr>
           <th>#</th>
-          <th>UserName</th>
+          <th>First Name</th>
+          <th>Last Name</th>
           <th>Email</th>
+          <th>Role</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
@@ -44,20 +47,32 @@ const confirmDelete = async (userId: string) => {
           <td>
             <div class="flex items-center">
               <div class="grow ltr:ml-3 rtl:mr-3">
-                <h6 class="mb-0">{{ user.username }}</h6>
+                <h6 class="mb-0">{{ user.firstname }}</h6>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center">
+              <div class="grow ltr:ml-3 rtl:mr-3">
+                <h6 class="mb-0">{{ user.lastname }}</h6>
               </div>
             </div>
           </td>
           <td>{{ user.email }}</td>
+          <td>
+            <span v-if="user.role === UserRole.MANAGER" class="badge text-white bg-success-500">Manager</span>
+            <span v-if="user.role === UserRole.EMPLOYEE" class="badge text-white bg-warning-500">Employee</span>
+          </td>
           <td class="text-center">
             <ul class="flex items-center mr-auto mb-0">
               <li class="list-inline-item">
                 <RouterLink :to="`/workingtimes/${user.id}`"
-                  class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-secondary btn-pc-default"
+                  class="px-4 py-2 bg-gray-200 rounded-lg inline-flex items-center justify-center btn-link-secondary btn-pc-default"
                   data-pc-toggle="modal"
-                  data-pc-target="#customer-modal"
-                  ><i class="ti ti-eye text-lg leading-none"></i
-                >
+                  data-pc-target="#customer-modal">
+                  <small>
+                    Workingtimes
+                  </small><!-- <i class="ti ti-eye text-lg leading-none"></i> -->
                 </RouterLink>
               </li>
               <li class="list-inline-item">

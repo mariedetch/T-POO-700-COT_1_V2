@@ -47,7 +47,13 @@ defmodule TimeManagement.ClockContext do
       where: clock.user_id == ^user_id,
       order_by: [desc: clock.inserted_at],
       limit: 1)
-    Repo.one(query)
+    case Repo.one(query) do
+      nil ->
+        {:error, :not_found}
+
+      clock ->
+        {:ok, clock}
+    end
   end
 
   @doc """
@@ -83,6 +89,14 @@ defmodule TimeManagement.ClockContext do
 
   """
   def get_clock!(id), do: Repo.get!(Clock, id)
+
+  def list_clocks_grouped_by_day(user_id) do
+    clocks = from(c in Clock, where: c.user_id == ^user_id, order_by: [asc: c.time])
+    |> Repo.all()
+
+    clocks
+    |> Enum.group_by(fn clock -> NaiveDateTime.to_date(clock.time) end)
+  end
 
   @doc """
   Creates a clock.

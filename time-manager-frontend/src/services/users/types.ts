@@ -1,7 +1,9 @@
 export interface User {
   id: string,
-  username: String,
-  email: String
+  firstname: String,
+  lastname: String,
+  email: String,
+  role: string
 }
 
 export interface UserRequest {
