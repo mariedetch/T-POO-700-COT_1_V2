@@ -6,7 +6,13 @@ export interface Team {
   description: string,
   inserted_at: string,
   manager: User | null,
+  manager_id: string,
   member_count: number;
+}
+
+export interface Member {
+  id: string,
+  user: Partial<User>
 }
 
 export interface CreateTeamRequest {

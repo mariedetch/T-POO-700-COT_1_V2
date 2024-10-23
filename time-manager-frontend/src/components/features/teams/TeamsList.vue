@@ -117,10 +117,10 @@ onMounted(async () => {
             >
           </td>
           <td>
-            <a
-              href="#"
+            <RouterLink
+              :to="`/teams/${team.id}`"
               class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-secondary"
-              ><i class="ti ti-eye text-xl leading-none"></i> </a
+              ><i class="ti ti-eye text-xl leading-none"></i> </RouterLink
             ><a
               href="#"
               @click="confirmDelete(team.id)"

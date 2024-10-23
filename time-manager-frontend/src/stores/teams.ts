@@ -1,10 +1,11 @@
 import teamService from '@/services/teams';
-import type { Team, CreateTeamRequest, UpdateTeamRequest } from "@/services/teams/types";
+import type { Team, CreateTeamRequest, UpdateTeamRequest, Member } from "@/services/teams/types";
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
 export const useTeamsStore = defineStore('teams', () => {
   const teams = ref<Team[]>([]);
+  const members = ref<Member[]>([]);
   const selectedTeam = ref<Team | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -33,15 +34,28 @@ export const useTeamsStore = defineStore('teams', () => {
     isLoading.value = true;
     error.value = null;
 
-    teamService.getTeam(teamId).then((response) => {
+    try {
+      const response = (await teamService.getTeam(teamId));
       selectedTeam.value = response.data.data;
-    })
-      .catch((errors) => {
-        error.value = 'Error while retrieving team.';
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+    } catch (errors) {
+      error.value = 'Error when retrieving team.';
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const getTeamMembers = async (teamId: string) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const response = (await teamService.getTeamMembers(teamId));
+      members.value = response.data.data;
+    } catch (errors) {
+      error.value = 'Error when retrieving team.';
+    } finally {
+      isLoading.value = false;
+    }
   };
 
   const createTeam = async (data: CreateTeamRequest): Promise<boolean> => {
@@ -99,10 +113,11 @@ export const useTeamsStore = defineStore('teams', () => {
   }
 
   return {
-    teams, selectedTeam,
+    teams, selectedTeam, members,
     currentPage, pageSize, totalCount,
     isLoading, error,
     getTeams, getTeam,
+    getTeamMembers,
     createTeam, updateTeam,
     deleteTeam
   };
