@@ -50,7 +50,7 @@ export const useTeamsStore = defineStore('teams', () => {
 
     try {
       const response = await teamService.createTeam(data);
-      teams.value.push(response.data.data);
+      teams.value.push({...response.data.data, member_count: data.team.user_ids.length});
       isLoading.value = false;
 
       return true;

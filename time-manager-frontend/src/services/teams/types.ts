@@ -10,10 +10,12 @@ export interface Team {
 }
 
 export interface CreateTeamRequest {
-  name: string,
-  description: string,
-  manager_id: string,
-  user_ids: string[]
+  team: {
+    name: string,
+    description: string,
+    manager_id: string,
+    user_ids: string[]
+  }
 }
 
 export interface UpdateTeamRequest {
