@@ -42,7 +42,7 @@ defmodule TimeManagement.WorkingTimeContext do
       query
       |> Repo.all()
 
-    {workingtime}
+    workingtime
   end
 
   def list_workingtime_by_team(%User{} = authUser, %Team{} = team) do
@@ -52,13 +52,12 @@ defmodule TimeManagement.WorkingTimeContext do
         order_by: [asc: t.inserted_at]
       )
 
-    query = apply_user_filter(query, authUser)
     query = apply_team_filter(query, team)
     workingtime =
       query
       |> Repo.all()
 
-    {workingtime}
+    workingtime
   end
 
   defp apply_user_filter(query, %User{id: user_id}) do
@@ -146,8 +145,8 @@ defmodule TimeManagement.WorkingTimeContext do
             users
             |> Enum.map(fn user ->
               case create_working_time(current_user, team, user, attrs) do
-                nil -> {:error, "User not found"}
-                user -> {:ok, user}
+                {:ok, working_time} -> {:ok, working_time}
+                {:error, changeset} -> {:error, changeset}
               end
             end)
 
@@ -160,8 +159,8 @@ defmodule TimeManagement.WorkingTimeContext do
             users
             |> Enum.map(fn user ->
               case create_working_time(current_user, team, user, attrs) do
-                nil -> {:error, "User not found"}
-                user -> {:ok, user}
+                {:ok, working_time} -> {:ok, working_time}
+                {:error, changeset} -> {:error, changeset}
               end
             end)
 

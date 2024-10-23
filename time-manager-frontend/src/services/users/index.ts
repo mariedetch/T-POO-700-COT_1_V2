@@ -22,6 +22,10 @@ async function getUser(id: string) {
   return await http.get<ApiResponse<User>>(`users/${id}`);
 }
 
+async function getProfil() {
+  return await http.get<ApiResponse<User>>("/accounts/profile/self")
+}
+
 async function updateUser(id: string, data: Partial<UserRequest>) {
   return await http.put<ApiResponse<User>>(`users/${id}`, data);
 }
@@ -32,6 +36,7 @@ async function deleteUser(id: string) {
 
 export default {
   getUser,
+  getProfil,
   getUsers,
   createUser,
   updateUser,

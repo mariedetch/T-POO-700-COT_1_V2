@@ -9,7 +9,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
   action_fallback TimeManagementWeb.FallbackController
   plug TimeManagementWeb.Plugs.WorkingtimesAuthorizeAccess
 
-  def list(conn) do
+  def list(conn, params) do
     workingtime = WorkingTimeContext.list_workingtime(conn.assigns.current_user)
     render(conn, :index, workingtime: workingtime)
   end
@@ -51,7 +51,7 @@ defmodule TimeManagementWeb.WorkingTimeController do
     current_user = conn.assigns.current_user
     working_time_results = WorkingTimeContext.create_working_times_for_users(current_user, team, users, workingtime_params)
     errors = Enum.filter(working_time_results, fn
-      {:error, _changeset} -> true
+      {:error, _} -> true
       _ -> false
     end)
     if errors == [] do

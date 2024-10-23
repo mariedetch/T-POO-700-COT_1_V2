@@ -19,7 +19,8 @@ defmodule TimeManagementWeb.WorkingTimeJSON do
     %{
       id: working_time.id,
       start: working_time.start,
-      end: working_time.end
+      end: working_time.end,
+      team_id: working_time.team_id
     }
   end
 end

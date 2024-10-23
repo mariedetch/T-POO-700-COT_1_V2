@@ -7,6 +7,7 @@ export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([]);
   const userId = import.meta.env.VITE_DEFAULT_USER;
   const currentUser = ref<User | null>(null);
+  const loggedUser = ref<User | null>(null);
   const selectedUser = ref<User | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
@@ -38,6 +39,21 @@ export const useUsersStore = defineStore('users', () => {
       isLoading.value = false;
     });
   };
+
+  const getProfil = async () => {
+    isLoading.value = true;
+    error.value = null;
+
+    API.users.getProfil().then((response) => {
+      loggedUser.value = response.data.data;
+    })
+    .catch((errors) => {
+      error.value = 'Error while retrieving user.';
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+  }
 
   const createUser = async (data: UserRequest): Promise<boolean> => {
     isLoading.value = true;
@@ -93,5 +109,5 @@ export const useUsersStore = defineStore('users', () => {
     return false;
   }
 
-  return { users, userId, currentUser, isLoading, selectedUser, error, getUsers, getUser, createUser, updateUser, deleteUser };
+  return { users, userId, currentUser, isLoading, selectedUser, error, loggedUser, getProfil, getUsers, getUser, createUser, updateUser, deleteUser };
 })
