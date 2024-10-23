@@ -12,6 +12,19 @@ import type { EventClickArg } from '@fullcalendar/core';
 const workingtimeStore = useWorkingtimesStore();
 const { workingtimes } = toRefs(workingtimeStore);
 
+interface CalendarEvent {
+  id: string
+  title: string
+  start: Date | string | null
+  end: Date | string | null
+}
+
+const selectedEvent = ref<CalendarEvent>({
+  id: '',
+  title: '',
+  start: null,
+  end: null
+})
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
