@@ -22,6 +22,10 @@ async function getUser(id: string) {
   return await http.get<ApiResponse<User>>(`users/${id}`);
 }
 
+async function getEmployees() {
+  return await http.get<ApiResponse<User[]>>(`users?role=EMPLOYEE`);
+}
+
 async function updateUser(id: string, data: Partial<UserRequest>) {
   return await http.put<ApiResponse<User>>(`users/${id}`, data);
 }
@@ -33,6 +37,7 @@ async function deleteUser(id: string) {
 export default {
   getUser,
   getUsers,
+  getEmployees,
   createUser,
   updateUser,
   deleteUser,
