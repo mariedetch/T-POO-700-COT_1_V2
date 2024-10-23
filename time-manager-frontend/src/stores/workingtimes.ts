@@ -30,7 +30,9 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
   
     try {
       const response = await API.workingtimes.getCurrentUserWorkingtimes();
+      console.log("Dans le store :", response.data.data )
       workingtimes.value = response.data.data;
+
       return workingtimes.value;
     } catch (errors) {
       error.value = 'Error while retrieving your working times';
@@ -39,6 +41,7 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
       isLoading.value = false;
     }
   };
+  
   const createWorkingtime= async (userID: string, data: WorkingtimeRequest): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;

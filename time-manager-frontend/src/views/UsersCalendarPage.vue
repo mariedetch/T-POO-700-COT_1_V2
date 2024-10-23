@@ -47,8 +47,7 @@ const calendarOptions = ref({
     id: wt.id,
     title: 'WorkingTime',
     start: wt.start,
-    end: wt.end,
-    team:wt.team_id
+    end: wt.end
   }))),
   select: handleDateSelect,
   eventClick: handleEventClick

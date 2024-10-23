@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, toRefs, computed, onMounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -7,8 +7,11 @@ import listPlugin from '@fullcalendar/list'
 import Modal from '../components/shared/Modal.vue'
 import { useWorkingtimesStore } from '@/stores/workingtimes';
 
+import type { EventClickArg } from '@fullcalendar/core';
+
 const workingtimeStore = useWorkingtimesStore();
 const { workingtimes } = toRefs(workingtimeStore);
+
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin],
@@ -31,10 +34,15 @@ const calendarOptions = ref({
 })
 
 const isModalOpen = ref(false)
-const selectedEvent = ref({ title: '', start: '', end: '' })
+// const selectedEvent = ref({ title: '', start: '', end: '' })
 
-function handleEventClick(clickInfo) {
-  selectedEvent.value = clickInfo.event
+function handleEventClick(clickInfo: EventClickArg) {
+  selectedEvent.value = {
+    id: clickInfo.event.id,
+    title: clickInfo.event.title,
+    start: clickInfo.event.start,
+    end: clickInfo.event.end,
+  }
   isModalOpen.value = true
 }
 
@@ -42,19 +50,28 @@ function closeModal() {
   isModalOpen.value = false
 }
 
-const formattedStartTime = computed(() => {
-  if (selectedEvent.value) {
-    return new Date(selectedEvent.value.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-  return '';
-});
+// const formattedStartTime = computed(() => {
+//   if (selectedEvent.value) {
+//     return new Date(selectedEvent.value.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+//   }
+//   return '';
+// });
 
-const formattedEndTime = computed(() => {
-  if (selectedEvent) {
-    return new Date(selectedEvent.value.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-  return '';
-});
+// const formattedEndTime = computed(() => {
+//   if (selectedEvent) {
+//     return new Date(selectedEvent.value.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+//   }
+//   return '';
+// });
+
+const formatDate = (dateValue: Date | string | null): string => {
+  if (!dateValue) return '';
+  return new Date(dateValue).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+// Computed formatedStartTime and formatedEndTime 
+const formattedStartTime = computed(() => formatDate(selectedEvent.value.start))
+const formattedEndTime = computed(() => formatDate(selectedEvent.value.end))
 
 onMounted(async () => {
   await workingtimeStore.getCurrentUserWorkingtimes();
