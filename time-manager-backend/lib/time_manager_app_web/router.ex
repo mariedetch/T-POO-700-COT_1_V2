@@ -32,6 +32,7 @@ defmodule TimeManagementWeb.Router do
 
     resources "/teams", TeamController, except: [:new, :edit] do
       get "/available", UserController, :list_users_not_in_team
+      get "/stats", TeamController, :get_stats_by_team
       resources "/members", MemberController, only: [:index, :create]
     end
 

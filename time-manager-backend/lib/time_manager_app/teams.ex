@@ -213,4 +213,12 @@ defmodule TimeManagement.Teams do
   def change_team(%Team{} = team, attrs \\ %{}) do
     Team.changeset(team, attrs)
   end
+
+  def count_members_in_team(team_id) do
+    Repo.aggregate(
+      from m in Member,
+      where: m.team_id == ^team_id,
+      select: count(m.id)
+    )
+  end
 end
