@@ -15,12 +15,24 @@ async function getUsers(email: string | null = null, username: string | null = n
   return await http.get<ApiResponse<User[]>>(url);
 }
 
+async function getUsersByRoleAndName(role: UserRole, name: string | null = null) {
+  let url = `users?role=${role}`;
+  if (name) {
+    url += `&firstname=${name}&lastname=${name}`;
+  }
+  return await http.get<ApiResponse<User[]>>(url);
+}
+
 async function createUser(data: UserRequest) {
   return await http.post<ApiResponse<User>>("users", data);
 }
 
 async function getUser(id: string) {
   return await http.get<ApiResponse<User>>(`users/${id}`);
+}
+
+async function getEmployees() {
+  return await http.get<ApiResponse<User[]>>(`users?role=EMPLOYEE`);
 }
 
 async function updateUser(id: string, data: Partial<UserRequest>) {
@@ -31,17 +43,10 @@ async function deleteUser(id: string) {
   return await http.delete<ApiResponse<boolean>>(`users/${id}`);
 }
 
-async function getUsersByRoleAndName(role: UserRole, name: string | null = null) {
-  let url = `users?role=${role}`;
-  if (name) {
-    url += `&firstname=${name}&lastname=${name}`;
-  }
-  return await http.get<ApiResponse<User[]>>(url);
-}
-
 export default {
   getUser,
   getUsers,
+  getEmployees,
   getUsersByRoleAndName,
   createUser,
   updateUser,

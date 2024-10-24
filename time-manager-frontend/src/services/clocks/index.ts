@@ -1,11 +1,9 @@
 import http from "../api";
 import type { ApiResponse } from "../types";
-import { type Clock } from "./types";
-
-const userId = import.meta.env.VITE_DEFAULT_USER;
+import { type Clock, type ClockList } from "./types";
 
 async function getClocks(id: string | null = null) {
-  return await http.get<ApiResponse<Clock[]>>(`clocks`);
+  return await http.get<ApiResponse<ClockList[]>>(`clocks`);
 }
 
 async function getClock() {

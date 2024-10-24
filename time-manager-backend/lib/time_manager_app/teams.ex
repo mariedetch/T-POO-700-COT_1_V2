@@ -7,7 +7,8 @@ defmodule TimeManagement.Teams do
   alias TimeManagement.Repo
 
   alias TimeManagement.Teams.Team
-  alias TimeManagement.UserContext
+  alias TimeManagement.Members.Member
+  alias TimeManagement.{UserContext, Members}
   alias TimeManagement.UserContext.User
 
   @doc """
@@ -20,49 +21,63 @@ defmodule TimeManagement.Teams do
 
   """
   def list_teams(%User{} = authUser, page \\ 1, page_size \\ 10) do
-    query =
-      from(t in Team,
-        where: is_nil(t.deleted_at),
-        order_by: [asc: t.inserted_at]
-      )
+    query = from(t in Team, where: is_nil(t.deleted_at), distinct: true)
 
-    query = apply_role_filter(query, authUser)
+    query =
+      case authUser.role do
+        :GENERAL_MANAGER -> query
+        :MANAGER -> from(t in query, where: t.manager_id == ^authUser.id)
+        :EMPLOYEE ->
+          from(t in query,
+            join: m in Member, on: m.team_id == t.id,
+            where: m.user_id == ^authUser.id,
+            where: is_nil(m.deleted_at)
+          )
+      end
+
+    total_count = Repo.aggregate(query, :count, :id)
+
     teams =
       query
       |> limit(^page_size)
       |> offset(^((page - 1) * page_size))
+      |> count_members_per_team()
       |> Repo.all()
 
     teams =
-      if authUser.role == :GENERAL_MANAGER do
-        Repo.preload(teams, :manager)
-      else
+      if authUser.role == :MANAGER do
         teams
+      else
+        for(team <- teams, do: %{
+          team: Repo.preload(team.team, :manager),
+          member_count: team.member_count
+        })
       end
-
-    total_count = count_teams(authUser)
 
     {teams, total_count}
   end
 
-  defp count_teams(%User{} = authUser) do
+  defp count_members_per_team(query) do
+    from(t in query,
+      left_join: m in Member, on: m.team_id == t.id and is_nil(m.deleted_at),
+      group_by: [t.id, m.id],
+      select: %{team: t, member_count: count(m.id)}
+    )
+  end
+
+  def list_users_not_in_team(team_id) do
     query =
-      from(t in Team,
-        where: is_nil(t.deleted_at)
+      from(u in User,
+        where: u.role == :EMPLOYEE,
+        where: u.id not in subquery(from(m in Member,
+          where: m.team_id == ^team_id,
+          select: m.user_id
+        ))
       )
 
-    query = apply_role_filter(query, authUser)
-
-    Repo.aggregate(query, :count, :id)
+    Repo.all(query)
   end
 
-  defp apply_role_filter(query, %User{role: :MANAGER, id: manager_id}) do
-    from(t in query, where: t.manager_id == ^manager_id)
-  end
-
-  defp apply_role_filter(query, _authUser) do
-    query
-  end
 
   @doc """
   Gets a single team.
@@ -101,12 +116,23 @@ defmodule TimeManagement.Teams do
   """
   def create_team(%User{} = authUser, attrs \\ %{}) do
     manager = check_manager(authUser, attrs)
+    user_ids = Map.get(attrs, "user_ids", nil)
 
-    %Team{}
-    |> Team.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:created_by, authUser)
-    |> Ecto.Changeset.put_assoc(:manager, manager)
-    |> Repo.insert()
+    {:ok, team} = %Team{}
+      |> Team.changeset(attrs)
+      |> Ecto.Changeset.put_assoc(:created_by, authUser)
+      |> Ecto.Changeset.put_assoc(:manager, manager)
+      |> Repo.insert()
+
+    case user_ids do
+      _ ->
+        case Members.add_members_to_team(team.id, user_ids, authUser.id) do
+          {:ok, _successful_inserts} -> {:ok, team}
+          _ -> {:error, team}
+        end
+    end
+
+    {:ok, team}
   end
 
   def check_manager(auth_user, attrs) do
@@ -186,5 +212,15 @@ defmodule TimeManagement.Teams do
   """
   def change_team(%Team{} = team, attrs \\ %{}) do
     Team.changeset(team, attrs)
+  end
+
+  def count_members_in_team(team_id) do
+    query =
+      from(t in Member,
+        where: is_nil(t.deleted_at),
+        where: t.team_id == ^team_id
+      )
+
+    total_count = Repo.aggregate(query, :count, :id)
   end
 end

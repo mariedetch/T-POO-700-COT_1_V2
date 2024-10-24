@@ -11,13 +11,6 @@ defmodule TimeManagementWeb.Plugs.TeamsAuthorizeAccess do
   def call(conn, _opts) do
     user = conn.assigns[:current_user]
 
-    if conn.request_path == "/api/teams" and !is_authorized_for_team_list?(user) do
-      conn
-      |> put_status(:forbidden)
-      |> json(%{error: "Access forbidden: You are not authorized to view this list of teams."})
-      |> halt()
-    end
-
     case conn.params do
       %{"id" => team_id} ->
         if !is_authorized_for_team_action?(user, team_id) do
@@ -26,15 +19,24 @@ defmodule TimeManagementWeb.Plugs.TeamsAuthorizeAccess do
           |> json(%{error: "Access forbidden: You are not authorized to perform this action on the team."})
           |> halt()
         end
+      %{"team" => _team_params} ->
+        if !is_authorized_to_create_team?(user) do
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Access forbidden: You are not authorized to create a new team."})
+          |> halt()
+        else
+          conn
+        end
       _ -> conn
     end
 
     conn
   end
 
-  defp is_authorized_for_team_list?(%User{role: :MANAGER}), do: true
-  defp is_authorized_for_team_list?(%User{role: :GENERAL_MANAGER}), do: true
-  defp is_authorized_for_team_list?(_), do: false
+  defp is_authorized_to_create_team?(%User{role: :GENERAL_MANAGER}), do: true
+  defp is_authorized_to_create_team?(%User{role: :MANAGER}), do: true
+  defp is_authorized_to_create_team?(_user), do: false
 
   defp is_authorized_for_team_action?(%User{role: :GENERAL_MANAGER}, _team_id), do: true
   defp is_authorized_for_team_action?(%User{id: user_id}, team_id) do

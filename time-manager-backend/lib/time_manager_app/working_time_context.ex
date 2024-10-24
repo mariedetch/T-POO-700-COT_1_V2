@@ -228,4 +228,44 @@ defmodule TimeManagement.WorkingTimeContext do
   def change_working_time(%WorkingTime{} = working_time, attrs \\ %{}) do
     WorkingTime.changeset(working_time, attrs)
   end
+
+  def sum_working_times_duration(team_id, start_date, end_date) do
+    # Récupérer tous les enregistrements WorkingTime
+    working_times =
+      Repo.all(from w in WorkingTime,
+        where: w.team_id == ^team_id and w.start >= ^start_date and w.end <= ^end_date
+      )
+
+    # Calculer la somme des durées
+    total_duration =
+      working_times
+      |> Enum.reduce(0, fn working_time, acc ->
+        # Calculer la différence en secondes entre start et end
+        seconds_diff = NaiveDateTime.diff(working_time.end, working_time.start, :second)
+
+        # Convertir la différence en heures et ajouter au total accumulé
+        acc + (seconds_diff / 3600)
+      end)
+
+    total_duration
+  end
+
+  def daily_average_for_team(team_id) do
+    today = Date.utc_today()
+    start_time = NaiveDateTime.new!(today, ~T[00:00:00])
+    end_time = NaiveDateTime.new!(today, ~T[23:59:59])
+    sum_working_times_duration(team_id, start_time, end_time)
+  end
+
+  def weekly_average_for_team(team_id) do
+    today = Date.utc_today()
+    start_of_week = Date.beginning_of_week(today)
+    end_of_week = Date.end_of_week(today)
+
+    start_time = NaiveDateTime.new!(start_of_week, ~T[00:00:00])
+    end_time = NaiveDateTime.new!(end_of_week, ~T[23:59:59])
+
+    sum_working_times_duration(team_id, start_time, end_time)
+  end
+
 end

@@ -8,7 +8,7 @@ defmodule TimeManagement.UserContext do
 
   alias TimeManagement.UserContext.User
 
-  def get_users_by_search(%User{} = authUser, page \\ 1, page_size \\ 10, email \\ nil, firstname \\ nil, lastname \\ nil, role \\ nil) do
+  def get_users_by_search(page \\ 1, page_size \\ 10, email \\ nil, firstname \\ nil, lastname \\ nil, role \\ nil) do
     query =
       from(t in User,
         where: is_nil(t.deleted_at),
