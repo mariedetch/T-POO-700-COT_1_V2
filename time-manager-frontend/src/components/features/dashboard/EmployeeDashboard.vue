@@ -1,86 +1,36 @@
 <script setup lang="ts">
-import * as echarts from 'echarts';
-import { onMounted } from 'vue';
+import { onMounted, toRefs } from 'vue'
+import Linechart from '@/components/features/charts/Linechart.vue'
+import ClockChart from '@/components/features/charts/ClockChart.vue'
+import WorkingChart from '@/components/features/charts/WorkingChart.vue'
+import { useClocksStore } from '@/stores/clocks';
+import { useAuthStore } from '@/stores/auth';
+import { useWorkingtimesStore } from '@/stores/workingtimes';
 
-const initChart = async () => {
-  const chartDom = document.getElementById('my-chart');
-  const myChart = echarts.init(chartDom);
+const props = defineProps({
+  userId: String
+})
 
-  const option = {
-    title: {
-      text: 'Ponctuality Data',
-      subtext: 'Comparative punctuality rates',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left'
-    },
-    series: [
-      {
-        name: 'Access From',
-        type: 'pie',
-        radius: '50%',
-        data: [
-          { value: 1048, name: 'Search Engine' },
-          { value: 735, name: 'Direct' },
-          { value: 580, name: 'Email' },
-          { value: 484, name: 'Union Ads' },
-          { value: 300, name: 'Video Ads' }
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  };
+const authStore = useAuthStore();
+const { authUser } = toRefs(authStore);
 
-  myChart.setOption(option);
-};
+const clockStore = useClocksStore();
+const { clockList } = toRefs(clockStore);
 
-const initChart2 = async () => {
-  const chartDom = document.getElementById('my-chart-2');
-  const myChart = echarts.init(chartDom);
-
-  const option = {
-    legend: {},
-    tooltip: {},
-    dataset: {
-      source: [
-        ['product', '2015', '2016', '2017'],
-        ['Matcha Latte', 43.3, 85.8, 93.7],
-        ['Milk Tea', 83.1, 73.4, 55.1],
-        ['Cheese Cocoa', 86.4, 65.2, 82.5],
-        ['Walnut Brownie', 72.4, 53.9, 39.1]
-      ]
-    },
-    xAxis: { type: 'category' },
-    yAxis: {},
-    // Declare several bar series, each will be mapped
-    // to a column of dataset.source by default.
-    series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }]
-  };
-
-  myChart.setOption(option);
-};
+const workingStore = useWorkingtimesStore();
+const { workingtimes } = toRefs(workingStore);
 
 onMounted(async () => {
-  initChart()
-  initChart2()
-})
+  const userID = props.userId ?? authUser.value?.id;
+  await clockStore.getClocksByUser(userID ?? '');
+  await workingStore.getWorkingtimes(userID);
+});
 </script>
 
 <template>
   <main>
     <div class="grid grid-cols-12 gap-x-6">
-      <div class="col-span-12 xl:col-span-4 md:col-span-6">
+      <div class="col-span-12 xl:col-span-3 md:col-span-6">
         <div class="card">
           <div class="card-body">
             <h6 class="mb-2 font-normal text-muted">Daily hours worked</h6>
@@ -117,8 +67,20 @@ onMounted(async () => {
             <p class="mb-0 text-muted text-sm"><strong>VS</strong> Scheduled monthly hours</p>
           </div>
         </div>
+        <div class="card">
+          <div class="card-body">
+            <h6 class="mb-2 font-normal text-muted">Monthly hours worked</h6>
+            <h4 class="mb-3">
+              18,800
+              <span class="badge bg-danger-500/10 border border-danger-500 text-danger-500"
+                ><i class="ti ti-trending-down"></i> 27.4%</span
+              >
+            </h4>
+            <p class="mb-0 text-muted text-sm"><strong>VS</strong> Scheduled monthly hours</p>
+          </div>
+        </div>
       </div>
-      <div class="col-span-12 xl:col-span-8 md:col-span-12">
+      <div class="col-span-12 xl:col-span-9 md:col-span-12">
         <div class="card">
           <div class="card-header flex items-center justify-between">
             <h5 class="mb-0">Hours worked vs. hours planned</h5>
@@ -129,91 +91,26 @@ onMounted(async () => {
             </select>
           </div>
           <div class="card-body">
-            <div class="col-span-12 lg:col-span-9" id="my-chart-2" style="width: 100%; height: 335px;"></div>
+            <Linechart/>
           </div>
         </div>
       </div>
 
-      <div class="col-span-12 lg:col-span-7 flex flex-col gap-y-4">
+      <div class="col-span-12 lg:col-span-6 flex flex-col gap-y-4">
         <div class="card">
           <div class="card-body">
-            <div class="col-span-12 lg:col-span-9" id="my-chart" style="width: 100%; height: 400px;"></div>
+            <WorkingChart :userId="userId"/>
           </div>
         </div>
       </div>
 
-      <div class="col-span-12 md:col-span-5">
+      <div class="col-span-12 lg:col-span-6 flex flex-col gap-y-4">
         <div class="card">
-          <h3 class="mt-4 text-center f-46"><b>Coming Soon</b></h3>
-          <div
-            class="timer-block mt-4 flex items-center justify-center gap-6 flex-wrap leading-none font-semibold *:w-20 *:h-20 *:rounded-xl *:inline-flex *:items-center *:justify-center *:card *:text-2xl"
-            id="timer-block"
-          >
-            <div>1</div>
-            <div>23</div>
-            <div>55</div>
-            <div>26</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header flex items-center justify-between">
-            <h5 class="mb-0">Your day's arrivals and departures</h5>
-          </div>
           <div class="card-body">
-            <ul class="list-unstyled task-list relative pl-[30px] *:mb-3">
-              <li
-                class="absolute h-full w-0.5 top-0 left-2.5 z-10 bg-theme-border dark:bg-themedark-border"
-              ></li>
-              <li
-                class="absolute rounded-full p-0.5 bottom-0 !mb-0 left-[3px] min-w-[15px] min-h-[15px] z-20 bg-theme-border dark:bg-themedark-border"
-              ></li>
-              <li>
-                <i
-                  class="feather icon-check font-semibold rounded-full p-0.5 absolute left-[3px] min-w-[15px] min-h-[15px] z-20 bg-success-500 text-white"
-                ></i>
-                <p class="mb-1">8:50</p>
-                <p class="text-muted">
-                  Call to customer
-                  <span class="text-primary"><a href="#!" class="text-primary">Jacob</a> </span>and
-                  discuss the
-                </p>
-              </li>
-              <li>
-                <i
-                  class="font-semibold rounded-full p-0.5 absolute left-[3px] min-w-[15px] min-h-[15px] z-20 bg-primary-500 text-white"
-                ></i>
-                <p class="mb-1">Sat, 5 Mar</p>
-                <p class="text-muted">Design mobile Application</p>
-              </li>
-              <li>
-                <i
-                  class="font-semibold rounded-full p-0.5 absolute left-[3px] min-w-[15px] min-h-[15px] z-20 bg-danger-500 text-white"
-                ></i>
-                <p class="mb-1">Sun, 17 Feb</p>
-                <p class="text-muted">
-                  <span><a href="#!" class="text-primary-500">Jeny</a></span> assign you a task
-                  <span><a href="#!" class="text-primary-500">Mockup Design.</a></span>
-                </p>
-              </li>
-              <li>
-                <i
-                  class="font-semibold rounded-full p-0.5 absolute left-[3px] min-w-[15px] min-h-[15px] z-20 bg-warning-500 text-white"
-                ></i>
-                <p class="mb-1">Sat, 18 Mar</p>
-                <p class="text-muted">Design logo</p>
-              </li>
-              <li class="pb-3 mb-2">
-                <i
-                  class="font-semibold rounded-full p-0.5 absolute left-[3px] min-w-[15px] min-h-[15px] z-20 bg-success-500 text-white"
-                ></i>
-                <p class="mb-1">Sat, 22 Mar</p>
-                <p class="text-muted">Design mobile Application</p>
-              </li>
-            </ul>
+            <ClockChart :userId="userId" />
           </div>
         </div>
       </div>
-
     </div>
   </main>
 </template>

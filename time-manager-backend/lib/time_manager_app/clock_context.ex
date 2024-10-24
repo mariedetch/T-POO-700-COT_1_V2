@@ -31,10 +31,10 @@ defmodule TimeManagement.ClockContext do
       [%Clock{}, ...]
 
   """
-  def list_clocks_by_user(%User{} = user) do
+  def list_clocks_by_user(user_id) do
     Repo.all(
       from clock in Clock,
-      where: clock.user_id == ^user.id,
+      where: clock.user_id == ^user_id,
       order_by: [desc: clock.inserted_at]
     )
   end

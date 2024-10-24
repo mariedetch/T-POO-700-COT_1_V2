@@ -46,10 +46,8 @@ onMounted(async () => {
             <ul class="flex items-center mr-auto mb-0">
               <!-- <li class="list-inline-item">
                 <RouterLink
-                  :to="`calendar/${employee.id}`"
+                  :to="`/dashboard/${employee.id}`"
                   class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-secondary btn-pc-default"
-                  data-pc-toggle="modal"
-                  data-pc-target="#customer-modal"
                 >
                   <i class="ti ti-calendar-clock text-lg leading-none"></i>
                 </RouterLink>
@@ -58,8 +56,6 @@ onMounted(async () => {
                 <a
                   href="#"
                   class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-success btn-pc-default"
-                  data-pc-toggle="modal"
-                  data-pc-target="#customer-edit_add-modal"
                 >
                   <i class="ti ti-layout-dashboard text-lg leading-none"></i>
                 </a>

@@ -21,36 +21,33 @@ const times = ref<TimeData[]>([]); // Contiendra les dates et les plages horaire
 const chart = ref<Chart | null>(null); // Stocke la référence au graphique
 
 const fetchData = async () => {
-    // if (props.userId) {
-        try {
-            // Récupérer les données depuis l'API
-            await workingStore.getWorkingtimes()
+  try {
+      // Récupérer les données depuis l'API
+      await workingStore.getWorkingtimes(props.userId)
 
-            if (workingtimes.value) {
-            // Traiter les données pour extraire les dates et les heures
-            times.value = workingtimes.value.map(item => {
-                const start = new Date(item.start);  // On convertit `start` en objet Date
-                const end = new Date(item.end);      // On convertit `end` en objet Date
-                
-                return {
-                date: start.toLocaleDateString(),  // Extraire uniquement la date (jour/mois/année)
-                startTime: start.getHours()*60 + start.getMinutes(), // Extraire l'heure de début (en heures décimales)
-                endTime: end.getHours() * 60 + end.getMinutes(), // Extraire l'heure de fin (en heures décimales)
-                };
-            });
+      if (workingtimes.value) {
+      // Traiter les données pour extraire les dates et les heures
+      times.value = workingtimes.value.map(item => {
+          const start = new Date(item.start);  // On convertit `start` en objet Date
+          const end = new Date(item.end);      // On convertit `end` en objet Date
 
-            // Créer le graphique une fois que les données sont prêtes
-            createChart();
-            }
-        } catch (error) {
-            console.error('Erreur lors de la récupération des données:', error);
-        }
-    //}// fin if 
+          return {
+          date: start.toLocaleDateString(),  // Extraire uniquement la date (jour/mois/année)
+          startTime: start.getHours()*60 + start.getMinutes(), // Extraire l'heure de début (en heures décimales)
+          endTime: end.getHours() * 60 + end.getMinutes(), // Extraire l'heure de fin (en heures décimales)
+          };
+      });
 
+      // Créer le graphique une fois que les données sont prêtes
+      createChart();
+      }
+  } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+  }
 };
 
 // Requête déclenchée à chaque changement de l'ID utilisateur
-// watch(() => props.userId, fetchData);
+watch(() => props.userId, fetchData);
 
 onMounted(fetchData);
 

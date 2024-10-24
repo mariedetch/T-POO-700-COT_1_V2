@@ -12,8 +12,8 @@ defmodule TimeManagementWeb.ClockController do
   end
 
   def list_clocks_by_user(conn, %{"user_id" => user_id}) do
-    clocks = ClockContext.list_clocks_grouped_by_day(user_id)
-    render(conn, :index, clocks: clocks)
+    clocks = ClockContext.list_clocks_by_user(user_id)
+    render(conn, :index_list, clocks: clocks)
   end
 
   def show(conn, _params) do

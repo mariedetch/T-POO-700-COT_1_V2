@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import EmployeeDashboard from '../components/features/dashboard/EmployeeDashboard.vue';
-import ManagerDasboard from '../components/features/dashboard/ManagerDasboard.vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const userId = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
 
 </script>
 
@@ -14,6 +17,6 @@ import ManagerDasboard from '../components/features/dashboard/ManagerDasboard.vu
         <div class="page-header-title"><h2 class="mb-0">Dashboard</h2></div>
       </div>
     </div>
-    <EmployeeDashboard />
+    <EmployeeDashboard :userId="userId" />
   </main>
 </template>
