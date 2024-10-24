@@ -11,13 +11,12 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
+import Swal from 'sweetalert2';
 
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 
 const route = useRoute();
 const teamID = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
-
-console.log("Team ID ", teamID)
 
 const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
 
@@ -131,11 +130,25 @@ async function editWorkingtime(workingtimeId: string) {
 }
 
 async function deleteWorkingtime(workingtimeId: string) {
-  if (confirm('Are you sure you want to delete this working time?')) {
+  closeModal()
+
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: 'Cette action ne peut pas être annulée !',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler'
+  })
+
+  if (result.isConfirmed) {
     const success = await workingtimeStore.deleteWorkingtime(workingtimeId);
     if (success) {
-      closeModal();
+      ToastrService.success('WorkingTime deleted successfully')
     } else {
+      ToastrService.error('Failed to delete working time');
       console.error('Failed to delete working time');
     }
   }
