@@ -28,3 +28,8 @@ export interface UpdateTeamRequest {
   name: string,
   description: string
 }
+
+export interface TeamStats {
+  daily_avg: Number,
+  weekly_avg: Number
+}

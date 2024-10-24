@@ -1,5 +1,5 @@
 import teamService from '@/services/teams';
-import type { Team, CreateTeamRequest, UpdateTeamRequest, Member } from "@/services/teams/types";
+import type { Team, CreateTeamRequest, UpdateTeamRequest, Member, TeamStats } from "@/services/teams/types";
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
@@ -12,6 +12,7 @@ export const useTeamsStore = defineStore('teams', () => {
   const currentPage = ref<number>(1);
   const pageSize = ref<number>(1);
   const totalCount = ref<number>(1);
+  const stats = ref<TeamStats | null>(null);
 
   const getTeams = async (page: number = 1, perPage: number = 10) => {
     isLoading.value = true;
@@ -112,10 +113,25 @@ export const useTeamsStore = defineStore('teams', () => {
     return false;
   }
 
+  const getStatsByTeam = async (teamId: string) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const response = (await teamService.getStatsByTeam(teamId));
+      stats.value = response.data.data;
+    } catch (errors) {
+      error.value = 'Error when retrieving team.';
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     teams, selectedTeam, members,
     currentPage, pageSize, totalCount,
-    isLoading, error,
+    isLoading, error, stats,
+    getStatsByTeam,
     getTeams, getTeam,
     getTeamMembers,
     createTeam, updateTeam,

@@ -12,7 +12,7 @@ const teamId = Array.isArray(route.params.id) ? route.params.id[0] : route.param
 const teamStore = useTeamsStore(),
   authStore = useAuthStore(),
   { authUser } = toRefs(authStore),
-  { selectedTeam, members } = toRefs(teamStore)
+  { selectedTeam, members, stats } = toRefs(teamStore)
 
 onMounted(async () => {
   await teamStore.getTeam(teamId)
@@ -25,6 +25,7 @@ onMounted(async () => {
     }
   }
 
+  await teamStore.getStatsByTeam(teamId);
   await teamStore.getTeamMembers(teamId);
 });
 </script>
@@ -67,7 +68,7 @@ onMounted(async () => {
               <div class="grow ltr:ml-3 rtl:mr-3">
                 <p class="mb-1">Nb Members</p>
                 <div class="flex items-center justify-between">
-                  <h4 class="mb-0">400+</h4>
+                  <h4 class="mb-0">{{ selectedTeam?.member_count }}</h4>
                 </div>
               </div>
             </div>
@@ -88,7 +89,7 @@ onMounted(async () => {
               <div class="grow ltr:ml-3 rtl:mr-3">
                 <p class="mb-1">Average hours worked in the day</p>
                 <div class="flex items-center justify-between">
-                  <h4 class="mb-0">520+</h4>
+                  <h4 class="mb-0">{{ stats?.daily_avg }}</h4>
                 </div>
               </div>
             </div>
@@ -109,7 +110,7 @@ onMounted(async () => {
               <div class="grow ltr:ml-3 rtl:mr-3">
                 <p class="mb-1">Average hours worked in the week</p>
                 <div class="flex items-center justify-between">
-                  <h4 class="mb-0">800+</h4>
+                  <h4 class="mb-0">{{ stats?.weekly_avg }}</h4>
                 </div>
               </div>
             </div>
@@ -130,7 +131,7 @@ onMounted(async () => {
               <div class="grow ltr:ml-3 rtl:mr-3">
                 <p class="mb-1">Average hours worked in the month</p>
                 <div class="flex items-center justify-between">
-                  <h4 class="mb-0">1,065</h4>
+                  <h4 class="mb-0">{{ stats?.weekly_avg }}</h4>
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import http from "../api";
 import type { ApiResponse, PaginationResponse } from "../types";
-import type { Team, CreateTeamRequest, UpdateTeamRequest, Member } from "./types";
+import type { Team, CreateTeamRequest, UpdateTeamRequest, Member, TeamStats } from "./types";
 
 async function getTeams(page: number = 1, perPage: number = 10) {
   return await http.get<ApiResponse<PaginationResponse<Team>>>(`teams?page=${page}&per_page=${perPage}`);
@@ -26,10 +26,15 @@ async function deleteTeam(id: string) {
   return await http.delete<ApiResponse<boolean>>(`teams/${id}`);
 }
 
+async function getStatsByTeam(id: string) {
+  return await http.get<ApiResponse<TeamStats>>(`teams/${id}/stats`);
+}
+
 export default {
   getTeam,
   getTeams,
   getTeamMembers,
+  getStatsByTeam,
   createTeam,
   updateTeam,
   deleteTeam,
