@@ -57,6 +57,7 @@ defmodule TimeManagement.WorkingTimeContext do
       |> Repo.all()
 
     Repo.preload(workingtime, :user)
+    workingtime
   end
 
   defp apply_user_filter(query, %User{id: user_id}) do
@@ -144,8 +145,8 @@ defmodule TimeManagement.WorkingTimeContext do
             users
             |> Enum.map(fn user ->
               case create_working_time(current_user, team, user, attrs) do
-                nil -> {:error, "User not found"}
-                user -> {:ok, user}
+                {:ok, working_time} -> {:ok, working_time}
+                {:error, changeset} -> {:error, changeset}
               end
             end)
 
@@ -158,8 +159,8 @@ defmodule TimeManagement.WorkingTimeContext do
             users
             |> Enum.map(fn user ->
               case create_working_time(current_user, team, user, attrs) do
-                nil -> {:error, "User not found"}
-                user -> {:ok, user}
+                {:ok, working_time} -> {:ok, working_time}
+                {:error, changeset} -> {:error, changeset}
               end
             end)
 

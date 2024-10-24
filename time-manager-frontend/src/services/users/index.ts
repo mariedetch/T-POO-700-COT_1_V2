@@ -33,6 +33,9 @@ async function getUser(id: string) {
 
 async function getEmployees() {
   return await http.get<ApiResponse<User[]>>(`users?role=EMPLOYEE`);
+
+async function getProfil() {
+  return await http.get<ApiResponse<User>>("/accounts/profile/self")
 }
 
 async function updateUser(id: string, data: Partial<UserRequest>) {
@@ -45,6 +48,7 @@ async function deleteUser(id: string) {
 
 export default {
   getUser,
+  getProfil,
   getUsers,
   getEmployees,
   getUsersByRoleAndName,
