@@ -41,25 +41,25 @@ const calendarOptions = ref({
     center: 'title',
     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
   },
-  editable: true,
   selectable: true,
+  dayMaxEvents: 2, // 2 évènements maximum par jour
   events: computed(() => workingtimes.value.map(wt => ({
     id: wt.id,
     title: 'WorkingTime',
     start: wt.start,
     end: wt.end
   }))),
-  select: handleDateSelect,
+  // select: handleDateSelect,
   eventClick: handleEventClick
 });
 
-function handleDateSelect(selectInfo: DateSelectArg) {
-  selectedWorkingtime.value = {
-    start: selectInfo.startStr,
-    end: selectInfo.endStr
-  };
-  isFormOpened.value = true;
-}
+// function handleDateSelect(selectInfo: DateSelectArg) {
+//   selectedWorkingtime.value = {
+//     start: selectInfo.startStr,
+//     end: selectInfo.endStr
+//   };
+//   isFormOpened.value = false;
+// }
 
 function handleEventClick(clickInfo: EventClickArg) {
   const workingtime = workingtimes.value.find(wt => wt.id === clickInfo.event.id);
@@ -174,8 +174,11 @@ onMounted(async () => {
 }
 
 :deep(.fc-event) {
-    border-radius: 8px;
-    cursor: pointer;
+  background-color: #3788d8;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
 }
 
 :deep(.fc-day-today) {
