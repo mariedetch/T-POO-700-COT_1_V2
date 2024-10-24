@@ -119,10 +119,13 @@ onMounted(async () => {
       <div class="page-block">
         <ul class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-          <li class="breadcrumb-item" aria-current="page">General Agenda</li>
+          <li class="breadcrumb-item" aria-current="page">User Calendar</li>
         </ul>
         <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">Workingtime management</h2>
+          <h2 class="mb-0">
+            Workingtime management of 
+            <span class="text-primary">{{ currentUser?.firstname + ' ' + currentUser?.lastname }}</span>
+          </h2>
         </div>
       </div>
     </div>
@@ -140,13 +143,13 @@ onMounted(async () => {
     </div>
 
     <WorkingtimeForm
-      :workingtime="selectedWorkingtime"
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isFormOpened"
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
     <WorkingtimeInfo
-      :workingtime="selectedWorkingtime"
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isDetailModalOpened"
       @close="closeModal"
       @edit="editWorkingtime"
