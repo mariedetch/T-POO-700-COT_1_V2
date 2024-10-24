@@ -6,7 +6,10 @@ import { ref } from 'vue'
 const emailSent = ref(false)
 const errors = ref({error: '', email: ''})
 
+const isLoading = ref<boolean>(false);
+
 const submitForm = async (values: any) => {
+  isLoading.value = true;
   try {
     await authService.sendResetPasswordLink(values as unknown as any);
     emailSent.value = true;
@@ -15,6 +18,8 @@ const submitForm = async (values: any) => {
       errors.value.email = "Email not exists"
     }
     else errors.value.error = "An error occure please try again!"
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
@@ -41,8 +46,22 @@ const submitForm = async (values: any) => {
       </div>
 
       <p class="mt-4 text-sm text-muted">Do not forgot to check SPAM box.</p>
-      <div class="grid mt-3">
-        <button type="submit" class="btn btn-primary">Send Password Reset Email</button>
+      <div class="mt-4">
+        <button
+          v-if="isLoading"
+          class="btn btn-primary lh-1 inline-flex w-full items-center gap-3 disabled"
+          type="button"
+          :disabled="true"
+        >
+          <span
+            class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent"
+            role="status"
+          >
+            <span class="sr-only">Loading...</span>
+          </span>
+          Loading...
+        </button>
+        <button v-else type="submit" class="btn btn-primary w-full">Send Password Reset Email</button>
       </div>
     </Form>
     <template v-else>
