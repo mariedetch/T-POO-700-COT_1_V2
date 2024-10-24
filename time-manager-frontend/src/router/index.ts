@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
-import TeamDetailPage from '@/views/TeamDetailPage.vue'
+import TeamMembersPage from '@/views/TeamMembersPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
+import TeamCalendarPage from '@/views/TeamCalendarPage.vue'
+import TeamDetailPage from '@/views/TeamDetailPage.vue'
 import UsersCalendarPage from '@/views/UsersCalendarPage.vue'
 import MyCalendarPage from '@/views/MyCalendarPage.vue'
 import TeamsPage from '@/views/TeamsPage.vue'
@@ -87,7 +89,7 @@ const router = createRouter({
         {
           path: '/agenda',
           name: 'agenda',
-          component: UsersCalendarPage,
+          component: TeamCalendarPage,
           meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER]}
         },
         {

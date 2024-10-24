@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch, toRefs } from 'vue'
 import Modal from '@/components/shared/Modal.vue'
 import { useUsersStore } from '@/stores/users'
 import { ToastrService } from '@/utils/toastr'
+import { Form, Field, ErrorMessage } from 'vee-validate'
 
 const userStore = useUsersStore()
 
@@ -11,18 +12,15 @@ const props = defineProps({ isModalOpened: Boolean })
 const { selectedUser, isLoading } = toRefs(userStore)
 
 const user = computed(() => ({
-  username: selectedUser.value?.username || '',
-  email: selectedUser.value?.email || ''
+  firstname: selectedUser.value?.firstname || '',
+  lastname: selectedUser.value?.lastname || '',
+  email: selectedUser.value?.email || '',
+  role: selectedUser.value?.role || ''
 }))
 const modalData = computed(() => ({
-  title: selectedUser.value ? `Update user ${selectedUser.value.username}` : 'Add new user',
+  title: selectedUser.value ? `Update user ${selectedUser.value.firstname}` : 'Add new user',
   button: selectedUser.value ? 'Update' : 'Add'
 }))
-
-const errors = ref({
-  username: '',
-  email: ''
-})
 
 const updateUser = async (userId: string) => {
   if (await userStore.updateUser(userId, { user: user.value })) {
@@ -33,20 +31,17 @@ const updateUser = async (userId: string) => {
 
 const createUser = async () => {
   if (await userStore.createUser({ user: user.value })) {
-    ToastrService.success('Utilisateur mise à jour avec succès')
+    ToastrService.success('Utilisateur crée avec succès')
   }
 }
 
 const onSubmit = async () => {
-  // if (validateFields()) {
     if (selectedUser.value) {
       await updateUser(selectedUser.value.id)
     } else {
       await createUser()
     }
-
     emit('closeModalForm')
-  // }
 }
 
 </script>
@@ -54,33 +49,61 @@ const onSubmit = async () => {
 <template>
   <main>
     <Modal :isOpened="isModalOpened" modalId="createUserModal" :modalTitle="modalData.title">
-      <form @submit.prevent="onSubmit">
+      <Form @submit="onSubmit">
         <div class="modal-body">
           <div class="mb-4">
-            <label class="form-label" for="email">Email address</label>
-            <input
+            <label class="form-label" for="firstname">Firstname</label>
+            <Field
+              v-model="user.firstname"
+              type="text"
+              class="form-control"
+              id="firstname"
+              name="firstname"
+              placeholder="Enter firstname"
+              rules="required|min:3"
+            />
+            <ErrorMessage name="firstname" class="error-message" />
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="lastname">Lastname</label>
+            <Field
+              v-model="user.lastname"
+              type="text"
+              class="form-control"
+              id="lastname"
+              name="lastname"
+              placeholder="Enter lastname"
+              rules="required|min:3"
+            />
+            <ErrorMessage name="lastname" class="error-message" />
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="email">Email</label>
+            <Field
               v-model="user.email"
               type="email"
               class="form-control"
-              id="email"
+              id="lastname"
+              name="email"
               placeholder="Enter email"
+              rules="required|email"
             />
-            <small v-if="errors.email" id="email-error-msg" class="form-text">
-              <div class="error-message" id="bouncer-error_email">{{ errors.email }}</div>
-            </small>
+            <ErrorMessage name="email" class="error-message" />
           </div>
           <div class="mb-4">
-            <label class="form-label" for="username">Username</label>
-            <input
-              v-model="user.username"
-              type="text"
-              class="form-control"
-              id="username"
-              placeholder="Enter username"
-            />
-            <small v-if="errors.username" id="username-error-msg" class="form-text">
-              <div class="error-message" id="bouncer-error_username">{{ errors.username }}</div>
-            </small>
+            <label class="form-label" for="role">Role</label>
+            <Field
+              v-model="user.role"
+              as="select"
+              name="role"
+              id="role"
+              class="form-select"
+              rules="required">
+              <option value="">Select a role</option>
+              <option value="EMPLOYEE">Employee</option>
+              <option value="MANAGER">Manager</option>
+            </Field>
+            <ErrorMessage name="role" class="error-message" />
           </div>
         </div>
         <div class="modal-footer">
@@ -103,7 +126,7 @@ const onSubmit = async () => {
             {{ modalData.button }}
           </button>
         </div>
-      </form>
+      </Form>
     </Modal>
   </main>
 </template>
