@@ -62,7 +62,22 @@ export const useUsersStore = defineStore('users', () => {
       loggedUser.value = response.data.data;
     })
     .catch((errors) => {
-      error.value = 'Error while retrieving user.';
+      error.value = 'Error while retrieving account.';
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+  }
+
+  const updateProfil = async (data: Partial<UserRequest>) => {
+    isLoading.value = true;
+    error.value = null;
+
+    API.users.updateProfil(data).then((response) => {
+      loggedUser.value = response.data.data;
+    })
+    .catch((errors) => {
+      error.value = 'Error while updating account.';
     })
     .finally(() => {
       isLoading.value = false;
@@ -122,6 +137,21 @@ export const useUsersStore = defineStore('users', () => {
     }
     return false;
   }
-  return { users, userId, currentUser, isLoading, selectedUser, error, loggedUser, getProfil, getUsers, getUser, createUser, updateUser, deleteUser };
 
+  const deleteProfil = async () => {
+    isLoading.value = true;
+    error.value = null;
+
+    API.users.getProfil().then((response) => {
+
+    })
+    .catch((errors) => {
+      error.value = 'Error while deleting account.';
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
+  }
+
+  return { users, userId, currentUser, isLoading, selectedUser, error, loggedUser, getProfil, deleteProfil, updateProfil, getUsers, getUser, createUser, updateUser, deleteUser };
 })

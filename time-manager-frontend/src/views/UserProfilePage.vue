@@ -1,12 +1,48 @@
 <script setup lang="ts">
 import { useUsersStore } from '@/stores/users';
-import { onMounted, toRefs } from 'vue';
+import { computed, onMounted, ref, toRefs } from 'vue';
+import Modal from '../components/shared/Modal.vue';
+import { CredentialService } from '@/utils/credentials';
+import { useRouter } from 'vue-router';
+import type { UserRequest } from "@/services/users/types";
+import { ToastrService } from '@/utils/toastr'
 
 const userStore = useUsersStore();
 const { loggedUser } = toRefs(userStore);
+const isModalOpen = ref(false);
+
+const userForm = computed(() => ({
+  firstName: loggedUser.value?.firstname || '',
+  lastName: loggedUser.value?.lastname || '',
+  eMail: loggedUser.value?.email || ''
+}))
+
+const router = useRouter();
+
+const deleteAccount = async () => {
+  await userStore.deleteProfil(); 
+  isModalOpen.value = false; 
+  CredentialService.clearCredentials();
+  router.push({ name: 'dashboard' });
+};  
+
+const updateProfile = async () => {
+  // const updatedData: Partial<UserRequest> = {
+  //   user: {
+  //     firstname: userForm.value.firstName,
+  //     lastname: userForm.value.lastName,
+  //     email: userForm.value.eMail,
+  //   }        
+  // };
+  
+  await userStore.updateProfil({user: userForm}); 
+  await userStore.getProfil(); 
+  ToastrService.success('Your credentials has been successfully updated')
+};
 
 onMounted(async () => {
   await userStore.getProfil();
+  await userStore.deleteProfil();
 });
 
 </script>
@@ -80,11 +116,7 @@ onMounted(async () => {
                     </div>
                     <div class="inline-flex items-center gap-3 w-full mb-3">
                       <i class="ti ti-phone"></i>
-                      <p class="mb-0">---</p>
-                    </div>
-                    <div class="inline-flex items-center gap-3 w-full mb-3">
-                      <i class="ti ti-map-pin"></i>
-                      <p class="mb-0">---</p>
+                      <p class="mb-0"></p>
                     </div>
                   </div>
                 </div>
@@ -93,30 +125,40 @@ onMounted(async () => {
               <div class="col-span-12 lg:col-span-8 2xl:col-span-9">
                 <div class="card">
                   <div class="card-header">
-                    <h5>Personal Details</h5>
+                    <h5>Edit Profil</h5>
                   </div>
-                  <div class="card-body">
-                    <ul
-                      class="*:py-4 divide-y divide-inherit border-theme-border dark:border-themedark-border"
-                    >
-                      <li class="list-group-item px-0 pt-0">
-                        <div class="grid grid-cols-12 gap-6">
-                          <div class="col-span-12 md:col-span-6">
-                            <p class="mb-1 text-muted">Name</p>
-                            <p class="mb-0">{{ loggedUser?.firstname }} {{ loggedUser?.lastname }}</p>
-                          </div>
-                          <div class="col-span-12 md:col-span-6">
-                            <p class="mb-1 text-muted">Email</p>
-                            <p class="mb-0">{{ loggedUser?.email }}</p>
+                  <form @submit.prevent="updateProfile">
+                    <div class="card-body">
+                      <div class="grid grid-cols-12 gap-6">
+                        <div class="col-span-12 sm:col-span-6">
+                          <div class="mb-3">
+                            <label class="form-label">First Name</label> 
+                            <input type="text" id="firstName" class="form-control" :v-model="userForm.firstName">
                           </div>
                         </div>
-                      </li>
-                      <!-- <li class="list-group-item px-0 pb-0">
-                            <p class="mb-1 text-muted">Tel</p>
-                            <p class="mb-0">{{ loggedUser?.tel }}</p>
-                      </li> -->
-                    </ul>
-                  </div>
+                        <div class="col-span-12 sm:col-span-6">
+                          <div class="mb-3">
+                            <label class="form-label">Last Name</label> 
+                            <input type="text" id="lastName" class="form-control" :v-model="userForm.lastName">
+                          </div>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                          <div class="mb-3"><label class="form-label">Email</label> 
+                            <input type="text" id="email" class="form-control" v-model="userForm.eMail">
+                          </div>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                          <div class="mb-3"><label class="form-label">Tel</label> 
+                            <input type="text" class="form-control" value="956754">
+                          </div>
+                        </div>
+                        <div class="card-footer text-left btn-page">
+                          <button type="submit" class="btn btn-primary mx-1">Update</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  
                 </div>
               </div>
             </div>
@@ -169,8 +211,7 @@ onMounted(async () => {
                 </div>
               </div>
               <div class="card-footer text-right btn-page">
-                <div class="btn btn-outline-secondary mx-1">Cancel</div>
-                <div class="btn btn-primary mx-1">Update Profile</div>
+                <div type="submit" class="btn btn-primary mx-1">Update Profile</div>
               </div>
             </div>
           </div>
@@ -179,31 +220,32 @@ onMounted(async () => {
               <div class="col-span-12 md:col-span-6">
                 <div class="card">
                   <div class="card-header">
-                    <h5>Email Settings</h5>
+                    <h5>Delete accout</h5>
                   </div>
                   <div class="card-body">
-                    <h6 class="mb-4">Setup Email Notification</h6>
+                    <h6 class="mb-4">Are you sure you want to delete ?</h6>
                     <div class="flex items-center justify-between mb-1">
                       <div>
-                        <p class="text-muted mb-0">Email Notification</p>
+                        <p class="mb-0 text-danger">Delete account</p>
                       </div>
-                      <div class="form-check form-switch p-0">
-                        <input class="m-0 form-check-input h5 position-relative" type="checkbox" role="switch" checked="">
-                      </div>
-                    </div>
-                    <div class="flex items-center justify-between mb-1">
-                      <div>
-                        <p class="text-muted mb-0">Send Copy To Personal Email</p>
-                      </div>
-                      <div class="form-check form-switch p-0">
-                        <input class="m-0 form-check-input h5 position-relative" type="checkbox" role="switch">
-                      </div>
+                      <button class="btn btn-danger" @click="isModalOpen = true">
+                        <i class="ti ti-trash text-white leading-none"></i> 
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <Modal :modalId="'deleteAccountModal'" modalTitle="Confirm Deletion" :isOpened="isModalOpen">
+            <div class="modal-body">
+              <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" @click="isModalOpen = false">Cancel</button>
+              <button class="btn btn-danger" @click="deleteAccount">Delete</button>
+            </div>
+          </Modal>
         </div>
       </div>
     </div>
