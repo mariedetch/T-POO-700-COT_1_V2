@@ -21,6 +21,7 @@ defmodule TimeManagementWeb.UserJSON do
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
+      tel: user.tel,
       role: user.role
     }
   end

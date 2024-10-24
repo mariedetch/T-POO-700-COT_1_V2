@@ -2,14 +2,18 @@
 import * as echarts from 'echarts';
 import { onMounted } from 'vue';
 
+const props = defineProps({
+  userId: String
+});
+
 const initChart = async () => {
   const chartDom = document.getElementById('my-chart');
   const myChart = echarts.init(chartDom);
 
   const option = {
     title: {
-      text: 'Referer of a Website',
-      subtext: 'Fake Data',
+      text: 'Ponctuality Data',
+      subtext: 'Comparative punctuality rates',
       left: 'center'
     },
     tooltip: {
@@ -25,11 +29,9 @@ const initChart = async () => {
         type: 'pie',
         radius: '50%',
         data: [
-          { value: 1048, name: 'Search Engine' },
-          { value: 735, name: 'Direct' },
-          { value: 580, name: 'Email' },
-          { value: 484, name: 'Union Ads' },
-          { value: 300, name: 'Video Ads' }
+          { value: 1048, name: 'Presence' },
+          { value: 735, name: 'Absence' },
+          { value: 580, name: 'Delay' }
         ],
         emphasis: {
           itemStyle: {
@@ -54,18 +56,16 @@ const initChart2 = async () => {
     tooltip: {},
     dataset: {
       source: [
-        ['product', '2015', '2016', '2017'],
-        ['Matcha Latte', 43.3, 85.8, 93.7],
-        ['Milk Tea', 83.1, 73.4, 55.1],
-        ['Cheese Cocoa', 86.4, 65.2, 82.5],
-        ['Walnut Brownie', 72.4, 53.9, 39.1]
+        ['product', 'Scheduled Hours', 'Hours worked'],
+        ['Matcha Latte', 43.3, 85.8],
+        ['Milk Tea', 83.1, 73.4],
+        ['Cheese Cocoa', 86.4, 65.2],
+        ['Walnut Brownie', 72.4, 53.9]
       ]
     },
     xAxis: { type: 'category' },
     yAxis: {},
-    // Declare several bar series, each will be mapped
-    // to a column of dataset.source by default.
-    series: [{ type: 'bar' }, { type: 'bar' }, { type: 'bar' }]
+    series: [{ type: 'bar' }, { type: 'bar' }]
   };
 
   myChart.setOption(option);

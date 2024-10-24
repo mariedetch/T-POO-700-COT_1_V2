@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
-import TeamMembersPage from '@/views/TeamMembersPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
 import TeamCalendarPage from '@/views/TeamCalendarPage.vue'
 import TeamDetailPage from '@/views/TeamDetailPage.vue'
