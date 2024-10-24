@@ -5,6 +5,7 @@ import { ref } from "vue"
 
 export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([]);
+  const employees = ref<User[]>([]);
   const userId = import.meta.env.VITE_DEFAULT_USER;
   const currentUser = ref<User | null>(null);
   const selectedUser = ref<User | null>(null);
@@ -17,6 +18,19 @@ export const useUsersStore = defineStore('users', () => {
 
     try {
       users.value = (await API.users.getUsers(email, username)).data.data;
+    } catch (errors) {
+      error.value = 'Error when retrieving users.';
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const getEmployees = async () => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      employees.value = (await API.users.getEmployees()).data.data;
     } catch (errors) {
       error.value = 'Error when retrieving users.';
     } finally {
@@ -93,5 +107,8 @@ export const useUsersStore = defineStore('users', () => {
     return false;
   }
 
-  return { users, userId, currentUser, isLoading, selectedUser, error, getUsers, getUser, createUser, updateUser, deleteUser };
+  return {
+    users, employees, userId, currentUser, isLoading, selectedUser, error,
+    getUsers, getUser, getEmployees, createUser, updateUser, deleteUser
+  };
 })

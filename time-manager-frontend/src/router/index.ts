@@ -8,6 +8,7 @@ import MyCalendarPage from '@/views/MyCalendarPage.vue'
 import TeamsPage from '@/views/TeamsPage.vue'
 import StaffPage from '@/views/StaffPage.vue'
 import EmployeePage from '@/views/EmployeePage.vue'
+import Punctualities from '@/views/Punctualities.vue'
 import ForbiddenPage from '@/views/ForbiddenPage.vue'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
@@ -113,6 +114,12 @@ const router = createRouter({
           name: 'employees',
           meta: { requiresAuth: true, roles: [UserRole.MANAGER ]},
           component: EmployeePage // Lister tous les employés du manager
+        },
+        {
+          path: '/punctualities',
+          name: 'punctualities',
+          meta: { requiresAuth: true},
+          component: Punctualities // Ponctualité du user connecté
         },
         /* {
           path: 'users',
