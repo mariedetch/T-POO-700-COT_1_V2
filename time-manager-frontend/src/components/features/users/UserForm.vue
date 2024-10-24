@@ -23,14 +23,14 @@ const modalData = computed(() => ({
 }))
 
 const updateUser = async (userId: string) => {
-  if (await userStore.updateUser(userId, { user: user.value })) {
+  if (await userStore.updateUser(userId, { user: user.value as any })) {
     selectedUser.value = null
     ToastrService.success('Utilisateur mise à jour avec succès')
   }
 }
 
 const createUser = async () => {
-  if (await userStore.createUser({ user: user.value })) {
+  if (await userStore.createUser({ user: user.value as any })) {
     ToastrService.success('Utilisateur crée avec succès')
   }
 }

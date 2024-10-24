@@ -6,8 +6,8 @@ import Swal from 'sweetalert2';
 const props = defineProps<{ users: User[] }>();
 const emit = defineEmits(['editUser', 'removeUser'])
 
-const openEditModal = (user: User) => {
-  emit('editUser', user)
+const promoteUser = (user: User) => {
+  emit('editUser', user.id)
 }
 
 const confirmDelete = async (userId: string) => {
@@ -89,7 +89,7 @@ const confirmDelete = async (userId: string) => {
                   class="px-4 py-2 bg-gray-200 rounded-xl inline-flex items-center justify-center btn-link-success btn-pc-default"
                   data-pc-toggle="modal"
                   data-pc-target="#customer-edit_add-modal"
-                  @click="openEditModal(user)"
+                  @click="promoteUser(user)"
                   >
                   <!-- <i class="ti ti-edit-circle text-lg leading-none"></i> -->
                   <small>

@@ -23,7 +23,13 @@ const onCloseModal = async () => {
 
 const onDeleted = async (userId: string) => {
   if (await userStore.deleteUser(userId)) {
-    ToastrService.success("L'utilisateur a été supprimé.");
+    ToastrService.success("User successfully deleted.");
+  }
+}
+
+const onPromote = async (userId: string) => {
+  if (await userStore.promoteUser(userId)) {
+    ToastrService.success("User successfully promoted.");
   }
 }
 
@@ -87,7 +93,7 @@ onMounted(async () => {
           </div>
           <div class="card-body">
             <StaffList
-              @edit-user="onModalOpen"
+              @edit-user="onPromote"
               @remove-user="onDeleted"
               :users="users"
             />

@@ -43,6 +43,11 @@ async function deleteUser(id: string) {
   return await http.delete<ApiResponse<boolean>>(`users/${id}`);
 }
 
+// Promote an user
+async function promoteUser(id: string) {
+  return await http.put<ApiResponse<User>>(`users/${id}/promote`);
+}
+
 export default {
   getUser,
   getUsers,
@@ -51,4 +56,5 @@ export default {
   createUser,
   updateUser,
   deleteUser,
+  promoteUser
 };
