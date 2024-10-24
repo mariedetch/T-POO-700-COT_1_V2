@@ -1,8 +1,12 @@
 defmodule TimeManagementWeb.UserController do
   use TimeManagementWeb, :controller
 
+  import Ecto.Query, warn: false
+  alias TimeManagement.Repo
   alias TimeManagement.{UserContext, Teams}
   alias TimeManagement.UserContext.User
+  alias TimeManagement.WorkingTimeContext.WorkingTime
+  alias TimeManagement.ClockContext.Clock
 
   action_fallback TimeManagementWeb.FallbackController
   plug TimeManagementWeb.Plugs.UsersAuthorizeAccess
@@ -76,5 +80,39 @@ defmodule TimeManagementWeb.UserController do
     with {:ok, %User{} = user} <- UserContext.promote_user(user) do
       render(conn, :show, user: user)
     end
+  end
+
+  def stats_for_user(conn, _params) do
+    # Obtenez toutes les heures de travail
+    working_times = Repo.all(WorkingTime)
+    # Obtenez tous les horodatages
+    clocks = Repo.all(Clock)
+
+    # Regroupez les heures de travail par jour
+    working_hours =
+      working_times
+      |> Enum.group_by(&Date.to_string(&1.start |> DateTime.to_date()))
+
+    # Regroupez les horodatages par jour et par statut
+    clocked_hours =
+      clocks
+      |> Enum.group_by(&Date.to_string(&1.time |> DateTime.to_date()))
+      |> Enum.map(fn {date, entries} ->
+        total_hours = Enum.count(entries) / 2 # Chaque entrée doit avoir un statut d'arrivée et de départ
+        {date, total_hours}
+      end)
+      |> Enum.into(%{})
+
+    # Créez la réponse finale
+    response = Enum.map(working_hours, fn {date, working_entries} ->
+      planned_hours = Enum.reduce(working_entries, 0, fn entry, acc ->
+        DateTime.diff(entry.end, entry.start) + acc
+      end)
+
+      actual_hours = Map.get(clocked_hours, date, 0)
+      %{date: date, planned_hours: planned_hours, actual_hours: actual_hours}
+    end)
+
+    json(conn, response)
   end
 end

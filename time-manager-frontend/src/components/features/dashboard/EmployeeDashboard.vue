@@ -1,51 +1,13 @@
 <script setup lang="ts">
-import * as echarts from 'echarts';
 import { onMounted } from 'vue';
+import Linechart from '@/components/features/charts/Linechart.vue'
+import ClockChart from '@/components/features/charts/ClockChart.vue'
+import WorkingChart from '@/components/features/charts/WorkingChart.vue'
 
 const props = defineProps({
   userId: String
 });
 
-const initChart = async () => {
-  const chartDom = document.getElementById('my-chart');
-  const myChart = echarts.init(chartDom);
-
-  const option = {
-    title: {
-      text: 'Ponctuality Data',
-      subtext: 'Comparative punctuality rates',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left'
-    },
-    series: [
-      {
-        name: 'Access From',
-        type: 'pie',
-        radius: '50%',
-        data: [
-          { value: 1048, name: 'Presence' },
-          { value: 735, name: 'Absence' },
-          { value: 580, name: 'Delay' }
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  };
-
-  myChart.setOption(option);
-};
 
 const initChart2 = async () => {
   const chartDom = document.getElementById('my-chart-2');
@@ -72,7 +34,6 @@ const initChart2 = async () => {
 };
 
 onMounted(async () => {
-  initChart()
   initChart2()
 })
 </script>
@@ -129,7 +90,7 @@ onMounted(async () => {
             </select>
           </div>
           <div class="card-body">
-            <div class="col-span-12 lg:col-span-9" id="my-chart-2" style="width: 100%; height: 335px;"></div>
+            <WorkingChart />
           </div>
         </div>
       </div>
@@ -137,7 +98,12 @@ onMounted(async () => {
       <div class="col-span-12 lg:col-span-7 flex flex-col gap-y-4">
         <div class="card">
           <div class="card-body">
-            <div class="col-span-12 lg:col-span-9" id="my-chart" style="width: 100%; height: 400px;"></div>
+            <Linechart />
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <ClockChart />
           </div>
         </div>
       </div>
