@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
-import TeamMembersPage from '@/views/TeamMembersPage.vue'
+import TeamDetailPage from '@/views/TeamDetailPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
 import UsersCalendarPage from '@/views/UsersCalendarPage.vue'
 import MyCalendarPage from '@/views/MyCalendarPage.vue'
@@ -98,9 +98,10 @@ const router = createRouter({
         },
         {
           path: '/teams/:id',
-          name: 'team-members',
-          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER ]},
-          component: TeamMembersPage // Lister les membres d'une équipe précise
+          name: 'team-detail',
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER] },
+          props: true,
+          component: TeamDetailPage // Lister les membres d'une équipe précise
         },
         {
           path: '/staff',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import StaffList from '@/components/features/users/StaffList.vue';
+import StaffList from '@/components/features/users/StaffList.vue'
 import { onMounted, ref, toRefs } from 'vue'
 import { UserForm } from '@/components/features/users'
 import { useUsersStore } from '@/stores/users'
@@ -23,7 +23,7 @@ const onCloseModal = async () => {
 
 const onDeleted = async (userId: string) => {
   if (await userStore.deleteUser(userId)) {
-    ToastrService.success("L'utilisateur a été supprimé.");
+    ToastrService.success("L'utilisateur a été supprimé.")
   }
 }
 
@@ -34,32 +34,31 @@ const onFiltered = async () => {
 onMounted(async () => {
   await userStore.getUsers()
 })
-
 </script>
 
 
 <template>
-    <main>
-      <div class="page-header">
-        <div class="page-block">
-          <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-            <li class="breadcrumb-item"><router-link to="#">All Staff</router-link></li>
-          </ul>
-          <div class="page-header-title flex flex-row justify-between items-center">
-            <h2 class="mb-0">Staff management</h2>
-            <div class="text-right p-4 pb-sm-2">
-              <a
-                href="#"
-                class="btn btn-primary d-inline-flex align-items-center gap-2"
-                @click="onModalOpen()"
-              >
-                <i class="ti ti-plus f-18"></i> Add Employee</a
-              >
-            </div>
+  <main>
+    <div class="page-header">
+      <div class="page-block">
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+          <li class="breadcrumb-item"><router-link to="#">All Staff</router-link></li>
+        </ul>
+        <div class="page-header-title flex flex-row justify-between items-center">
+          <h2 class="mb-0">Staff management</h2>
+          <div class="text-right p-4 pb-sm-2">
+            <a
+              href="#"
+              class="btn btn-primary d-inline-flex align-items-center gap-2"
+              @click="onModalOpen()"
+            >
+              <i class="ti ti-plus f-18"></i> Add Employee</a
+            >
           </div>
         </div>
       </div>
+    </div>
     <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">
@@ -86,17 +85,12 @@ onMounted(async () => {
             </div>
           </div>
           <div class="card-body">
-            <StaffList
-              @edit-user="onModalOpen"
-              @remove-user="onDeleted"
-              :users="users"
-            />
+            <StaffList @edit-user="onModalOpen" @remove-user="onDeleted" :users="users" />
           </div>
         </div>
       </div>
     </div>
 
-
-      <UserForm :is-modal-opened="isUserFormOpened" @close-modal-form="onCloseModal"/>
-    </main>
-  </template>
+    <UserForm :is-modal-opened="isUserFormOpened" @close-modal-form="onCloseModal" />
+  </main>
+</template>

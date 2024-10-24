@@ -1,4 +1,5 @@
 import http from "../api";
+import type { UserRole } from "../auth/types";
 import type { ApiResponse } from "../types";
 import { type User, type UserRequest } from "./types";
 
@@ -11,6 +12,14 @@ async function getUsers(email: string | null = null, username: string | null = n
   const queryString = new URLSearchParams(queryParams).toString();
   const url = queryString ? `users?${queryString}` : "users";
 
+  return await http.get<ApiResponse<User[]>>(url);
+}
+
+async function getUsersByRoleAndName(role: UserRole, name: string | null = null) {
+  let url = `users?role=${role}`;
+  if (name) {
+    url += `&firstname=${name}&lastname=${name}`;
+  }
   return await http.get<ApiResponse<User[]>>(url);
 }
 
@@ -38,6 +47,7 @@ export default {
   getUser,
   getUsers,
   getEmployees,
+  getUsersByRoleAndName,
   createUser,
   updateUser,
   deleteUser,
