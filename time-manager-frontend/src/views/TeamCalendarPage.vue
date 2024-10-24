@@ -63,6 +63,7 @@ const calendarOptions = ref({
   },
   editable: true,
   selectable: true,
+  dayMaxEvents: 2, // 2 évènements maximum par jour
   events: computed(() => workingtimes.value.map(wt => ({
     id: wt.id,
     title: 'WorkingTime',
