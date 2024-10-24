@@ -14,12 +14,12 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     error.value = null;
 
     try {
-        workingtimes.value = (await API.workingtimes.getWorkingtimes(userID, start, end)).data.data;
-        return workingtimes.value;
+      workingtimes.value = (await API.workingtimes.getWorkingtimes(userID, start, end)).data.data;
+      return workingtimes.value;
     } catch (errors) {
       error.value = 'Error during the working times recovering';
       return [];
-    } finally { 
+    } finally {
       isLoading.value = false;
     }
   };
@@ -28,7 +28,7 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
   const getCurrentUserWorkingtimes = async () => {
     isLoading.value = true;
     error.value = null;
-  
+
     try {
       const response = await API.workingtimes.getCurrentUserWorkingtimes();
       workingtimes.value = response.data.data;

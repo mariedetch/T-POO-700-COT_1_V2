@@ -18,7 +18,7 @@ const props = defineProps({
   userId: String
 });
 const clockStore = useClocksStore();
-const { clocks } = toRefs(clockStore);
+const { clockList } = toRefs(clockStore);
 
 
 const times = ref<TimeRecord[]>([]);  // Contiendra les paires (start, end) pour chaque journée
@@ -28,7 +28,7 @@ const fetchData = async () => {
     // if (props.userId) {
         try {
             // Récupérer les données depuis l'API
-            await clockStore.getClocks();
+            await clockStore.getClocksByUser(props.userId ?? '');
             // fonction pour ordonner les dates de clock
             const parseDate = (dateString: string) => {
                 const [day, month, year] = dateString.split('/').map(Number);
@@ -41,11 +41,11 @@ const fetchData = async () => {
                 const dateB = parseDate(b.date);
                 return dateA.getTime() - dateB.getTime();
             };
-            if (clocks.value) {
+            if (clockList.value) {
                 const groupedTimes: { [date: string]: TimeRange } = {};
 
             // Traiter les données pour regrouper par paires de start et end par date
-                clocks.value.forEach(item => {
+                clockList.value.forEach(item => {
                     const dateTime = new Date(item.time);
                     const date = dateTime.toLocaleDateString(); // Extraire uniquement la date (jour/mois/année)
                     const time = dateTime.getHours() * 60 + dateTime.getMinutes(); // Temps en minutes depuis minuit
@@ -82,7 +82,7 @@ const fetchData = async () => {
 }
 
 // Requête déclenchée à chaque changement de l'ID utilisateur
-// watch(() => props.userId, fetchData);
+watch(() => props.userId, fetchData);
 
 onMounted(fetchData);
 

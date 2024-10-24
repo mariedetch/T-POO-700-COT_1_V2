@@ -5,16 +5,27 @@ import { ref } from "vue";
 
 export const useClocksStore = defineStore('clocks', () => {
   const clocks = ref<ClockList[]>([]);
+  const clockList = ref<Clock[]>([]);
   const userId = import.meta.env.VITE_DEFAULT_USER;
   const startDateTime = ref<Date | null>(null);
   const clockIn = ref<Boolean>(false);
   const error = ref<string | null>(null);
 
-  const getClocks = async (userId: string | null = null) => {
+  const getClocks = async () => {
     error.value = null;
 
     try {
-      clocks.value = (await API.clocks.getClocks(userId)).data.data;
+      clocks.value = (await API.clocks.getClocks()).data.data;
+    } catch (errors) {
+      error.value = 'Error when retrieving users.';
+    }
+  };
+
+  const getClocksByUser = async (userId: string) => {
+    error.value = null;
+
+    try {
+      clockList.value = (await API.clocks.getClocksByUser(userId)).data.data;
     } catch (errors) {
       error.value = 'Error when retrieving users.';
     }
@@ -54,5 +65,5 @@ export const useClocksStore = defineStore('clocks', () => {
     });
   };
 
-  return { clocks, startDateTime, clockIn, error, clock, getClocks, getLatestClock };
+  return { clocks, clockList, startDateTime, clockIn, error, clock, getClocks, getLatestClock, getClocksByUser };
 });

@@ -13,6 +13,12 @@ defmodule TimeManagementWeb.ClockJSON do
     end}
   end
 
+
+  def index_list(%{clocks: clocks}) do
+    %{data: for(clock <- clocks, do: data(clock))}
+  end
+
+
   @doc """
   Renders a single clock.
   """

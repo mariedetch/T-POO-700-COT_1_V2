@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, toRefs } from 'vue';
+import { onMounted, ref, toRefs, watch } from 'vue';
 import Chart from 'chart.js/auto';
 
 import { useWorkingtimesStore } from '@/stores/workingtimes';
@@ -19,11 +19,15 @@ interface GroupedTimes {
   };
 }
 
+const props = defineProps({
+  userId: String
+});
+
 const workingStore = useWorkingtimesStore();
 const { workingtimes } = toRefs(workingStore);
 
 const clockStore = useClocksStore();
-const { clocks } = toRefs(clockStore);
+const { clockList } = toRefs(clockStore);
 
 const times = ref<TimeData[]>([]); // Contiendra les dates et les plages horaires pour workingTimes
 const times_clock = ref<TimeData[]>([]); // Contiendra les dates et les plages horaires pour clock
@@ -31,76 +35,77 @@ const times_clock = ref<TimeData[]>([]); // Contiendra les dates et les plages h
 const chart = ref<Chart | null>(null); // Stocke la référence au graphique
 
 const fetchData = async () => {
-    try {
-        // Récupérer les données depuis l'API
-        await workingStore.getWorkingtimes()
-        await clockStore.getClocks();
+  try {
+      // Récupérer les données depuis l'API
+      await workingStore.getWorkingtimes(props.userId)
+          await clockStore.getClocksByUser(props.userId ?? '');
 
-        // fonction pour ordonner les dates de clock
-        const parseDate = (dateString: string) => {
-            const [day, month, year] = dateString.split('/').map(Number);
-            return new Date(year, month - 1, day); // Mois sont 0-indexés en JavaScript
-        };
+      // fonction pour ordonner les dates de clock
+      const parseDate = (dateString: string) => {
+          const [day, month, year] = dateString.split('/').map(Number);
+          return new Date(year, month - 1, day); // Mois sont 0-indexés en JavaScript
+      };
 
-        // Fonction de tri améliorée de clock
-        const sortByDate = (a: TimeData, b: TimeData) => {
-            const dateA = parseDate(a.date);
-            const dateB = parseDate(b.date);
-            return dateA.getTime() - dateB.getTime();
-        };
-        
-        if (workingtimes.value && clocks.value) {
-        // Traiter les données pour extraire les dates et les heures
-        times.value = workingtimes.value.map(item => {
-            const start = new Date(item.start);  // On convertit `start` en objet Date
-            const end = new Date(item.end);      // On convertit `end` en objet Date
-            
-            return {
-            date: start.toLocaleDateString(),  // Extraire uniquement la date (jour/mois/année)
-            startTime: start.getHours()*60 + start.getMinutes(),
-            endTime: end.getHours() * 60 + end.getMinutes(),
-            };
-        });
+      // Fonction de tri améliorée de clock
+      const sortByDate = (a: TimeData, b: TimeData) => {
+          const dateA = parseDate(a.date);
+          const dateB = parseDate(b.date);
+          return dateA.getTime() - dateB.getTime();
+      };
 
-        // ======================== Traitement clocks ============
-        const groupedTimes: GroupedTimes = {};
+      if (workingtimes.value && clockList.value) {
+      // Traiter les données pour extraire les dates et les heures
+      times.value = workingtimes.value.map(item => {
+          const start = new Date(item.start);  // On convertit `start` en objet Date
+          const end = new Date(item.end);      // On convertit `end` en objet Date
 
-        // Traiter les données pour regrouper par paires de start et end par date
-        clocks.value.forEach(item => {
-            const dateTime = new Date(item.time);
-            const date = dateTime.toLocaleDateString(); // Extraire uniquement la date (jour/mois/année)
-            const time = dateTime.getHours() * 60 + dateTime.getMinutes(); // Temps en minutes depuis minuit
+          return {
+          date: start.toLocaleDateString(),  // Extraire uniquement la date (jour/mois/année)
+          startTime: start.getHours()*60 + start.getMinutes(),
+          endTime: end.getHours() * 60 + end.getMinutes(),
+          };
+      });
 
-            if (!groupedTimes[date]) {
-                groupedTimes[date] = { start: null, end: null };
-            }
+      // ======================== Traitement clocks ============
+      const groupedTimes: GroupedTimes = {};
 
-            // Associer chaque status true à un start et chaque status false à un end
-            if (item.status === true) {
-                groupedTimes[date].start = time;
-            } else if (item.status === false) {
-                groupedTimes[date].end = time;
-            }
-        });
+      // Traiter les données pour regrouper par paires de start et end par date
+      clockList.value.forEach(item => {
+          const dateTime = new Date(item.time);
+          const date = dateTime.toLocaleDateString(); // Extraire uniquement la date (jour/mois/année)
+          const time = dateTime.getHours() * 60 + dateTime.getMinutes(); // Temps en minutes depuis minuit
 
-        // Stocker les données pour le graphique en format { date, start, end }
-        times_clock.value = Object.entries(groupedTimes)
-            .filter(([date, times]) => times.start !== null && times.end !== null)
-            .map(([date, times]) => ({
-            date,
-            startTime: times.start,
-            endTime: times.end
-            }))
-            .sort(sortByDate);
+          if (!groupedTimes[date]) {
+              groupedTimes[date] = { start: null, end: null };
+          }
 
-        // Créer le graphique une fois que les données sont prêtes
-        createChart();
-        }
-    } catch (error) {
-        console.error('Erreur lors de la récupération des données:', error);
-    }
+          // Associer chaque status true à un start et chaque status false à un end
+          if (item.status === true) {
+              groupedTimes[date].start = time;
+          } else if (item.status === false) {
+              groupedTimes[date].end = time;
+          }
+      });
 
+      // Stocker les données pour le graphique en format { date, start, end }
+      times_clock.value = Object.entries(groupedTimes)
+          .filter(([date, times]) => times.start !== null && times.end !== null)
+          .map(([date, times]) => ({
+          date,
+          startTime: times.start,
+          endTime: times.end
+          }))
+          .sort(sortByDate);
+
+      // Créer le graphique une fois que les données sont prêtes
+      createChart();
+      }
+  } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+  }
 };
+
+watch(() => props.userId, fetchData);
 
 onMounted(fetchData);
 
