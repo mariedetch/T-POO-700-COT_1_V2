@@ -39,6 +39,15 @@ async function createWorkingtime(userID: string, data: WorkingtimeRequest) {
   return await http.post<ApiResponse<Workingtime>>(`workingtime/${userID}`, data);
 }
 
+// Créer workingTime de plusieurs users dans une team
+async function createTeamWorkingtime(teamID: string | null = null, data: WorkingtimeRequest) {
+  const defaultTeamId = "ce11022e-3816-41c7-b312-bdad540d6a9f";
+  const teamId = teamID ?? defaultTeamId;
+
+  return await http.post<ApiResponse<Workingtime>>(`workingtime/${teamId}`, data);
+}
+
+
 async function updateWorkingtime(id: string, data: Partial<WorkingtimeRequest>) {
   return await http.put<ApiResponse<Workingtime>>(`workingtime/${id}`, data);
 }
@@ -54,5 +63,6 @@ export default {
   updateWorkingtime,
   deleteWorkingtime,
   getCurrentUserWorkingtimes,
-  getTeamWorkingtimes
+  getTeamWorkingtimes,
+  createTeamWorkingtime
 };

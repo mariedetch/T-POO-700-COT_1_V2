@@ -1,5 +1,5 @@
 import { API } from "@/services";
-import type { Workingtime, WorkingtimeRequest } from "@/services/workingtimes/types";
+import type { Workingtime, WorkingtimeRequest, WorkingtimeRequest_2 } from "@/services/workingtimes/types";
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
@@ -76,6 +76,25 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     return false;
   };
 
+  // Créer WorkingTime pour plusieurs users dans une équipe 
+  const createTeamWorkingtime= async (teamID: string  | null = null, data: WorkingtimeRequest_2): Promise<boolean> => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const response = await API.workingtimes.createTeamWorkingtime(teamID, data);
+      console.log("Backend : ", data);
+      workingtimes.value.push(data.workingtime as any);
+      isLoading.value = false;
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error during working time creation';
+      isLoading.value = false;
+    }
+    return false;
+  };
+
   const updateWorkingtime = async (workingtimeId: string, data: Partial<WorkingtimeRequest>): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
@@ -114,5 +133,6 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     return false;
   }
 
-  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime, getCurrentUserWorkingtimes, getTeamWorkingtimes };
+  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime,
+           updateWorkingtime, deleteWorkingtime, getCurrentUserWorkingtimes, getTeamWorkingtimes, createTeamWorkingtime };
 })

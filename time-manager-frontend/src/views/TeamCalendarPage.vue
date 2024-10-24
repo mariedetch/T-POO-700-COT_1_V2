@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, toRefs, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { ToastrService } from '@/utils/toastr'
 import WorkingtimeFormTeam from '@/components/features/workingtimes/WorkingtimeFormTeam.vue';
 import WorkingtimeInfoTeam from '@/components/features/workingtimes/WorkingtimeInfoTeam.vue';
 import { useUsersStore } from '@/stores/users';
@@ -13,6 +14,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 
+const teamID = null;
+
 const route = useRoute();
 const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
 
@@ -23,6 +26,7 @@ const { workingtimes } = toRefs(workingtimeStore);
 
 const isFormOpened = ref(false);
 const isDetailModalOpened = ref(false);
+const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null);
 
 type Workingtime = {
   id?: string;
@@ -70,6 +74,15 @@ const calendarOptions = ref({
   eventClick: handleEventClick
 });
 
+// Fonction pour rafraîchir le calendrier
+async function refreshCalendar() {
+  await workingtimeStore.getTeamWorkingtimes(userID);
+  if (calendarRef.value) {
+    const calendarApi = calendarRef.value.getApi();
+    calendarApi.refetchEvents();
+  }
+}
+
 function handleDateSelect(selectInfo: DateSelectArg) {
   selectedWorkingtime.value = {
     start: selectInfo.startStr,
@@ -92,12 +105,14 @@ function closeModal() {
   selectedWorkingtime.value = null;
 }
 
-async function handleWorkingtimeSubmit(workingtime: { workingtime: Workingtime }) {
+async function handleWorkingtimeSubmit(workingtime: any) {
   const id_workingtime = workingtime.workingtime.id ;
   if (id_workingtime) {
     await workingtimeStore.updateWorkingtime(id_workingtime, workingtime);
   } else {
-    await workingtimeStore.createWorkingtime(userID, workingtime);
+    await workingtimeStore.createTeamWorkingtime(userID, workingtime);
+    await refreshCalendar(); // Rafraîchir le calendrier après la soumission
+    ToastrService.success('WorkingTime created successfully')
   }
   closeModal();
 }
@@ -124,8 +139,7 @@ async function deleteWorkingtime(workingtimeId: string) {
 }
 
 onMounted(async () => {
-  await userStore.getUser(userID);
-  await workingtimeStore.getTeamWorkingtimes(userID);
+  await workingtimeStore.getTeamWorkingtimes(teamID);
 });
 </script>
 
@@ -148,7 +162,7 @@ onMounted(async () => {
         <div class="card table-card">
           <div class="card-body">
             <div class="calendar-container">
-              <FullCalendar :options="calendarOptions" />
+              <FullCalendar ref="calendarRef" :options="calendarOptions" />
             </div>
           </div>
         </div>
@@ -156,13 +170,13 @@ onMounted(async () => {
     </div>
 
     <WorkingtimeFormTeam
-      :workingtime="selectedWorkingtime"
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isFormOpened"
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
     <WorkingtimeInfoTeam
-      :workingtime="selectedWorkingtime"
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isDetailModalOpened"
       @close="closeModal"
       @edit="editWorkingtime"

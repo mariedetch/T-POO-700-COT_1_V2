@@ -4,7 +4,6 @@ import Modal from '@/components/shared/Modal.vue';
 import Multiselect from 'vue-multiselect';
 import { UserRole } from '@/services/auth/types';
 import userService from '@/services/users'
-import { ToastrService } from '@/utils/toastr'
 import type { User } from '@/services/users/types';
 
 const selectedMembers = ref<User[]>([]),
@@ -33,7 +32,6 @@ const asyncFind = (query: any) => {
   userService.getUsersByRoleAndName(UserRole.EMPLOYEE).then((response) => {
     members.value = response.data.data
     isSearchLoading.value = false
-    console.log(members.value)
   })
 }
 const clearAll = () => {
@@ -66,13 +64,6 @@ watch(() => props.workingtime, (newVal) => {
   }
 }, { immediate: true, deep: true });
 
-// function formatDateForInput(dateString: string): string {
-//   return new Date(dateString).toISOString().slice(0, 16);
-// }
-
-// function formatDateForAPI(dateString: string): string {
-//   return new Date(dateString).toISOString().slice(0, 19);
-// }
 
 function formatDateForInput(dateString: string): string {
   const date = new Date(dateString);
@@ -105,19 +96,20 @@ function submitForm() {
     });
     const formattedData = {
       workingtime: {
-        id: formData.value.id,
+        // id: formData.value.id,
         start: formatDateForAPI(formData.value.start),
-        end: formatDateForAPI(formData.value.end),
-        userIDs: userIDs
-      }
+        end: formatDateForAPI(formData.value.end)
+      },
+      userIDs: userIDs,
+      users: selectedMembers.value
     };
-    console.log(formattedData);
     
     emit('submit', formattedData);
   }
 }
 
 const modalTitle = computed(() => formData.value.id ? 'Edit WorkingTime' : 'Add WorkingTime');
+
 </script>
 
 <template>
@@ -162,8 +154,9 @@ const modalTitle = computed(() => formData.value.id ? 'Edit WorkingTime' : 'Add 
                 ><span class="custom__tag"
                   ><span>{{ option.firstname + ' ' + option.lastname }}</span
                   ><span class="custom__remove" @click="remove(option)">❌</span></span
-                ></template
               >
+              </template>
+              
               <template>
                 <div
                   class="multiselect__clear"
