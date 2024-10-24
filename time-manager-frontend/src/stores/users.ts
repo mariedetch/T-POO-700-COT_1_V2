@@ -124,6 +124,27 @@ export const useUsersStore = defineStore('users', () => {
     return false;
   };
 
+  const promoteUser = async (userId: string): Promise<boolean> => {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const response = await API.users.promoteUser(userId);
+      const promotedUser = response.data.data;
+      const index = users.value.findIndex(user => user.id === userId);
+      if (index !== -1) {
+        users.value[index] = promotedUser;
+      }
+      isLoading.value = false;
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error when updating user.';
+      isLoading.value = false;
+    }
+
+    return false;
+  };
+
   const deleteUser = async (userId: string): Promise<boolean> => {
     isLoading.value = true;
     try {
@@ -153,5 +174,11 @@ export const useUsersStore = defineStore('users', () => {
     });
   }
 
-  return { users, userId, currentUser, isLoading, selectedUser, error, loggedUser, getProfil, deleteProfil, updateProfil, getUsers, getUser, createUser, updateUser, deleteUser };
+  
+  return {
+    users, employees, userId, currentUser, isLoading, selectedUser, error,
+    loggedUser, getProfil, deleteProfil, updateProfil,
+    getUsers, getUser, getEmployees, createUser, updateUser, deleteUser, promoteUser
+  };
+
 })

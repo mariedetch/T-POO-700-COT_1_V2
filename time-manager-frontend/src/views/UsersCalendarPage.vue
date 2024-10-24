@@ -41,25 +41,25 @@ const calendarOptions = ref({
     center: 'title',
     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
   },
-  editable: true,
   selectable: true,
+  dayMaxEvents: 2, // 2 évènements maximum par jour
   events: computed(() => workingtimes.value.map(wt => ({
     id: wt.id,
     title: 'WorkingTime',
     start: wt.start,
     end: wt.end
   }))),
-  select: handleDateSelect,
+  // select: handleDateSelect,
   eventClick: handleEventClick
 });
 
-function handleDateSelect(selectInfo: DateSelectArg) {
-  selectedWorkingtime.value = {
-    start: selectInfo.startStr,
-    end: selectInfo.endStr
-  };
-  isFormOpened.value = true;
-}
+// function handleDateSelect(selectInfo: DateSelectArg) {
+//   selectedWorkingtime.value = {
+//     start: selectInfo.startStr,
+//     end: selectInfo.endStr
+//   };
+//   isFormOpened.value = false;
+// }
 
 function handleEventClick(clickInfo: EventClickArg) {
   const workingtime = workingtimes.value.find(wt => wt.id === clickInfo.event.id);
@@ -119,10 +119,13 @@ onMounted(async () => {
       <div class="page-block">
         <ul class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-          <li class="breadcrumb-item" aria-current="page">General Agenda</li>
+          <li class="breadcrumb-item" aria-current="page">User Calendar</li>
         </ul>
         <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">Workingtime management</h2>
+          <h2 class="mb-0">
+            Workingtime management of 
+            <span class="text-primary">{{ currentUser?.firstname + ' ' + currentUser?.lastname }}</span>
+          </h2>
         </div>
       </div>
     </div>
@@ -140,13 +143,13 @@ onMounted(async () => {
     </div>
 
     <WorkingtimeForm
-      :workingtime="selectedWorkingtime"
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isFormOpened"
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
     <WorkingtimeInfo
-      :workingtime="selectedWorkingtime"
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isDetailModalOpened"
       @close="closeModal"
       @edit="editWorkingtime"
@@ -171,8 +174,11 @@ onMounted(async () => {
 }
 
 :deep(.fc-event) {
-    border-radius: 8px;
-    cursor: pointer;
+  background-color: #3788d8;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
 }
 
 :deep(.fc-day-today) {

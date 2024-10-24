@@ -3,6 +3,7 @@ import { onMounted, toRefs, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { ToastrService } from '@/utils/toastr'
 import WorkingtimeFormTeam from '@/components/features/workingtimes/WorkingtimeFormTeam.vue';
+import WorkingtimeEditFormTeam from '@/components/features/workingtimes/WorkingtimeEditFormTeam.vue';
 import WorkingtimeInfoTeam from '@/components/features/workingtimes/WorkingtimeInfoTeam.vue';
 import { useUsersStore } from '@/stores/users';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
@@ -11,12 +12,13 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
+import Swal from 'sweetalert2';
 
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 
-const teamID = null;
-
 const route = useRoute();
+const teamID = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
+
 const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
 
 const userStore = useUsersStore();
@@ -25,6 +27,7 @@ const { currentUser } = toRefs(userStore);
 const { workingtimes } = toRefs(workingtimeStore);
 
 const isFormOpened = ref(false);
+const isFormOpened_2 = ref(false);
 const isDetailModalOpened = ref(false);
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null);
 
@@ -61,7 +64,6 @@ const calendarOptions = ref({
     center: 'title',
     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
   },
-  editable: true,
   selectable: true,
   dayMaxEvents: 2, // 2 évènements maximum par jour
   events: computed(() => workingtimes.value.map(wt => ({
@@ -102,6 +104,7 @@ function handleEventClick(clickInfo: EventClickArg) {
 
 function closeModal() {
   isFormOpened.value = false;
+  isFormOpened_2.value = false;
   isDetailModalOpened.value = false;
   selectedWorkingtime.value = null;
 }
@@ -111,11 +114,24 @@ async function handleWorkingtimeSubmit(workingtime: any) {
   if (id_workingtime) {
     await workingtimeStore.updateWorkingtime(id_workingtime, workingtime);
   } else {
-    await workingtimeStore.createTeamWorkingtime(userID, workingtime);
+    await workingtimeStore.createTeamWorkingtime(teamID, workingtime);
     await refreshCalendar(); // Rafraîchir le calendrier après la soumission
     ToastrService.success('WorkingTime created successfully')
   }
   closeModal();
+}
+
+async function EditWorkingtimeSubmit(workingtime: any) {
+  const id_workingtime = workingtime.workingtime.id ;
+  if (id_workingtime) {
+    await workingtimeStore.updateWorkingtime(id_workingtime, workingtime);
+    closeModal();
+    await refreshCalendar(); // Rafraîchir le calendrier après la soumission
+    ToastrService.success('WorkingTime updated successfully')
+  } else {
+    ToastrService.error('Error in WorkingTime update')
+    closeModal();
+  }
 }
 
 async function editWorkingtime(workingtimeId: string) {
@@ -124,16 +140,30 @@ async function editWorkingtime(workingtimeId: string) {
   
   if (workingtime) {
     selectedWorkingtime.value = { ...workingtime }; // Mettre à jour selectedWorkingtime avec les données actuelles
-    isFormOpened.value = true;
+    isFormOpened_2.value = true;
   }
 }
 
 async function deleteWorkingtime(workingtimeId: string) {
-  if (confirm('Are you sure you want to delete this working time?')) {
+  closeModal()
+
+  const result = await Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    text: 'Cette action ne peut pas être annulée !',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler'
+  })
+
+  if (result.isConfirmed) {
     const success = await workingtimeStore.deleteWorkingtime(workingtimeId);
     if (success) {
-      closeModal();
+      ToastrService.success('WorkingTime deleted successfully')
     } else {
+      ToastrService.error('Failed to delete working time');
       console.error('Failed to delete working time');
     }
   }
@@ -146,7 +176,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div class="page-header">
+    <!-- <div class="page-header">
       <div class="page-block">
         <ul class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
@@ -156,7 +186,7 @@ onMounted(async () => {
           <h2 class="mb-0">Workingtime management</h2>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">
@@ -171,11 +201,20 @@ onMounted(async () => {
     </div>
 
     <WorkingtimeFormTeam
+      :team-id="teamID"
       :workingtime="(selectedWorkingtime as any)"
       :isOpened="isFormOpened"
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
+
+    <WorkingtimeEditFormTeam
+      :workingtime="(selectedWorkingtime as any)"
+      :isOpened="isFormOpened_2"
+      @close="closeModal"
+      @submit="EditWorkingtimeSubmit"
+    />
+    
     <WorkingtimeInfoTeam
       :workingtime="(selectedWorkingtime as any)"
       :isOpened="isDetailModalOpened"

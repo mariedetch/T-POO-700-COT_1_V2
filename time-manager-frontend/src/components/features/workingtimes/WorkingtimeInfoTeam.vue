@@ -37,6 +37,18 @@ const Userinfo = computed(() => {
   return '';
 });
 
+function handleEdit() {
+  if (props.workingtime && props.workingtime.id){
+    emit('edit', props.workingtime.id);
+  }
+}
+
+function handleDelete() {
+  if (props.workingtime && props.workingtime.id) {
+    emit('delete', props.workingtime.id);
+  }
+}
+
 function handleClose() {
   emit('close');
 }
@@ -59,7 +71,11 @@ function handleClose() {
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-primary" @click="handleClose">Close</button>
+      <button type="button" class="btn btn-outline-secondary" @click="handleClose">Close</button>
+      <div class="ms-auto">
+        <button type="button" class="btn btn-secondary me-2" @click="handleEdit">Edit</button>
+        <button type="button" class="btn btn-danger" @click="handleDelete">Delete</button>
+      </div>
     </div>
   </Modal>
 </template>

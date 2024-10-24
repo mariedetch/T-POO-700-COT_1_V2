@@ -112,7 +112,7 @@ onMounted(async () => {
           </td>
           <td>
             <span
-              class="badge bg-danger-500/10 border border-danger text-danger-500 rounded-full text-sm"
+              class="badge bg-warning-500/10 border border-warning text-warning-500 rounded-full text-sm"
               >{{ team.member_count }} members</span
             >
           </td>

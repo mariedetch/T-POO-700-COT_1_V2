@@ -12,7 +12,7 @@ export interface Team {
 
 export interface Member {
   id: string,
-  user: Partial<User>
+  user: User
 }
 
 export interface CreateTeamRequest {

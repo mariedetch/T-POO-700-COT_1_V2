@@ -40,12 +40,12 @@ const hasRole = (role: string | string[]) => {
               <span class="pc-mtext">My Calendar</span>
             </RouterLink>
           </li>
-          <li class="pc-item" v-if="hasRole([UserRole.GENERAL_MANAGER, UserRole.MANAGER])">
+          <!-- <li class="pc-item" v-if="hasRole([UserRole.GENERAL_MANAGER, UserRole.MANAGER])">
             <RouterLink :to="{ name: 'agenda' }" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-calendar-week"></i>
               <span class="pc-mtext">General Agenda</span>
             </RouterLink>
-          </li>
+          </li> -->
           <li class="pc-item" v-if="hasRole(UserRole.GENERAL_MANAGER)">
             <RouterLink :to="{ name: 'staff' }" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-users"></i>

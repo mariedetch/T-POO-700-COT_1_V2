@@ -81,7 +81,7 @@ const router = createRouter({
         {
           path: 'calendar/:userID',
           name: 'user-calendar',
-          component: MyCalendarPage,
+          component: UsersCalendarPage,
           meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER] },
           props: true
         },

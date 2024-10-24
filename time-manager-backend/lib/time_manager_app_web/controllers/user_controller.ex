@@ -75,8 +75,8 @@ defmodule TimeManagementWeb.UserController do
     end
   end
 
-  def promote(conn, %{"id" => id}) do
-    user = UserContext.get_user!(id)
+  def promote(conn, %{"user_id" => user_id}) do
+    user = UserContext.get_user!(user_id)
 
     with {:ok, %User{} = user} <- UserContext.promote_user(user) do
       render(conn, :show, user: user)

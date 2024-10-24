@@ -2,8 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import Modal from '@/components/shared/Modal.vue';
 import Multiselect from 'vue-multiselect';
-import { UserRole } from '@/services/auth/types';
-import userService from '@/services/users'
+import teamService from '@/services/teams';
 import type { User } from '@/services/users/types';
 
 const selectedMembers = ref<User[]>([]),
@@ -13,7 +12,8 @@ const selectedMembers = ref<User[]>([]),
 
 const props = defineProps({
   workingtime: Object,
-  isOpened: Boolean
+  isOpened: Boolean,
+  teamId: String
 });
 
 const emit = defineEmits(['close', 'submit']);
@@ -29,8 +29,10 @@ const limitText = (count: any) => {
 }
 const asyncFind = (query: any) => {
   isSearchLoading.value = true
-  userService.getUsersByRoleAndName(UserRole.EMPLOYEE).then((response) => {
-    members.value = response.data.data
+  teamService.getTeamMembers(props.teamId ?? '').then((response) => {
+    const teamMembers: User[] = []
+    response.data.data.forEach(member => teamMembers.push(member.user));
+    members.value = teamMembers
     isSearchLoading.value = false
   })
 }
@@ -91,7 +93,7 @@ function submitForm() {
 
   else {
     const userIDs: string[] = [];
-    selectedMembers.value.forEach(element => {
+    selectedMembers.value.forEach((element) => {
       userIDs.push(element.id as string)
     });
     const formattedData = {
@@ -105,6 +107,7 @@ function submitForm() {
     };
     
     emit('submit', formattedData);
+    selectedMembers.value = []
   }
 }
 

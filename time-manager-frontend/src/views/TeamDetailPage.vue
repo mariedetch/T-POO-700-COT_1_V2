@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import WorkingtimeVsClockChart from '@/components/features/charts/WorkingtimeVsClockChart.vue';
+// import WorkingtimeVsClockChart from '@/components/features/charts/WorkingtimeVsClockChart.vue';
+import TeamCalendarPage from './TeamCalendarPage.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTeamsStore } from '@/stores/teams';
 import { useAuthStore } from '@/stores/auth';
@@ -40,7 +41,7 @@ onMounted(async () => {
           <li class="breadcrumb-item" aria-current="page">Team Details</li>
         </ul>
         <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">Team :</h2>
+          <h2 class="mb-0">Details of <span class="text-primary">{{ selectedTeam?.name }}</span></h2>
           <!-- <div class="text-right p-4 pb-sm-2">
             <a
               href="#"
@@ -138,68 +139,38 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="col-span-12 xl:col-span-3">
+      <div class="col-span-12">
         <div class="card new-cust-card">
           <div class="card-header"><h5>Members of the team</h5></div>
-          <div
-            class="customer-scroll simplebar-scrollable-y"
-            style="height: 415px; position: relative"
-            data-simplebar="init"
-          >
-            <div class="simplebar-wrapper" style="margin: 0px">
-              <div class="simplebar-height-auto-observer-wrapper">
-                <div class="simplebar-height-auto-observer"></div>
-              </div>
-              <div class="simplebar-mask">
-                <div class="simplebar-offset" style="right: 0px; bottom: 0px">
-                  <div
-                    class="simplebar-content-wrapper"
-                    tabindex="0"
-                    role="region"
-                    aria-label="scrollable content"
-                    style="height: 100%; overflow: hidden scroll"
-                  >
-                    <div class="simplebar-content" style="padding: 0px">
-                      <div class="card-body !pb-0">
-                        <div v-for="member in members"  :key="member.id" class="flex items-center justify-between mb-6">
-                          <div class="shrink-0">
-                            <img
-                              src="@/assets/img/user/avatar-1.jpg"
-                              alt="user image"
-                              class="w-10 h-10 rounded-full"
-                            />
-                          </div>
-                          <div class="grow mx-3">
-                            <a href="#!"><h6>{{ member.user.firstname + ' ' + member.user.lastname }}</h6></a>
-                            <p class="m-b-0">{{ member.user.email }}</p>
-                          </div>
-                          <div class="shrink-0">
-                            <span
-                              class="rounded-full w-2.5 h-2.5 inline-block bg-success-500"
-                            ></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+          <div class="customer-scroll" style="overflow-x: auto">
+            <div class="card-body">
+              <div class="flex flex-row flex-wrap gap-4">
+                <div v-for="member in members" :key="member.id" 
+                    class="flex items-center p-4 border rounded-lg min-w-[300px]">
+                  <div class="shrink-0">
+                    <img
+                      src="@/assets/img/user/avatar-1.jpg"
+                      alt="user image"
+                      class="w-10 h-10 rounded-full"
+                    />
+                  </div>
+                  <div class="grow mx-3">
+                    <a href="#!">
+                      <h6>{{ member.user.firstname + ' ' + member.user.lastname }}</h6>
+                    </a>
+                    <p class="m-b-0">{{ member.user.email }}</p>
+                  </div>
+                  <div class="shrink-0">
+                    <span class="rounded-full w-2.5 h-2.5 inline-block bg-success-500"></span>
                   </div>
                 </div>
               </div>
-              <div class="simplebar-placeholder" style="width: 599px; height: 553px"></div>
-            </div>
-            <div class="simplebar-track simplebar-horizontal" style="visibility: hidden">
-              <div class="simplebar-scrollbar" style="width: 0px; display: none"></div>
-            </div>
-            <div class="simplebar-track simplebar-vertical" style="visibility: visible">
-              <div
-                class="simplebar-scrollbar"
-                style="height: 311px; transform: translate3d(0px, 0px, 0px); display: block"
-              ></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-span-12 lg:col-span-9 flex flex-col gap-y-4">
-        <WorkingtimeVsClockChart />
+      <div class="col-span-12 lg:col-span-12 flex flex-col gap-y-4">
+        <TeamCalendarPage />
       </div>
     </div>
   </main>
