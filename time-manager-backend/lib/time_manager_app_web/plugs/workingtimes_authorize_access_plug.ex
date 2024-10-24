@@ -11,12 +11,12 @@ defmodule TimeManagementWeb.Plugs.WorkingtimesAuthorizeAccess do
   def call(conn, _opts) do
     user = conn.assigns[:current_user]
 
-    if conn.request_path == "/api/workingtimes" and !is_authorized_for_workingtime_list?(user) do
-      conn
-      |> put_status(:forbidden)
-      |> json(%{error: "Access forbidden: You are not authorized to view this list of working times."})
-      |> halt()
-    end
+    # if conn.request_path == "/api/workingtimes" and !is_authorized_for_workingtime_list?(user) do
+    #   conn
+    #   |> put_status(:forbidden)
+    #   |> json(%{error: "Access forbidden: You are not authorized to view this list of working times."})
+    #   |> halt()
+    # end
 
     case conn.params do
       %{"id" => workingtime_id} ->

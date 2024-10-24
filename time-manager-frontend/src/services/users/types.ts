@@ -1,3 +1,5 @@
+import { UserRole } from "../auth/types"
+
 export interface User {
   id: string,
   firstname: String,
@@ -9,7 +11,9 @@ export interface User {
 
 export interface UserRequest {
   user: {
-    username: String,
-    email: String
+    firstname: String,
+    lastname: String,
+    email: String,
+    role: UserRole
   }
 }
