@@ -16,7 +16,7 @@ defmodule TimeManagementWeb.UserController do
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "10") |> String.to_integer()
 
-    {users, total_count} = UserContext.get_users_by_search(conn.assigns.current_user, page, per_page, email, firstname, lastname, role)
+    {users, total_count} = UserContext.get_users_by_search(page, per_page, email, firstname, lastname, role)
 
     render(conn, :index, users: users, total_count: total_count, page: page, per_page: per_page)
   end

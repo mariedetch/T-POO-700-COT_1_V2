@@ -3,11 +3,14 @@ import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
 import TeamMembersPage from '@/views/TeamMembersPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
+import TeamCalendarPage from '@/views/TeamCalendarPage.vue'
+import TeamDetailPage from '@/views/TeamDetailPage.vue'
 import UsersCalendarPage from '@/views/UsersCalendarPage.vue'
 import MyCalendarPage from '@/views/MyCalendarPage.vue'
 import TeamsPage from '@/views/TeamsPage.vue'
 import StaffPage from '@/views/StaffPage.vue'
 import EmployeePage from '@/views/EmployeePage.vue'
+import Punctualities from '@/views/Punctualities.vue'
 import ForbiddenPage from '@/views/ForbiddenPage.vue'
 import AuthLayout from '@/views/auth/AuthLayout.vue'
 import LoginPage from '@/views/auth/LoginPage.vue'
@@ -86,7 +89,7 @@ const router = createRouter({
         {
           path: '/agenda',
           name: 'agenda',
-          component: UsersCalendarPage,
+          component: TeamCalendarPage,
           meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER]}
         },
         {
@@ -97,9 +100,10 @@ const router = createRouter({
         },
         {
           path: '/teams/:id',
-          name: 'team-members',
-          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER ]},
-          component: TeamMembersPage // Lister les membres d'une équipe précise
+          name: 'team-detail',
+          meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER] },
+          props: true,
+          component: TeamDetailPage // Lister les membres d'une équipe précise
         },
         {
           path: '/staff',
@@ -112,6 +116,12 @@ const router = createRouter({
           name: 'employees',
           meta: { requiresAuth: true, roles: [UserRole.MANAGER ]},
           component: EmployeePage // Lister tous les employés du manager
+        },
+        {
+          path: '/punctualities',
+          name: 'punctualities',
+          meta: { requiresAuth: true},
+          component: Punctualities // Ponctualité du user connecté
         },
         /* {
           path: 'users',

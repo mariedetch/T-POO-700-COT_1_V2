@@ -60,8 +60,9 @@ const confirmDelete = async (userId: string) => {
           </td>
           <td>{{ user.email }}</td>
           <td>
-            <span v-if="user.role === UserRole.MANAGER" class="badge text-white bg-success-500">Manager</span>
-            <span v-if="user.role === UserRole.EMPLOYEE" class="badge text-white bg-warning-500">Employee</span>
+            <span v-if="user.role === UserRole.GENERAL_MANAGER" class="badge text-white text-sm bg-primary-500">G. Manager</span>
+            <span v-if="user.role === UserRole.MANAGER" class="badge text-white text-sm bg-success-500">Manager</span>
+            <span v-if="user.role === UserRole.EMPLOYEE" class="badge text-white text-sm bg-warning-500">Employee</span>
           </td>
           <td class="text-center">
             <ul class="flex items-center mr-auto mb-0">

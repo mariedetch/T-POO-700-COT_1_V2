@@ -43,11 +43,7 @@ defmodule TimeManagement.ClockContext do
   Returns the latest clock for a user.
   """
   def get_latest_clock_by_user(user_id) do
-    query = Ecto.Query.from(clock in Clock,
-      where: clock.user_id == ^user_id,
-      order_by: [desc: clock.inserted_at],
-      limit: 1)
-    case Repo.one(query) do
+    case find_latest_clock_by_user(user_id) do
       nil ->
         {:error, :not_found}
 
@@ -56,11 +52,20 @@ defmodule TimeManagement.ClockContext do
     end
   end
 
+  
+  def find_latest_clock_by_user(user_id) do
+    query = Ecto.Query.from(clock in Clock,
+      where: clock.user_id == ^user_id,
+      order_by: [desc: clock.inserted_at],
+      limit: 1)
+    Repo.one(query)
+  end
+
   @doc """
   Clock in or clock out
   """
   def clock_in_or_out(%User{} = user) do
-    lastestClock = get_latest_clock_by_user(user.id)
+    lastestClock = find_latest_clock_by_user(user.id)
     if lastestClock == nil do
       %Clock{}
       |> Clock.changeset(%{time: DateTime.utc_now(), status: true})

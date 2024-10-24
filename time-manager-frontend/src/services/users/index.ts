@@ -1,4 +1,5 @@
 import http from "../api";
+import type { UserRole } from "../auth/types";
 import type { ApiResponse } from "../types";
 import { type User, type UserRequest } from "./types";
 
@@ -14,6 +15,14 @@ async function getUsers(email: string | null = null, username: string | null = n
   return await http.get<ApiResponse<User[]>>(url);
 }
 
+async function getUsersByRoleAndName(role: UserRole, name: string | null = null) {
+  let url = `users?role=${role}`;
+  if (name) {
+    url += `&firstname=${name}&lastname=${name}`;
+  }
+  return await http.get<ApiResponse<User[]>>(url);
+}
+
 async function createUser(data: UserRequest) {
   return await http.post<ApiResponse<User>>("users", data);
 }
@@ -21,6 +30,9 @@ async function createUser(data: UserRequest) {
 async function getUser(id: string) {
   return await http.get<ApiResponse<User>>(`users/${id}`);
 }
+
+async function getEmployees() {
+  return await http.get<ApiResponse<User[]>>(`users?role=EMPLOYEE`);
 
 async function getProfil() {
   return await http.get<ApiResponse<User>>("/accounts/profile/self")
@@ -38,6 +50,8 @@ export default {
   getUser,
   getProfil,
   getUsers,
+  getEmployees,
+  getUsersByRoleAndName,
   createUser,
   updateUser,
   deleteUser,

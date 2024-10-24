@@ -1,5 +1,5 @@
 import { API } from "@/services";
-import type { Workingtime, WorkingtimeRequest } from "@/services/workingtimes/types";
+import type { Workingtime, WorkingtimeRequest, WorkingtimeRequest_2 } from "@/services/workingtimes/types";
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
@@ -24,6 +24,40 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     }
   };
 
+  // Workingtime for current user
+  const getCurrentUserWorkingtimes = async () => {
+    isLoading.value = true;
+    error.value = null;
+  
+    try {
+      const response = await API.workingtimes.getCurrentUserWorkingtimes();
+      workingtimes.value = response.data.data;
+
+      return workingtimes.value;
+    } catch (errors) {
+      error.value = 'Error while retrieving your working times';
+      return [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // Récupérer le workingTime d'une équipe
+  const getTeamWorkingtimes = async (teamID: string | null = null) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+        workingtimes.value = (await API.workingtimes.getTeamWorkingtimes(teamID)).data.data;
+        return workingtimes.value;
+    } catch (errors) {
+      error.value = 'Error during the working times recovering';
+      return [];
+    } finally { 
+      isLoading.value = false;
+    }
+  };
+  
   const createWorkingtime= async (userID: string, data: WorkingtimeRequest): Promise<boolean> => {
     isLoading.value = true;
     error.value = null;
@@ -39,6 +73,25 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
       isLoading.value = false;
     }
 
+    return false;
+  };
+
+  // Créer WorkingTime pour plusieurs users dans une équipe 
+  const createTeamWorkingtime= async (teamID: string  | null = null, data: WorkingtimeRequest_2): Promise<boolean> => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const response = await API.workingtimes.createTeamWorkingtime(teamID, data);
+      console.log("Backend : ", data);
+      workingtimes.value.push(data.workingtime as any);
+      isLoading.value = false;
+
+      return true;
+    } catch (errors) {
+      error.value = 'Error during working time creation';
+      isLoading.value = false;
+    }
     return false;
   };
 
@@ -80,5 +133,6 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     return false;
   }
 
-  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime };
+  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime,
+           updateWorkingtime, deleteWorkingtime, getCurrentUserWorkingtimes, getTeamWorkingtimes, createTeamWorkingtime };
 })

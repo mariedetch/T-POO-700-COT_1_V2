@@ -67,6 +67,7 @@ const hasRole = (role: string | string[]) => {
           </li>
           <li class="pc-item">
             <RouterLink :to="{ name: 'employees' }" class="pc-link text-black">
+            <RouterLink :to="{ name: 'punctualities' }" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-alarm"></i>
               <span class="pc-mtext">My Punctualities</span>
             </RouterLink>

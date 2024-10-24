@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, toRefs, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import WorkingtimeForm from '@/components/features/workingtimes/WorkingtimeForm.vue';
-import WorkingtimeInfo from '@/components/features/workingtimes/WorkingtimeInfo.vue';
+import { ToastrService } from '@/utils/toastr'
+import WorkingtimeFormTeam from '@/components/features/workingtimes/WorkingtimeFormTeam.vue';
+import WorkingtimeInfoTeam from '@/components/features/workingtimes/WorkingtimeInfoTeam.vue';
 import { useUsersStore } from '@/stores/users';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
 import FullCalendar from '@fullcalendar/vue3';
@@ -12,6 +13,8 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
+
+const teamID = null;
 
 const route = useRoute();
 const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
@@ -23,6 +26,7 @@ const { workingtimes } = toRefs(workingtimeStore);
 
 const isFormOpened = ref(false);
 const isDetailModalOpened = ref(false);
+const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null);
 
 type Workingtime = {
   id?: string;
@@ -32,6 +36,22 @@ type Workingtime = {
 };
 
 const selectedWorkingtime = ref<Workingtime | null>(null);
+
+const eventClasses = ['event-1', 'event-2', 'event-3', 'event-4', 'event-5', 
+                      'event-6', 'event-7', 'event-8', 'event-9', 'event-10'];
+const userClassMap = new Map<string, string>();
+let classIndex = 0;
+
+function getEventClass(userId: string): string {
+  if (!userId) return eventClasses[0]; // Classe par défaut si pas d'userId
+
+  if (!userClassMap.has(userId)) {
+    userClassMap.set(userId, eventClasses[classIndex % eventClasses.length]);
+    classIndex++;
+  }
+
+  return userClassMap.get(userId) || eventClasses[0];
+}
 
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
@@ -43,15 +63,26 @@ const calendarOptions = ref({
   },
   editable: true,
   selectable: true,
+  dayMaxEvents: 2, // 2 évènements maximum par jour
   events: computed(() => workingtimes.value.map(wt => ({
     id: wt.id,
     title: 'WorkingTime',
     start: wt.start,
-    end: wt.end
+    end: wt.end,
+    className: getEventClass(wt.user?.id || 'default')
   }))),
   select: handleDateSelect,
   eventClick: handleEventClick
 });
+
+// Fonction pour rafraîchir le calendrier
+async function refreshCalendar() {
+  await workingtimeStore.getTeamWorkingtimes(userID);
+  if (calendarRef.value) {
+    const calendarApi = calendarRef.value.getApi();
+    calendarApi.refetchEvents();
+  }
+}
 
 function handleDateSelect(selectInfo: DateSelectArg) {
   selectedWorkingtime.value = {
@@ -75,12 +106,14 @@ function closeModal() {
   selectedWorkingtime.value = null;
 }
 
-async function handleWorkingtimeSubmit(workingtime: { workingtime: Workingtime }) {
+async function handleWorkingtimeSubmit(workingtime: any) {
   const id_workingtime = workingtime.workingtime.id ;
   if (id_workingtime) {
     await workingtimeStore.updateWorkingtime(id_workingtime, workingtime);
   } else {
-    await workingtimeStore.createWorkingtime(userID, workingtime);
+    await workingtimeStore.createTeamWorkingtime(userID, workingtime);
+    await refreshCalendar(); // Rafraîchir le calendrier après la soumission
+    ToastrService.success('WorkingTime created successfully')
   }
   closeModal();
 }
@@ -107,9 +140,7 @@ async function deleteWorkingtime(workingtimeId: string) {
 }
 
 onMounted(async () => {
-  await userStore.getUser(userID);
-  await workingtimeStore.getWorkingtimes(userID);
-  console.log(userID)
+  await workingtimeStore.getTeamWorkingtimes(teamID);
 });
 </script>
 
@@ -132,21 +163,21 @@ onMounted(async () => {
         <div class="card table-card">
           <div class="card-body">
             <div class="calendar-container">
-              <FullCalendar :options="calendarOptions" />
+              <FullCalendar ref="calendarRef" :options="calendarOptions" />
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <WorkingtimeForm
-      :workingtime="selectedWorkingtime"
+    <WorkingtimeFormTeam
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isFormOpened"
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
-    <WorkingtimeInfo
-      :workingtime="selectedWorkingtime"
+    <WorkingtimeInfoTeam
+      :workingtime="(selectedWorkingtime as any)"
       :isOpened="isDetailModalOpened"
       @close="closeModal"
       @edit="editWorkingtime"
@@ -171,8 +202,38 @@ onMounted(async () => {
 }
 
 :deep(.fc-event) {
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+}
+
+:deep(.event-5) {
+    background-color: #FF6B6B !important;
+    border-color: #FF6B6B !important;
+    color: white !important;
+}
+
+:deep(.event-3) {
+    background-color: #4ECDC4 !important;
+    border-color: #4ECDC4 !important;
+    color: white !important;
+}
+
+:deep(.event-2) {
+    background-color: #45B7D1 !important;
+    border-color: #45B7D1 !important;
+    color: white !important;
+}
+
+:deep(.event-4) {
+    background-color: #96CEB4 !important;
+    border-color: #96CEB4 !important;
+    color: white !important;
+}
+
+:deep(.event-1) {
+    background-color: #9B5DE5 !important;
+    border-color: #9B5DE5 !important;
+    color: white !important;
 }
 
 :deep(.fc-day-today) {

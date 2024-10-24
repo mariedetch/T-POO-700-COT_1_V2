@@ -1,10 +1,10 @@
 import { API } from "@/services";
-import type { Clock } from "@/services/clocks/types";
+import type { Clock, ClockList } from "@/services/clocks/types";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useClocksStore = defineStore('clocks', () => {
-  const clocks = ref<Clock[]>([]);
+  const clocks = ref<ClockList[]>([]);
   const userId = import.meta.env.VITE_DEFAULT_USER;
   const startDateTime = ref<Date | null>(null);
   const clockIn = ref<Boolean>(false);
