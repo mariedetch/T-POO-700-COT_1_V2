@@ -1,6 +1,5 @@
 defmodule TimeManagementWeb.TeamJSON do
   alias TimeManagement.Teams.Team
-  alias TimeManagement.UserContext.User
 
   @doc """
   Renders a list of teams.
@@ -35,6 +34,7 @@ defmodule TimeManagementWeb.TeamJSON do
       description: team.description,
       inserted_at: team.inserted_at,
       updated_at: team.updated_at,
+      manager_id: team.manager_id,
       manager: if Ecto.assoc_loaded?(team.manager) do
         %{
           id: team.manager.id,

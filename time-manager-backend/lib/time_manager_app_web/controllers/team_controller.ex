@@ -3,6 +3,7 @@ defmodule TimeManagementWeb.TeamController do
 
   alias TimeManagement.Teams
   alias TimeManagement.Teams.Team
+  alias TimeManagement.WorkingTimeContext
 
   action_fallback TimeManagementWeb.FallbackController
   plug TimeManagementWeb.Plugs.TeamsAuthorizeAccess
@@ -46,4 +47,20 @@ defmodule TimeManagementWeb.TeamController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def get_stats_by_team(conn, %{"team_id" => team_id}) do
+    team = Teams.get_team!(team_id)
+
+    daily_avg = (WorkingTimeContext.daily_average_for_team(team_id))
+    weekly_avg = (WorkingTimeContext.weekly_average_for_team(team_id))
+    total_member = Teams.count_members_in_team(team_id)
+
+    # Renvoyer la somme en JSON
+    json(conn, %{data: %{
+      daily_avg: daily_avg,
+      weekly_avg: weekly_avg,
+      total_member: total_member
+    }})
+  end
+
 end
