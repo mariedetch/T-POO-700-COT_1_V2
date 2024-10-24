@@ -56,7 +56,7 @@ defmodule TimeManagement.WorkingTimeContext do
       query
       |> Repo.all()
 
-    workingtime
+    Repo.preload(workingtime, :user)
   end
 
   defp apply_user_filter(query, %User{id: user_id}) do

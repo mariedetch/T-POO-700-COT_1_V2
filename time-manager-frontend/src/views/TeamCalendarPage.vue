@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, toRefs, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import WorkingtimeForm from '@/components/features/workingtimes/WorkingtimeForm.vue';
-import WorkingtimeInfo from '@/components/features/workingtimes/WorkingtimeInfo.vue';
+import WorkingtimeFormTeam from '@/components/features/workingtimes/WorkingtimeFormTeam.vue';
+import WorkingtimeInfoTeam from '@/components/features/workingtimes/WorkingtimeInfoTeam.vue';
 import { useUsersStore } from '@/stores/users';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
 import FullCalendar from '@fullcalendar/vue3';
@@ -33,6 +33,22 @@ type Workingtime = {
 
 const selectedWorkingtime = ref<Workingtime | null>(null);
 
+const eventClasses = ['event-1', 'event-2', 'event-3', 'event-4', 'event-5', 
+                      'event-6', 'event-7', 'event-8', 'event-9', 'event-10'];
+const userClassMap = new Map<string, string>();
+let classIndex = 0;
+
+function getEventClass(userId: string): string {
+  if (!userId) return eventClasses[0]; // Classe par défaut si pas d'userId
+
+  if (!userClassMap.has(userId)) {
+    userClassMap.set(userId, eventClasses[classIndex % eventClasses.length]);
+    classIndex++;
+  }
+
+  return userClassMap.get(userId) || eventClasses[0];
+}
+
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
   initialView: 'dayGridMonth',
@@ -47,7 +63,8 @@ const calendarOptions = ref({
     id: wt.id,
     title: 'WorkingTime',
     start: wt.start,
-    end: wt.end
+    end: wt.end,
+    className: getEventClass(wt.user?.id || 'default')
   }))),
   select: handleDateSelect,
   eventClick: handleEventClick
@@ -108,8 +125,7 @@ async function deleteWorkingtime(workingtimeId: string) {
 
 onMounted(async () => {
   await userStore.getUser(userID);
-  await workingtimeStore.getWorkingtimes(userID);
-  console.log(userID)
+  await workingtimeStore.getTeamWorkingtimes(userID);
 });
 </script>
 
@@ -139,13 +155,13 @@ onMounted(async () => {
       </div>
     </div>
 
-    <WorkingtimeForm
+    <WorkingtimeFormTeam
       :workingtime="selectedWorkingtime"
       :isOpened="isFormOpened"
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
-    <WorkingtimeInfo
+    <WorkingtimeInfoTeam
       :workingtime="selectedWorkingtime"
       :isOpened="isDetailModalOpened"
       @close="closeModal"
@@ -171,8 +187,38 @@ onMounted(async () => {
 }
 
 :deep(.fc-event) {
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+}
+
+:deep(.event-5) {
+    background-color: #FF6B6B !important;
+    border-color: #FF6B6B !important;
+    color: white !important;
+}
+
+:deep(.event-3) {
+    background-color: #4ECDC4 !important;
+    border-color: #4ECDC4 !important;
+    color: white !important;
+}
+
+:deep(.event-2) {
+    background-color: #45B7D1 !important;
+    border-color: #45B7D1 !important;
+    color: white !important;
+}
+
+:deep(.event-4) {
+    background-color: #96CEB4 !important;
+    border-color: #96CEB4 !important;
+    color: white !important;
+}
+
+:deep(.event-1) {
+    background-color: #9B5DE5 !important;
+    border-color: #9B5DE5 !important;
+    color: white !important;
 }
 
 :deep(.fc-day-today) {

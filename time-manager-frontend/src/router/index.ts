@@ -3,7 +3,7 @@ import DashboardLayout from '@/views/DashboardLayout.vue'
 import DashboardPage from '@/views/DashboardPage.vue'
 import TeamMembersPage from '@/views/TeamMembersPage.vue'
 import UserProfilePage from '@/views/UserProfilePage.vue'
-import UsersCalendarPage from '@/views/UsersCalendarPage.vue'
+import TeamCalendarPage from '@/views/TeamCalendarPage.vue'
 import MyCalendarPage from '@/views/MyCalendarPage.vue'
 import TeamsPage from '@/views/TeamsPage.vue'
 import StaffPage from '@/views/StaffPage.vue'
@@ -86,7 +86,7 @@ const router = createRouter({
         {
           path: '/agenda',
           name: 'agenda',
-          component: UsersCalendarPage,
+          component: TeamCalendarPage,
           meta: { requiresAuth: true, roles: [UserRole.GENERAL_MANAGER, UserRole.MANAGER]}
         },
         {

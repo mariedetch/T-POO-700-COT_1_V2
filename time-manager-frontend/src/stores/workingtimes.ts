@@ -23,6 +23,7 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
       isLoading.value = false;
     }
   };
+
   // Workingtime for current user
   const getCurrentUserWorkingtimes = async () => {
     isLoading.value = true;
@@ -30,7 +31,6 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
   
     try {
       const response = await API.workingtimes.getCurrentUserWorkingtimes();
-      console.log("Dans le store :", response.data.data )
       workingtimes.value = response.data.data;
 
       return workingtimes.value;
@@ -38,6 +38,22 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
       error.value = 'Error while retrieving your working times';
       return [];
     } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // Récupérer le workingTime d'une équipe
+  const getTeamWorkingtimes = async (teamID: string | null = null) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+        workingtimes.value = (await API.workingtimes.getTeamWorkingtimes(teamID)).data.data;
+        return workingtimes.value;
+    } catch (errors) {
+      error.value = 'Error during the working times recovering';
+      return [];
+    } finally { 
       isLoading.value = false;
     }
   };
@@ -98,5 +114,5 @@ export const useWorkingtimesStore = defineStore('workingtimes', () => {
     return false;
   }
 
-  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime, getCurrentUserWorkingtimes };
+  return { workingtimes, isLoading, error, selectedWorkingtime, getWorkingtimes, createWorkingtime, updateWorkingtime, deleteWorkingtime, getCurrentUserWorkingtimes, getTeamWorkingtimes };
 })
