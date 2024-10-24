@@ -3,6 +3,7 @@ import { onMounted, toRefs, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { ToastrService } from '@/utils/toastr'
 import WorkingtimeFormTeam from '@/components/features/workingtimes/WorkingtimeFormTeam.vue';
+import WorkingtimeEditFormTeam from '@/components/features/workingtimes/WorkingtimeEditFormTeam.vue';
 import WorkingtimeInfoTeam from '@/components/features/workingtimes/WorkingtimeInfoTeam.vue';
 import { useUsersStore } from '@/stores/users';
 import { useWorkingtimesStore } from '@/stores/workingtimes';
@@ -26,6 +27,7 @@ const { currentUser } = toRefs(userStore);
 const { workingtimes } = toRefs(workingtimeStore);
 
 const isFormOpened = ref(false);
+const isFormOpened_2 = ref(false);
 const isDetailModalOpened = ref(false);
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null);
 
@@ -62,7 +64,6 @@ const calendarOptions = ref({
     center: 'title',
     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
   },
-  editable: true,
   selectable: true,
   dayMaxEvents: 2, // 2 évènements maximum par jour
   events: computed(() => workingtimes.value.map(wt => ({
@@ -103,6 +104,7 @@ function handleEventClick(clickInfo: EventClickArg) {
 
 function closeModal() {
   isFormOpened.value = false;
+  isFormOpened_2.value = false;
   isDetailModalOpened.value = false;
   selectedWorkingtime.value = null;
 }
@@ -119,13 +121,26 @@ async function handleWorkingtimeSubmit(workingtime: any) {
   closeModal();
 }
 
+async function EditWorkingtimeSubmit(workingtime: any) {
+  const id_workingtime = workingtime.workingtime.id ;
+  if (id_workingtime) {
+    await workingtimeStore.updateWorkingtime(id_workingtime, workingtime);
+    closeModal();
+    await refreshCalendar(); // Rafraîchir le calendrier après la soumission
+    ToastrService.success('WorkingTime updated successfully')
+  } else {
+    ToastrService.error('Error in WorkingTime update')
+    closeModal();
+  }
+}
+
 async function editWorkingtime(workingtimeId: string) {
   isDetailModalOpened.value = false;   // on ferme le modal de détails
   const workingtime = workingtimes.value.find(wt => wt.id === workingtimeId); // On Trouve le workingtime correspondant
   
   if (workingtime) {
     selectedWorkingtime.value = { ...workingtime }; // Mettre à jour selectedWorkingtime avec les données actuelles
-    isFormOpened.value = true;
+    isFormOpened_2.value = true;
   }
 }
 
@@ -192,6 +207,14 @@ onMounted(async () => {
       @close="closeModal"
       @submit="handleWorkingtimeSubmit"
     />
+
+    <WorkingtimeEditFormTeam
+      :workingtime="(selectedWorkingtime as any)"
+      :isOpened="isFormOpened_2"
+      @close="closeModal"
+      @submit="EditWorkingtimeSubmit"
+    />
+    
     <WorkingtimeInfoTeam
       :workingtime="(selectedWorkingtime as any)"
       :isOpened="isDetailModalOpened"
