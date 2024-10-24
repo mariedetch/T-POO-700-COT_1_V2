@@ -68,23 +68,11 @@ const confirmDelete = async (userId: string) => {
             <ul class="flex items-center mr-auto mb-0">
               <li class="list-inline-item">
                 <RouterLink :to="`calendar/${user.id}`"
-                  class="px-4 py-2 bg-gray-200 rounded-lg inline-flex items-center justify-center btn-link-secondary btn-pc-default"
+                  class="px-4 py-2 rounded-lg inline-flex items-center justify-center btn-link-secondary btn-pc-default"
                   data-pc-toggle="modal"
                   data-pc-target="#customer-modal">
-                  <small>
-                    Workingtimes
-                  </small><!-- <i class="ti ti-eye text-lg leading-none"></i> -->
+                  <i class="ti ti-calendar-month text-lg leading-none"></i> 
                 </RouterLink>
-              </li>
-              <li class="list-inline-item">
-                <a
-                  href="#"
-                  class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-success btn-pc-default"
-                  data-pc-toggle="modal"
-                  data-pc-target="#customer-edit_add-modal"
-                  @click="openEditModal(user)"
-                  ><i class="ti ti-edit-circle text-lg leading-none"></i
-                ></a>
               </li>
               <li class="list-inline-item">
                 <a
@@ -94,6 +82,22 @@ const confirmDelete = async (userId: string) => {
                   ><i class="ti ti-trash text-lg leading-none"></i
                 ></a>
               </li>
+
+              <li v-if="user.role === UserRole.EMPLOYEE" class="list-inline-item">
+                <a
+                  href="#"
+                  class="px-4 py-2 bg-gray-200 rounded-xl inline-flex items-center justify-center btn-link-success btn-pc-default"
+                  data-pc-toggle="modal"
+                  data-pc-target="#customer-edit_add-modal"
+                  @click="openEditModal(user)"
+                  >
+                  <!-- <i class="ti ti-edit-circle text-lg leading-none"></i> -->
+                  <small>
+                    Promote
+                  </small>
+                </a>
+              </li>
+
             </ul>
           </td>
         </tr>
