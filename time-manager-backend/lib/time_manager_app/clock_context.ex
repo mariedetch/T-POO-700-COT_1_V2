@@ -52,11 +52,6 @@ defmodule TimeManagement.ClockContext do
     end
   end
 
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 45a7e11 (chore: mailer)
   def find_latest_clock_by_user(user_id) do
     query = Ecto.Query.from(clock in Clock,
       where: clock.user_id == ^user_id,
@@ -70,11 +65,8 @@ defmodule TimeManagement.ClockContext do
   """
   def clock_in_or_out(%User{} = user) do
     lastestClock = find_latest_clock_by_user(user.id)
-<<<<<<< HEAD
     current_time = DateTime.utc_now()
 
-=======
->>>>>>> 45a7e11 (chore: mailer)
     if lastestClock == nil do
       %Clock{}
       |> Clock.changeset(%{time: DateTime.add(current_time, 3600), status: true})

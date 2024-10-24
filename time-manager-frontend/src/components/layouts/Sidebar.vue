@@ -65,10 +65,6 @@ const hasRole = (role: string | string[]) => {
             </RouterLink>
           </li>
           <li class="pc-item">
-<<<<<<< HEAD
-=======
-            <RouterLink :to="{ name: 'employees' }" class="pc-link text-black">
->>>>>>> 45a7e11 (chore: mailer)
             <RouterLink :to="{ name: 'punctualities' }" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-alarm"></i>
               <span class="pc-mtext">My Punctualities</span>
