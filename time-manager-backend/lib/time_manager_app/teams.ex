@@ -215,10 +215,12 @@ defmodule TimeManagement.Teams do
   end
 
   def count_members_in_team(team_id) do
-    Repo.aggregate(
-      from m in Member,
-      where: m.team_id == ^team_id,
-      select: count(m.id)
-    )
+    query =
+      from(t in Member,
+        where: is_nil(t.deleted_at),
+        where: t.team_id == ^team_id
+      )
+
+    total_count = Repo.aggregate(query, :count, :id)
   end
 end

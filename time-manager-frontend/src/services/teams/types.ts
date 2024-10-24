@@ -31,5 +31,6 @@ export interface UpdateTeamRequest {
 
 export interface TeamStats {
   daily_avg: Number,
-  weekly_avg: Number
+  weekly_avg: Number,
+  total_member: Number
 }

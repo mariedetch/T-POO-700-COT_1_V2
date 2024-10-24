@@ -3,7 +3,7 @@ import WorkingtimeVsClockChart from '@/components/features/charts/WorkingtimeVsC
 import { useRoute, useRouter } from 'vue-router';
 import { useTeamsStore } from '@/stores/teams';
 import { useAuthStore } from '@/stores/auth';
-import { onMounted, computed, toRefs } from 'vue'
+import { onMounted, toRefs } from 'vue'
 
 const route = useRoute();
 const router = useRouter();
@@ -68,7 +68,7 @@ onMounted(async () => {
               <div class="grow ltr:ml-3 rtl:mr-3">
                 <p class="mb-1">Nb Members</p>
                 <div class="flex items-center justify-between">
-                  <h4 class="mb-0">{{ selectedTeam?.member_count }}</h4>
+                  <h4 class="mb-0">{{ stats?.total_member }}</h4>
                 </div>
               </div>
             </div>
@@ -87,7 +87,7 @@ onMounted(async () => {
                 </div>
               </div>
               <div class="grow ltr:ml-3 rtl:mr-3">
-                <p class="mb-1">Average hours worked in the day</p>
+                <p class="mb-1">Hours worked in the day</p>
                 <div class="flex items-center justify-between">
                   <h4 class="mb-0">{{ stats?.daily_avg }}</h4>
                 </div>
@@ -108,7 +108,7 @@ onMounted(async () => {
                 </div>
               </div>
               <div class="grow ltr:ml-3 rtl:mr-3">
-                <p class="mb-1">Average hours worked in the week</p>
+                <p class="mb-1">Hours worked in the week</p>
                 <div class="flex items-center justify-between">
                   <h4 class="mb-0">{{ stats?.weekly_avg }}</h4>
                 </div>
@@ -129,7 +129,7 @@ onMounted(async () => {
                 </div>
               </div>
               <div class="grow ltr:ml-3 rtl:mr-3">
-                <p class="mb-1">Average hours worked in the month</p>
+                <p class="mb-1">Hours worked in the month</p>
                 <div class="flex items-center justify-between">
                   <h4 class="mb-0">{{ stats?.weekly_avg }}</h4>
                 </div>
@@ -138,7 +138,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="col-span-12 xl:col-span-4">
+      <div class="col-span-12 xl:col-span-3">
         <div class="card new-cust-card">
           <div class="card-header"><h5>Members of the team</h5></div>
           <div
@@ -198,7 +198,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="col-span-12 lg:col-span-8 flex flex-col gap-y-4">
+      <div class="col-span-12 lg:col-span-9 flex flex-col gap-y-4">
         <WorkingtimeVsClockChart />
       </div>
     </div>

@@ -53,16 +53,14 @@ defmodule TimeManagementWeb.TeamController do
 
     daily_avg = (WorkingTimeContext.daily_average_for_team(team_id))
     weekly_avg = (WorkingTimeContext.weekly_average_for_team(team_id))
+    total_member = Teams.count_members_in_team(team_id)
 
     # Renvoyer la somme en JSON
     json(conn, %{data: %{
       daily_avg: daily_avg,
-      weekly_avg: weekly_avg
+      weekly_avg: weekly_avg,
+      total_member: total_member
     }})
   end
 
-  # Fonction privée pour formater la durée en JSON (heures avec deux décimales)
-  defp format_duration(duration) do
-    "#{Float.round(duration, 2)}"
-  end
 end
