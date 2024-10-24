@@ -173,6 +173,7 @@ onMounted(async () => {
     </div>
 
     <WorkingtimeFormTeam
+      :team-id="teamID"
       :workingtime="(selectedWorkingtime as any)"
       :isOpened="isFormOpened"
       @close="closeModal"

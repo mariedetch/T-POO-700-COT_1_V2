@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WorkingtimeVsClockChart from '@/components/features/charts/WorkingtimeVsClockChart.vue';
+// import WorkingtimeVsClockChart from '@/components/features/charts/WorkingtimeVsClockChart.vue';
 import TeamCalendarPage from './TeamCalendarPage.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTeamsStore } from '@/stores/teams';
@@ -41,7 +41,7 @@ onMounted(async () => {
           <li class="breadcrumb-item" aria-current="page">Team Details</li>
         </ul>
         <div class="page-header-title flex flex-row justify-between items-center">
-          <h2 class="mb-0">Team :</h2>
+          <h2 class="mb-0">Details of <span class="text-primary">{{ selectedTeam?.name }}</span></h2>
           <!-- <div class="text-right p-4 pb-sm-2">
             <a
               href="#"
