@@ -182,11 +182,17 @@ defmodule TimeManagement.UserContext do
     case Repo.get_by(User, email: email) do
       nil -> {:error, :user_not_found}
       user ->
-        if Bcrypt.verify_pass(password, user.password) do
-          {:ok, user}
-        else
-          {:error, :invalid_password}
+        case user.deleted_at do
+          nil ->
+            if Bcrypt.verify_pass(password, user.password) do
+              {:ok, user}
+            else
+              {:error, :invalid_password}
+            end
+          _ ->
+            {:error, :deleted_account}
         end
+
     end
   end
 

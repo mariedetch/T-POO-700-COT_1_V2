@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" >
 import { User } from '@/components/features/users'
 import { UserRole } from '@/services/auth/types'
 import { useAuthStore } from '@/stores/auth';
@@ -21,9 +21,8 @@ const hasRole = (role: string | string[]) => {
       <div class="m-header flex items-center py-4 px-6 h-header-height">
         <a href="#" class="b-brand flex items-center gap-3">
           <img src="@/assets/logo.svg" class="img-fluid logo-lg" alt="logo" />
-          <span class="badge bg-success-500/10 text-success-500 rounded-full theme-version"
-            >v1.0.0</span
-          >
+          <span class="badge bg-success-500/10 text-success-500 rounded-full theme-version">
+            v1.0.0</span>
         </a>
       </div>
       <div class="navbar-content h-[calc(100vh_-_74px)] py-2.5">
@@ -66,6 +65,10 @@ const hasRole = (role: string | string[]) => {
             </RouterLink>
           </li>
           <li class="pc-item">
+<<<<<<< HEAD
+=======
+            <RouterLink :to="{ name: 'employees' }" class="pc-link text-black">
+>>>>>>> 45a7e11 (chore: mailer)
             <RouterLink :to="{ name: 'punctualities' }" class="pc-link text-black">
               <i class="text-xl mr-2 ti ti-alarm"></i>
               <span class="pc-mtext">My Punctualities</span>

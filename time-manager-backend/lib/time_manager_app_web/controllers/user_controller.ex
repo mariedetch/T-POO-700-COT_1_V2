@@ -1,7 +1,7 @@
 defmodule TimeManagementWeb.UserController do
   use TimeManagementWeb, :controller
 
-  alias TimeManagement.{UserContext, Teams}
+  alias TimeManagement.{UserContext, Teams, TokenHelper, Mailer}
   alias TimeManagement.UserContext.User
 
   action_fallback TimeManagementWeb.FallbackController
@@ -55,6 +55,11 @@ defmodule TimeManagementWeb.UserController do
   def create(conn, %{"user" => user_params}) do
     current_user = conn.assigns.current_user
     with {:ok, %User{} = user} <- UserContext.create_user(current_user, user_params) do
+      csrf_token = TokenHelper.generate_csrf_token()
+      {:ok, token, _claims} = TokenHelper.generate_token(user, csrf_token)
+
+      Mailer.send_activation_email(user.email, token)
+      IO.inspect(token)
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{user}")

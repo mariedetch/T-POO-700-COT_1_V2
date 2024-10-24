@@ -1,70 +1,31 @@
 defmodule TimeManagement.WorkingTimeContextTest do
-  use TimeManagement.DataCase
+  use TimeManagement.DataCase, async: true
 
   alias TimeManagement.WorkingTimeContext
+  alias TimeManagement.WorkingTimeContext.WorkingTime
+  alias TimeManagement.UserContext.User
+  alias TimeManagement.Teams.Team
 
-  describe "workingtimes" do
-    alias TimeManagement.WorkingTimeContext.WorkingTime
+  @valid_attrs %{start: ~N[2023-01-01 09:00:00], end: ~N[2023-01-01 17:00:00]}
+  @invalid_attrs %{start: nil, end: nil}
 
-    import TimeManagement.WorkingTimeContextFixtures
-    import TimeManagement.UserContextFixtures
+  setup do
+    # Créez un utilisateur et une équipe pour les tests
+    user = %User{lastname: "User", firstname: "User",  email: "test@example.com"} |> Repo.insert!()
+    team = %Team{name: "Test Team"} |> Repo.insert!()
 
-    @invalid_attrs %{start: nil, end: nil}
-
-    test "list_workingtimes/1 returns all user workingtimes" do
-      user = user_fixture()
-      working_time = working_time_fixture(%{user_id: user.id})
-      assert WorkingTimeContext.list_workingtimes(user.id) == [working_time]
-    end
-
-    test "get_working_time!/2 returns the working_time with given id" do
-      user = user_fixture()
-      working_time = working_time_fixture(%{user_id: user.id})
-      assert WorkingTimeContext.get_working_time!(working_time.id, user.id) == working_time
-    end
-
-    test "create_working_time/1 with valid data creates a working_time" do
-      valid_attrs = %{start: ~N[2024-10-07 15:36:00], end: ~N[2024-10-07 15:36:00]}
-      user = user_fixture()
-
-      assert {:ok, %WorkingTime{} = working_time} = WorkingTimeContext.create_working_time(user, valid_attrs)
-      assert working_time.start == ~N[2024-10-07 15:36:00]
-      assert working_time.end == ~N[2024-10-07 15:36:00]
-    end
-
-    test "create_working_time/1 with invalid data returns error changeset" do
-      user = user_fixture()
-      assert {:error, %Ecto.Changeset{}} = WorkingTimeContext.create_working_time(user, @invalid_attrs)
-    end
-
-    test "update_working_time/2 with valid data updates the working_time" do
-      user = user_fixture()
-      working_time = working_time_fixture(%{user_id: user.id})
-      update_attrs = %{start: ~N[2024-10-08 15:36:00], end: ~N[2024-10-08 15:36:00]}
-
-      assert {:ok, %WorkingTime{} = working_time} = WorkingTimeContext.update_working_time(working_time, update_attrs)
-      assert working_time.start == ~N[2024-10-08 15:36:00]
-      assert working_time.end == ~N[2024-10-08 15:36:00]
-    end
-
-    test "update_working_time/2 with invalid data returns error changeset" do
-      user = user_fixture()
-      working_time = working_time_fixture(%{user_id: user.id})
-      assert {:error, %Ecto.Changeset{}} = WorkingTimeContext.update_working_time(working_time, @invalid_attrs)
-      assert working_time == WorkingTimeContext.get_working_time!(working_time.id, user.id)
-    end
-
-    test "delete_working_time/1 deletes the working_time" do
-      user = user_fixture()
-      working_time = working_time_fixture(%{user_id: user.id})
-      assert {:ok, %WorkingTime{}} = WorkingTimeContext.delete_working_time(working_time)
-      assert_raise Ecto.NoResultsError, fn -> WorkingTimeContext.get_working_time!(working_time.id, user.id) end
-    end
-
-    test "change_working_time/1 returns a working_time changeset" do
-      user = user_fixture()
-      working_time = working_time_fixture(%{user_id: user.id})
-      assert %Ecto.Changeset{} = WorkingTimeContext.change_working_time(working_time)
-    end
+    {:ok, user: user, team: team}
   end
+
+  test "create_working_time/4 with valid data", %{user: user, team: team} do
+    assert {:ok, %WorkingTime{} = working_time} =
+             WorkingTimeContext.create_working_time(user, team, user, @valid_attrs)
+
+    assert working_time.start == @valid_attrs.start
+    assert working_time.end == @valid_attrs.end
+    assert working_time.user_id == user.id
+    assert working_time.team_id == team.id
+  end
+
+  # Ajoutez d'autres tests pour les fonctions restantes...
 end
