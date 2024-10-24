@@ -19,8 +19,6 @@ import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 const route = useRoute();
 const teamID = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
 
-const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
-
 const userStore = useUsersStore();
 const workingtimeStore = useWorkingtimesStore();
 const { currentUser } = toRefs(userStore);
@@ -79,7 +77,7 @@ const calendarOptions = ref({
 
 // Fonction pour rafraîchir le calendrier
 async function refreshCalendar() {
-  await workingtimeStore.getTeamWorkingtimes(userID);
+  await workingtimeStore.getTeamWorkingtimes(teamID);
   if (calendarRef.value) {
     const calendarApi = calendarRef.value.getApi();
     calendarApi.refetchEvents();
@@ -171,6 +169,7 @@ async function deleteWorkingtime(workingtimeId: string) {
 
 onMounted(async () => {
   await workingtimeStore.getTeamWorkingtimes(teamID);
+  console.log(workingtimes.value)
 });
 </script>
 

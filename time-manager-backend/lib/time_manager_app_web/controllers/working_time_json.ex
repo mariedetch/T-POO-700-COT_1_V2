@@ -33,7 +33,8 @@ defmodule TimeManagementWeb.WorkingTimeJSON do
       id: working_time.id,
       start: working_time.start,
       end: working_time.end,
-      team_id: working_time.team_id
+      team_id: working_time.team_id,
+      user: user_data
     }
   end
 end

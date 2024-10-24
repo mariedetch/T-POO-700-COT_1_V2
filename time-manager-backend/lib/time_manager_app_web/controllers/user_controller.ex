@@ -3,7 +3,7 @@ defmodule TimeManagementWeb.UserController do
 
   import Ecto.Query, warn: false
   alias TimeManagement.Repo
-  alias TimeManagement.{UserContext, Teams}
+  alias TimeManagement.{UserContext, Teams, TokenHelper, Mailer}
   alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
   alias TimeManagement.ClockContext.Clock

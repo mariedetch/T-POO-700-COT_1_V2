@@ -28,11 +28,7 @@ async function getWorkingtime(userID: string, id: string) {
 
 // Le workingTime d'une équipe entière 
 async function getTeamWorkingtimes(teamID: string | null = null) {
-
-  const defaultTeamId = "ce11022e-3816-41c7-b312-bdad540d6a9f";
-  const teamId = teamID ?? defaultTeamId;
-  
-  return await http.get<ApiResponse<Workingtime[]>>(`workingtime/team/${teamId}`);
+  return await http.get<ApiResponse<Workingtime[]>>(`workingtime/team/${teamID}`);
 }
 
 async function createWorkingtime(userID: string, data: WorkingtimeRequest) {
@@ -41,10 +37,7 @@ async function createWorkingtime(userID: string, data: WorkingtimeRequest) {
 
 // Créer workingTime de plusieurs users dans une team
 async function createTeamWorkingtime(teamID: string | null = null, data: WorkingtimeRequest) {
-  const defaultTeamId = "ce11022e-3816-41c7-b312-bdad540d6a9f";
-  const teamId = teamID ?? defaultTeamId;
-
-  return await http.post<ApiResponse<Workingtime>>(`workingtime/${teamId}`, data);
+  return await http.post<ApiResponse<Workingtime>>(`workingtime/${teamID}`, data);
 }
 
 
