@@ -12,20 +12,31 @@ defmodule TimeManagement.UserContextFixtures do
   @doc """
   Generate a unique user username.
   """
-  def unique_user_username, do: "some username#{System.unique_integer([:positive])}"
+  def unique_user_firstname, do: "some firstname#{System.unique_integer([:positive])}"
+
+  @doc """
+  Generate a unique user username.
+  """
+  def unique_user_lastname, do: "some lastname#{System.unique_integer([:positive])}"
+
 
   @doc """
   Generate a user.
   """
   def user_fixture(attrs \\ %{}) do
-    {:ok, user} =
+    user_attrs =
       attrs
       |> Enum.into(%{
         email: unique_user_email(),
-        username: unique_user_username()
+        lastname: unique_user_lastname(),
+        firstname: unique_user_firstname(),
+        role: "GENERAL_MANAGER"
       })
+      
+    {:ok, user} =
+      user_attrs
       |> TimeManagement.UserContext.create_user()
-
+    
     user
   end
 end

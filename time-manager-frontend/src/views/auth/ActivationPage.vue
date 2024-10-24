@@ -1,89 +1,73 @@
-
-
-<script #activeStep>
-import "form-wizard-vue3/dist/form-wizard-vue3.css";
-import Wizard from "form-wizard-vue3";
+<script>
+import "form-wizard-vue3/dist/form-wizard-vue3.css";  
+import axios from 'axios';
 
 export default {
   name: "App",
-  components: {
-    Wizard,
-  },
   data() {
     return {
-      currentTabIndex: 0,
-      options: ["Option 1", "Option 2", "Option 3"],
-      selectedOption: "",
+      tel: "", 
+      password: "", 
+      confirmPassword: "", 
+      token: "",
     };
   },
+  mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.token = urlParams.get('token');
+  },
   methods: {
-    onChangeCurrentTab(index, oldIndex) {
-      console.log(index, oldIndex);
-      this.currentTabIndex = index;
-    },
-    onTabBeforeChange() {
-      if (this.currentTabIndex === 0) {
-        console.log("First Tab");
+    async wizardCompleted() {
+      console.log('Token récupéré :', this.token);
+      if (this.password !== this.confirmPassword) {
+        console.error('Les mots de passe ne correspondent pas.');
+        alert('Les mots de passe ne correspondent pas.');
+        return;
       }
-      console.log("All Tabs");
-    },
-    wizardCompleted() {
-      console.log("Wizard Completed");
-    },
+    
+      const data = {
+        user: {
+          tel: this.tel,
+          password: this.password,
+        }
+      };
+    
+      try {
+        const response = await axios.post(`api/auth/activate-account/${this.token}`, data);
+        console.log('Compte activé :', response.data);
+        alert('Account successfully activated !');
+      } catch (error) {
+        console.error('Échec de l\'activation :', error.response?.data);
+        alert('Failed to activate : ' + error.response?.data.message || 'There is an error');
+      }
+    }
   },
 };
 </script>
 
 <template>
-  <form>
+  <form @submit="wizardCompleted"> 
     <div class="mb-4">
       <h3 class="mb-2">
-        <b>Create Password</b>
+        <b>Account activation</b>
       </h3>
-      <p class="text-muted">Please choose your new password</p>
+      <p class="text-muted">Please enter your credentials</p>
     </div>
     <div class="mb-3">
-      <Wizard squared-tabs navigable-tabs scrollable-tabs :nextButton="{
-        text: 'Next',
-        icon: 'check',
-        hideIcon: true, // default false but selected for sample
-        hideText: false, // default false but selected for sample
-      }" :custom-tabs="[
-        {
-          title: 'Your informations',
-        },
-        {
-          title: 'Your Password',
-        },
-      ]" :beforeChange="onTabBeforeChange" @change="onChangeCurrentTab" @complete:wizard="wizardCompleted">
-        <template v-if="currentTabIndex === 0">
-          <div class="mb-3">
-            <label class="form-label">First name</label>
-            <input type="text" class="form-control" placeholder="First Name">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Last Name</label>
-            <input type="text" class="form-control" placeholder="Last Name">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Phone number</label>
-            <input type="number" class="form-control" placeholder="Phone number">
-          </div>
-          <v-select :items="options" label="Select an option" v-model="selectedOption"></v-select>
-        </template>
-        <template v-if="currentTabIndex === 1">
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-control" placeholder="Password">
-          </div>
-          <div class="mb-4">
-            <label class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" placeholder="Confirm Password">
-          </div>
-          <v-select :items="options" label="Select an option" v-model="selectedOption"></v-select>
-        </template>
-      </Wizard>
+      <div class="mb-3">      
+        <label class="form-label">Phone number</label>
+        <input type="phone" class="form-control" placeholder="Photo number" v-model="tel"> 
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" placeholder="Confirm" v-model="password">
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Comfirm Password</label>
+        <input type="password" class="form-control" placeholder="comfirm your password" v-model="confirmPassword"> 
+      </div>
     </div>
+    <button type="submit" class="btn btn-primary w-full">Activate</button>
   </form>
 </template>
 
