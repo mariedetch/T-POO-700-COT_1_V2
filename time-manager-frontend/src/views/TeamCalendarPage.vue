@@ -14,9 +14,11 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 import type { DateSelectArg, EventClickArg } from '@fullcalendar/core';
 
-const teamID = null;
-
 const route = useRoute();
+const teamID = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
+
+console.log("Team ID ", teamID)
+
 const userID = Array.isArray(route.params.userID) ? route.params.userID[0] : route.params.userID;
 
 const userStore = useUsersStore();
@@ -111,7 +113,7 @@ async function handleWorkingtimeSubmit(workingtime: any) {
   if (id_workingtime) {
     await workingtimeStore.updateWorkingtime(id_workingtime, workingtime);
   } else {
-    await workingtimeStore.createTeamWorkingtime(userID, workingtime);
+    await workingtimeStore.createTeamWorkingtime(teamID, workingtime);
     await refreshCalendar(); // Rafraîchir le calendrier après la soumission
     ToastrService.success('WorkingTime created successfully')
   }
@@ -146,7 +148,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <div class="page-header">
+    <!-- <div class="page-header">
       <div class="page-block">
         <ul class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
@@ -156,7 +158,7 @@ onMounted(async () => {
           <h2 class="mb-0">Workingtime management</h2>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12">

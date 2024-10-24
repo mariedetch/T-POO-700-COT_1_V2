@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import WorkingtimeVsClockChart from '@/components/features/charts/WorkingtimeVsClockChart.vue';
+import TeamCalendarPage from './TeamCalendarPage.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTeamsStore } from '@/stores/teams';
 import { useAuthStore } from '@/stores/auth';
@@ -138,7 +139,7 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-      <div class="col-span-12 xl:col-span-3">
+      <!-- <div class="col-span-12 xl:col-span-3">
         <div class="card new-cust-card">
           <div class="card-header"><h5>Members of the team</h5></div>
           <div
@@ -197,9 +198,9 @@ onMounted(async () => {
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-span-12 lg:col-span-9 flex flex-col gap-y-4">
-        <WorkingtimeVsClockChart />
+      </div> -->
+      <div class="col-span-12 lg:col-span-12 flex flex-col gap-y-4">
+        <TeamCalendarPage />
       </div>
     </div>
   </main>

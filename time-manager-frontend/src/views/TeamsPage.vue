@@ -47,11 +47,11 @@ const onCloseModal = async () => {
             <h3>List of all teams</h3>
           </div>
           <div class="card-body">
-            <TeamsList :userRole="authUser.role"/>
+            <TeamsList :userRole="authUser?.role"/>
           </div>
         </div>
       </div>
     </div>
-    <CreateTeamForm :userRole="authUser.role" :isModalOpened="isFormOpened" @close-modal-form="onCloseModal"/>
+    <CreateTeamForm :userRole="authUser?.role" :isModalOpened="isFormOpened" @close-modal-form="onCloseModal"/>
   </main>
 </template>
