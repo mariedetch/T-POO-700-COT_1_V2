@@ -14,6 +14,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
   const csrfToken = CredentialService.getToken() ?? '';
+  console.log(csrfToken)
   if (csrfToken) {
     config.headers['c-xsrf-token'] = csrfToken;
   }
@@ -23,7 +24,7 @@ instance.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-instance.interceptors.response.use(
+/*instance.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -40,6 +41,6 @@ instance.interceptors.response.use(
 
     return Promise.reject(error);
   }
-);
+);*/
 
 export default instance;
