@@ -44,12 +44,18 @@ defmodule TimeManagementWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
 
-  plug CORSPlug,
-    origin: ["https://time-manager-web-app-00d05b5e9a83.herokuapp.com"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    headers: ["Authorization", "Content-Type", "C-XSRF-TOKEN"],
-    credentials: true,
-    max_age: 86400
+  # plug CORSPlug,
+  #   origin: ["https://time-manager-web-app-00d05b5e9a83.herokuapp.com"],
+  #   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  #   headers: ["Authorization", "Content-Type", "C-XSRF-TOKEN"],
+  #   credentials: true,
+  #   max_age: 86400
+
+  plug Corsica,
+    origins: ["https://time-manager-web-app-00d05b5e9a83.herokuapp.com"],
+    allow_credentials: true,
+    allow_headers: ["content-type", "authorization", "C-XSRF-TOKEN"],
+    allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
   plug Plug.MethodOverride
   plug Plug.Head
