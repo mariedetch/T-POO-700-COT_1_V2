@@ -2,7 +2,7 @@ import http from "../api";
 import type { UserRole } from "../auth/types";
 import type { TeamStats } from "../teams/types";
 import type { ApiResponse } from "../types";
-import { type User, type UserRequest } from "./types";
+import { type UpdateProfileRequest, type User, type UserRequest } from "./types";
 
 async function getUsers(email: string | null = null, username: string | null = null) {
   const queryParams: Record<string, string> = {};
@@ -44,7 +44,7 @@ async function getProfil() {
   return await http.get<ApiResponse<User>>("/accounts/profile/self")
 }
 
-async function updateProfil(data: Partial<UserRequest>) {
+async function updateProfil(data: UpdateProfileRequest) {
   return await http.put<ApiResponse<User>>("/accounts/profile/self", data)
 }
 

@@ -1,5 +1,5 @@
 import { API } from "@/services";
-import type { User, UserRequest } from "@/services/users/types";
+import type { UpdateProfileRequest, User, UserRequest } from "@/services/users/types";
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
@@ -69,7 +69,7 @@ export const useUsersStore = defineStore('users', () => {
     });
   }
 
-  const updateProfil = async (data: Partial<UserRequest>) => {
+  const updateProfil = async (data: UpdateProfileRequest) => {
     isLoading.value = true;
     error.value = null;
 

@@ -4,7 +4,6 @@ import { computed, onMounted, ref, toRefs } from 'vue';
 import Modal from '../components/shared/Modal.vue';
 import { CredentialService } from '@/utils/credentials';
 import { useRouter } from 'vue-router';
-import type { UserRequest } from "@/services/users/types";
 import { ToastrService } from '@/utils/toastr'
 import { Form, Field, ErrorMessage } from 'vee-validate'
 
@@ -30,8 +29,7 @@ const deleteAccount = async () => {
 };
 
 const updateProfile = async () => {
-
-  await userStore.updateProfil({user: userForm.value });
+  await userStore.updateProfil({ user: userForm.value });
   ToastrService.success('Your profile has been successfully updated')
 };
 

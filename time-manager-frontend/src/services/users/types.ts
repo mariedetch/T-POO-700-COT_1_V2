@@ -17,3 +17,11 @@ export interface UserRequest {
     role: UserRole
   }
 }
+
+export interface UpdateProfileRequest {
+  user: {
+    firstname: String,
+    lastname: String,
+    tel: String,
+  }
+}

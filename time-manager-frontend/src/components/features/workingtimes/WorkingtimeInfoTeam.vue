@@ -31,8 +31,8 @@ const formattedEndTime = computed(() => {
 });
 
 const Userinfo = computed(() => {
-  if (props.workingtime.user?.firstname && props.workingtime.user?.lastname) {
-    return props.workingtime.user?.firstname + ' ' + props.workingtime.user?.lastname;
+  if (props.workingtime?.user?.firstname && props.workingtime?.user?.lastname) {
+    return props.workingtime?.user?.firstname + ' ' + props.workingtime?.user?.lastname;
   }
   return '';
 });

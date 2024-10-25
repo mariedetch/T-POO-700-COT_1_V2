@@ -9,6 +9,13 @@ import { useTeamsStore } from '@/stores/teams'
 import type { User } from '@/services/users/types'
 import { ToastrService } from '@/utils/toastr'
 
+export interface TeamData {
+  name: string,
+  description: string,
+  manager_id: string,
+  user_ids: string[]
+}
+
 const emit = defineEmits(['closeModalForm']),
   props = defineProps({ isModalOpened: Boolean, userRole: { type: String, default: ''} }),
   teamStore = useTeamsStore(),
@@ -19,7 +26,7 @@ const emit = defineEmits(['closeModalForm']),
   isSearchLoading = ref<boolean>(false),
   selectedManager = ref<User|null>(null),
   error = ref(''),
-  teamData = {
+  teamData: TeamData = {
     name: '',
     description: '',
     manager_id: '',
@@ -53,9 +60,9 @@ const onSubmit = async () => {
   if (!selectedManager.value && props.userRole === UserRole.GENERAL_MANAGER) {
     error.value = 'Please select the manager of the team'
   } else {
-    teamData.manager_id = selectedManager.value?.id;
-    selectedEmployees.value.forEach(element => {
-      teamData.user_ids.push(element.id as string)
+    teamData.manager_id = selectedManager.value?.id ?? '';
+    selectedEmployees.value.forEach((element: User) => {
+      teamData.user_ids.push(element.id)
     });
     if (await teamStore.createTeam({ team: teamData })) {
       ToastrService.success('Team created successfully')
