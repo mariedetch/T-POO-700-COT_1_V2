@@ -57,7 +57,8 @@ defmodule TimeManagement.MixProject do
       {:cors_plug, "~> 3.0"},
       {:bcrypt_elixir, "~> 3.2"},
       {:joken, "~> 2.5"},
-      {:jose, "~> 1.11"}
+      {:jose, "~> 1.11"},
+      {:corsica, "~> 1.0"}
     ]
   end
 
