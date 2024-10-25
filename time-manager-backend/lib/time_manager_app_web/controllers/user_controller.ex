@@ -3,7 +3,7 @@ defmodule TimeManagementWeb.UserController do
 
   import Ecto.Query, warn: false
   alias TimeManagement.Repo
-  alias TimeManagement.{UserContext, Teams, TokenHelper, Mailer}
+  alias TimeManagement.{UserContext, WorkingTimeContext, Teams, TokenHelper, Mailer}
   alias TimeManagement.UserContext.User
   alias TimeManagement.WorkingTimeContext.WorkingTime
   alias TimeManagement.ClockContext.Clock
@@ -59,8 +59,7 @@ defmodule TimeManagementWeb.UserController do
   def create(conn, %{"user" => user_params}) do
     current_user = conn.assigns.current_user
     with {:ok, %User{} = user} <- UserContext.create_user(current_user, user_params) do
-      csrf_token = TokenHelper.generate_csrf_token()
-      {:ok, token, _claims} = TokenHelper.generate_token(user, csrf_token)
+      {:ok, token, _claims} = TokenHelper.generate_reset_token(user.id, user.email)
 
       Mailer.send_activation_email(user.email, token)
       IO.inspect(token)
@@ -87,37 +86,16 @@ defmodule TimeManagementWeb.UserController do
     end
   end
 
-  def stats_for_user(conn, _params) do
-    # Obtenez toutes les heures de travail
-    working_times = Repo.all(WorkingTime)
-    # Obtenez tous les horodatages
-    clocks = Repo.all(Clock)
+  def get_stats_by_user(conn, %{"user_id" => user_id}) do
+    user = UserContext.get_user!(user_id)
 
-    # Regroupez les heures de travail par jour
-    working_hours =
-      working_times
-      |> Enum.group_by(&Date.to_string(&1.start |> DateTime.to_date()))
+    daily_avg = (WorkingTimeContext.daily_average_for_user(user_id))
+    weekly_avg = (WorkingTimeContext.weekly_average_for_user(user_id))
 
-    # Regroupez les horodatages par jour et par statut
-    clocked_hours =
-      clocks
-      |> Enum.group_by(&Date.to_string(&1.time |> DateTime.to_date()))
-      |> Enum.map(fn {date, entries} ->
-        total_hours = Enum.count(entries) / 2 # Chaque entrée doit avoir un statut d'arrivée et de départ
-        {date, total_hours}
-      end)
-      |> Enum.into(%{})
-
-    # Créez la réponse finale
-    response = Enum.map(working_hours, fn {date, working_entries} ->
-      planned_hours = Enum.reduce(working_entries, 0, fn entry, acc ->
-        DateTime.diff(entry.end, entry.start) + acc
-      end)
-
-      actual_hours = Map.get(clocked_hours, date, 0)
-      %{date: date, planned_hours: planned_hours, actual_hours: actual_hours}
-    end)
-
-    json(conn, response)
+    # Renvoyer la somme en JSON
+    json(conn, %{data: %{
+      daily_avg: daily_avg,
+      weekly_avg: weekly_avg
+    }})
   end
 end

@@ -10,6 +10,13 @@ export interface LoginResponse {
   user: User
 }
 
+export interface ActivateAccountRequest {
+  user: {
+    tel: string,
+    password: string
+  }
+}
+
 export enum UserRole {
   GENERAL_MANAGER = 'GENERAL_MANAGER',
   MANAGER = 'MANAGER',

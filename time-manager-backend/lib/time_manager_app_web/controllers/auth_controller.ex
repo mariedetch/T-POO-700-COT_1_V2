@@ -136,7 +136,7 @@ defmodule TimeManagementWeb.AuthController do
         user_id = claims["sub"]
         user = UserContext.get_user!(user_id)
 
-        with {:ok, _user} <- UserContext.update_user(user, user_params) do
+        with {:ok, _user} <- UserContext.activate_account(user, user_params) do
           conn
           |> put_status(:ok)
           |> json(%{

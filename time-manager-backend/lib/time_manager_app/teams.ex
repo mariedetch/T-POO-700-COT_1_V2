@@ -21,7 +21,7 @@ defmodule TimeManagement.Teams do
 
   """
   def list_teams(%User{} = authUser, page \\ 1, page_size \\ 10) do
-    query = from(t in Team, where: is_nil(t.deleted_at), distinct: true)
+    query = from(t in Team, where: is_nil(t.deleted_at)) #, distinct: true
 
     query =
       case authUser.role do

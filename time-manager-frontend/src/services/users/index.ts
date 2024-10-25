@@ -1,5 +1,6 @@
 import http from "../api";
 import type { UserRole } from "../auth/types";
+import type { TeamStats } from "../teams/types";
 import type { ApiResponse } from "../types";
 import { type User, type UserRequest } from "./types";
 
@@ -29,6 +30,10 @@ async function createUser(data: UserRequest) {
 
 async function getUser(id: string) {
   return await http.get<ApiResponse<User>>(`users/${id}`);
+}
+
+async function getUserStats(id: string) {
+  return await http.get<ApiResponse<Partial<TeamStats>>>(`users/${id}/stats`);
 }
 
 async function getEmployees() {
@@ -70,5 +75,6 @@ export default {
   createUser,
   updateUser,
   deleteUser,
-  promoteUser
+  promoteUser,
+  getUserStats
 };

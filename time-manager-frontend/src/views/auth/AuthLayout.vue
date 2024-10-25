@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { CredentialService } from '@/utils/credentials';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+onMounted(async () => {
+  if (CredentialService.isAuthentificated()) {
+    router.push({ name: 'dashboard' });
+  }
+});
+</script>
+
 <template>
   <div class="auth-main relative">
     <div class="auth-wrapper v2 flex items-center w-full h-full min-h-screen">

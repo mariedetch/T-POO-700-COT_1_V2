@@ -6,43 +6,38 @@ import { CredentialService } from '@/utils/credentials';
 import { useRouter } from 'vue-router';
 import type { UserRequest } from "@/services/users/types";
 import { ToastrService } from '@/utils/toastr'
+import { Form, Field, ErrorMessage } from 'vee-validate'
+
 
 const userStore = useUsersStore();
 const { loggedUser } = toRefs(userStore);
 const isModalOpen = ref(false);
+const isLoading = ref(false);
 
 const userForm = computed(() => ({
-  firstName: loggedUser.value?.firstname || '',
-  lastName: loggedUser.value?.lastname || '',
-  eMail: loggedUser.value?.email || ''
+  firstname: loggedUser.value?.firstname || '',
+  lastname: loggedUser.value?.lastname || '',
+  tel: loggedUser.value?.tel || ''
 }))
 
 const router = useRouter();
 
 const deleteAccount = async () => {
-  await userStore.deleteProfil(); 
-  isModalOpen.value = false; 
+  await userStore.deleteProfil();
+  isModalOpen.value = false;
   CredentialService.clearCredentials();
   router.push({ name: 'dashboard' });
-};  
+};
 
 const updateProfile = async () => {
-  // const updatedData: Partial<UserRequest> = {
-  //   user: {
-  //     firstname: userForm.value.firstName,
-  //     lastname: userForm.value.lastName,
-  //     email: userForm.value.eMail,
-  //   }        
-  // };
-  
-  await userStore.updateProfil({user: userForm}); 
-  await userStore.getProfil(); 
-  ToastrService.success('Your credentials has been successfully updated')
+
+  await userStore.updateProfil({user: userForm.value });
+  ToastrService.success('Your profile has been successfully updated')
 };
 
 onMounted(async () => {
   await userStore.getProfil();
-  await userStore.deleteProfil();
+  // await userStore.deleteProfil();
 });
 
 </script>
@@ -69,19 +64,19 @@ onMounted(async () => {
             <ul class="flex flex-wrap w-full font-medium text-center nav-tabs">
               <li class="group active">
                 <a href="javascript:void(0);" data-pc-toggle="tab" data-pc-target="profile-1" class="inline-flex items-center mr-6 py-4 transition-all duration-300 ease-linear border-t-2 border-b-2 border-transparent group-[.active]:text-primary-500 group-[.active]:border-b-primary-500 hover:text-primary-500 active:text-primary-500">
-                  <i class="ti ti-user ltr:mr-2 rtl:ml-2 text-lg leading-none"></i> 
+                  <i class="ti ti-user ltr:mr-2 rtl:ml-2 text-lg leading-none"></i>
                   Profile
                 </a>
               </li>
               <li class="group">
                 <a href="javascript:void(0);" data-pc-toggle="tab" data-pc-target="profile-2" class="inline-flex items-center mr-6 py-4 transition-all duration-300 ease-linear border-t-2 border-b-2 border-transparent group-[.active]:text-primary-500 group-[.active]:border-b-primary-500 hover:text-primary-500 active:text-primary-500">
-                  <i class="ti ti-lock ltr:mr-2 rtl:ml-2 text-lg leading-none"></i> 
+                  <i class="ti ti-lock ltr:mr-2 rtl:ml-2 text-lg leading-none"></i>
                   Change Password
                 </a>
               </li>
               <li class="group">
                 <a href="javascript:void(0);" data-pc-toggle="tab" data-pc-target="profile-3" class="inline-flex items-center mr-6 py-4 transition-all duration-300 ease-linear border-t-2 border-b-2 border-transparent group-[.active]:text-primary-500 group-[.active]:border-b-primary-500 hover:text-primary-500 active:text-primary-500">
-                  <i class="ti ti-settings ltr:mr-2 rtl:ml-2 text-lg leading-none"></i> 
+                  <i class="ti ti-settings ltr:mr-2 rtl:ml-2 text-lg leading-none"></i>
                   Settings
                 </a>
               </li>
@@ -105,18 +100,13 @@ onMounted(async () => {
                     <h5 class="mb-0">{{ loggedUser?.firstname + ' ' + loggedUser?.lastname }}</h5>
                     <p class="text-muted text-sm">{{ loggedUser?.role }}</p>
                     <hr class="my-4 border-secondary-500/10" />
-                    <div
-                      class="grid grid-cols-12 gap-0 divide-x rtl:divide-x-reverse divide-inherit divide-theme-border dark:divide-themedark-border"
-                    >
-                    </div>
-                    <hr class="my-4 border-secondary-500/10" />
                     <div class="inline-flex items-center gap-3 w-full mb-3">
                       <i class="ti ti-mail"></i>
                       <p class="mb-0">{{ loggedUser?.email }}</p>
                     </div>
                     <div class="inline-flex items-center gap-3 w-full mb-3">
                       <i class="ti ti-phone"></i>
-                      <p class="mb-0"></p>
+                      <p class="mb-0">{{ loggedUser?.tel }}</p>
                     </div>
                   </div>
                 </div>
@@ -127,38 +117,70 @@ onMounted(async () => {
                   <div class="card-header">
                     <h5>Edit Profil</h5>
                   </div>
-                  <form @submit.prevent="updateProfile">
+                  <Form @submit="updateProfile">
                     <div class="card-body">
                       <div class="grid grid-cols-12 gap-6">
                         <div class="col-span-12 sm:col-span-6">
                           <div class="mb-3">
-                            <label class="form-label">First Name</label> 
-                            <input type="text" id="firstName" class="form-control" :v-model="userForm.firstName">
+                            <label class="form-label">First Name</label>
+                            <Field
+                              type="text"
+                              name="firstname"
+                              class="form-control"
+                              placeholder="Email Address"
+                              v-model="userForm.firstname"
+                              rules="required"
+                            />
+                            <ErrorMessage name="firstname" class="error-message" />
                           </div>
                         </div>
                         <div class="col-span-12 sm:col-span-6">
                           <div class="mb-3">
-                            <label class="form-label">Last Name</label> 
-                            <input type="text" id="lastName" class="form-control" :v-model="userForm.lastName">
+                            <label class="form-label">Last Name</label>
+                            <Field
+                              type="text"
+                              name="lastname"
+                              class="form-control"
+                              placeholder="Email Address"
+                              v-model="userForm.lastname"
+                              rules="required"
+                            />
+                            <ErrorMessage name="lastname" class="error-message" />
                           </div>
                         </div>
                         <div class="col-span-12 sm:col-span-6">
-                          <div class="mb-3"><label class="form-label">Email</label> 
-                            <input type="text" id="email" class="form-control" v-model="userForm.eMail">
+                          <div class="mb-3"><label class="form-label">Tel</label>
+                            <Field
+                              type="text"
+                              name="tel"
+                              class="form-control"
+                              placeholder="Email Address"
+                              v-model="userForm.tel"
+                              rules="required"
+                            />
+                            <ErrorMessage name="tel" class="error-message" />
                           </div>
-                        </div>
-                        <div class="col-span-12 sm:col-span-6">
-                          <div class="mb-3"><label class="form-label">Tel</label> 
-                            <input type="text" class="form-control" value="956754">
-                          </div>
-                        </div>
-                        <div class="card-footer text-left btn-page">
-                          <button type="submit" class="btn btn-primary mx-1">Update</button>
                         </div>
                       </div>
                     </div>
-                  </form>
-                  
+                    <div class="card-footer text-right btn-page">
+                      <button
+                        v-if="isLoading"
+                        class="btn btn-primary lh-1 inline-flex items-center gap-3 disabled"
+                        type="button"
+                        :disabled="true"
+                      >
+                        <span
+                          class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent"
+                          role="status"
+                        >
+                          <span class="sr-only">Loading...</span>
+                        </span>
+                        Loading...
+                      </button>
+                      <button v-else type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                  </Form>
                 </div>
               </div>
             </div>
@@ -249,6 +271,5 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    
   </main>
 </template>

@@ -1,52 +1,53 @@
-<script>
-import "form-wizard-vue3/dist/form-wizard-vue3.css";  
-import axios from 'axios';
+<script setup lang="ts">
+import { Form, Field, ErrorMessage } from 'vee-validate'
+import { onBeforeMount } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import authService from "@/services/auth";
+import { ToastrService } from '@/utils/toastr'
+import { ref } from 'vue'
 
-export default {
-  name: "App",
-  data() {
-    return {
-      tel: "", 
-      password: "", 
-      confirmPassword: "", 
-      token: "",
-    };
-  },
-  mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.token = urlParams.get('token');
-  },
-  methods: {
-    async wizardCompleted() {
-      console.log('Token récupéré :', this.token);
-      if (this.password !== this.confirmPassword) {
-        console.error('Les mots de passe ne correspondent pas.');
-        alert('Les mots de passe ne correspondent pas.');
-        return;
-      }
-    
-      const data = {
-        user: {
-          tel: this.tel,
-          password: this.password,
-        }
-      };
-    
-      try {
-        const response = await axios.post(`api/auth/activate-account/${this.token}`, data);
-        console.log('Compte activé :', response.data);
-        alert('Account successfully activated !');
-      } catch (error) {
-        console.error('Échec de l\'activation :', error.response?.data);
-        alert('Failed to activate : ' + error.response?.data.message || 'There is an error');
-      }
+const router = useRouter(),
+  route = useRoute(),
+  hasError = ref(false),
+  isLoading = ref(false),
+  errors = ref(''),
+  resetToken = ref('');
+
+const submitForm = async (values: any) => {
+  isLoading.value = true;
+  try {
+    await authService.activateAccount(resetToken.value, {
+      user: {tel: values.tel.toString(), password: values.password}
+    });
+    ToastrService.success("Account activated successfully");
+    router.push({ name: 'login' });
+  } catch (error: any) {
+    errors.value = "An error occure please try again!"
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onBeforeMount(async () => {
+  const { email, token } = route.query;
+
+  if (!token || !email) {
+    ToastrService.error("Missing passwork reset token");
+    router.push({ name: 'login' });
+  } else {
+    try {
+      await authService.verifyToken(email as string, token as string);
+      resetToken.value = token as string;
+    } catch (error: any) {
+      ToastrService.error("Invalid token");
+      router.push({ name: 'login' });
     }
-  },
-};
+  }
+});
 </script>
 
 <template>
-  <form @submit="wizardCompleted"> 
+  <Form @submit="submitForm">
     <div class="mb-4">
       <h3 class="mb-2">
         <b>Account activation</b>
@@ -54,20 +55,58 @@ export default {
       <p class="text-muted">Please enter your credentials</p>
     </div>
     <div class="mb-3">
-      <div class="mb-3">      
+      <div class="mb-3">
         <label class="form-label">Phone number</label>
-        <input type="phone" class="form-control" placeholder="Photo number" v-model="tel"> 
+        <Field
+          type="number"
+          name="tel"
+          class="form-control"
+          placeholder="Phone number"
+          rules="required|min:8"
+        />
+        <ErrorMessage name="tel" class="error-message" />
       </div>
       <div class="mb-3">
         <label class="form-label">Password</label>
-        <input type="password" class="form-control" placeholder="Confirm" v-model="password">
+        <Field
+          type="password"
+          name="password"
+          id="password"
+          class="form-control"
+          placeholder="Password"
+          rules="required|min:8"
+        />
+        <ErrorMessage name="password" class="error-message" />
       </div>
       <div class="mb-4">
         <label class="form-label">Comfirm Password</label>
-        <input type="password" class="form-control" placeholder="comfirm your password" v-model="confirmPassword"> 
+        <Field
+          type="password"
+          name="password_confirm"
+          class="form-control"
+          placeholder="Password"
+          rules="required"
+        /> <!--  -->
+        <ErrorMessage name="password_confirm" class="error-message" />
       </div>
     </div>
-    <button type="submit" class="btn btn-primary w-full">Activate</button>
-  </form>
+    <div class="mt-4">
+      <button
+        v-if="isLoading"
+        class="btn btn-primary lh-1 inline-flex w-full items-center gap-3 disabled"
+        type="button"
+        :disabled="true"
+      >
+        <span
+          class="flex border-[2px] border-white-500 rounded-full size-4 animate-spin border-l-transparent dark:border-l-transparent"
+          role="status"
+        >
+          <span class="sr-only">Loading...</span>
+        </span>
+        Loading...
+      </button>
+      <button v-else type="submit" class="btn btn-primary w-full">Activate</button>
+    </div>
+  </Form>
 </template>
 

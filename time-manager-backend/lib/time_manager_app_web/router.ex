@@ -27,7 +27,7 @@ defmodule TimeManagementWeb.Router do
     delete "/accounts/profile/self", UserController, :delete_account
 
     resources "/users", UserController, only: [:index, :create, :show, :delete] do
-      get "/stats", UserController, :stats_for_user
+      get "/stats", UserController, :get_stats_by_user
       put "/promote", UserController, :promote
       get "/clocks", ClockController, :list_clocks_by_user
     end

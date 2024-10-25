@@ -14,7 +14,7 @@ defmodule TimeManagement.Mailer do
   end
 
   def send_activation_email(email, activation_token) do
-    activation_url = "http://localhost:5173/auth/activation?token=#{activation_token}"
+    activation_url = "http://localhost:5173/auth/activation?email=#{email}&token=#{activation_token}"
 
     new()
     |> to(email)

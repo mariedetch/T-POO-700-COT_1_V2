@@ -82,7 +82,7 @@ onMounted(async () => {
           <th>Name</th>
           <th>Description</th>
           <th>Created at</th>
-          <th>Nb Members</th>
+          <!-- <th>Nb Members</th> -->
           <th class="text-center">Actions</th>
         </tr>
       </thead>
@@ -110,12 +110,12 @@ onMounted(async () => {
             {{ formatDate(team.inserted_at).date }}
             <span class="text-muted text-sm block">{{ formatDate(team.inserted_at).time }}</span>
           </td>
-          <td>
+          <!-- <td>
             <span
               class="badge bg-warning-500/10 border border-warning text-warning-500 rounded-full text-sm"
               >{{ team.member_count }} members</span
             >
-          </td>
+          </td> -->
           <td>
             <RouterLink
               :to="`/teams/${team.id}`"

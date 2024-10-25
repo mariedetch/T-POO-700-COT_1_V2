@@ -129,6 +129,13 @@ defmodule TimeManagement.UserContext do
     |> Repo.update()
   end
 
+  def activate_account(%User{} = user, attrs) do
+    user
+    |> User.activation_account_changeset(attrs)
+    |> Repo.update()
+  end
+
+
   @doc """
   Deletes a user.
 
@@ -199,7 +206,7 @@ defmodule TimeManagement.UserContext do
   def reset_password(user_id, new_password) do
     user = Repo.get(User, user_id)
     user
-    |> User.changeset(%{password: new_password})
+    |> User.password_reset_changeset(%{password: new_password})
     |> Repo.update()
   end
 end

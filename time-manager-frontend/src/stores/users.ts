@@ -174,7 +174,6 @@ export const useUsersStore = defineStore('users', () => {
     });
   }
 
-  
   return {
     users, employees, userId, currentUser, isLoading, selectedUser, error,
     loggedUser, getProfil, deleteProfil, updateProfil,
