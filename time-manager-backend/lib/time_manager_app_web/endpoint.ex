@@ -45,7 +45,7 @@ defmodule TimeManagementWeb.Endpoint do
     json_decoder: Phoenix.json_library()
 
   plug CORSPlug,
-    origin: System.get_env("CORS_ORIGIN") || "http://localhost:5173",
+    origin: "https://time-manager-api-ccce5d8c0e0e.herokuapp.com",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     headers: ["Authorization", "Content-Type", "C-XSRF-TOKEN"],
     credentials: true,
