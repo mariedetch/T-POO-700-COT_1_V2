@@ -3,6 +3,7 @@ defmodule TimeManagementWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+	  plug CORSPlug
   end
 
   pipeline :authenticated do
