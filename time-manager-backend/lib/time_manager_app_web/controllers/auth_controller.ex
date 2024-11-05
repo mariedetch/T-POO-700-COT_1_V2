@@ -13,7 +13,7 @@ defmodule TimeManagementWeb.AuthController do
 
         # Set the JWT in an HTTP-only cookie
         conn
-        |> put_resp_cookie("access_token", token, http_only: true, secure: true, max_age: 3600)
+        |> put_resp_cookie("access_token", token, http_only: true, secure: true, max_age: 33600)
         |> json(%{
           status_code: 200,
           status: "OK",

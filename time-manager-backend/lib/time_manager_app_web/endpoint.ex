@@ -54,6 +54,7 @@ defmodule TimeManagementWeb.Endpoint do
   plug Corsica,
     origins: ["http://localhost:5173"],
     allow_credentials: true,
+    credentials: true,
     allow_headers: ["content-type", "authorization", "C-XSRF-TOKEN"],
     allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
