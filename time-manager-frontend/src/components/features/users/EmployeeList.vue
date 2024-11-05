@@ -53,12 +53,12 @@ onMounted(async () => {
                 </RouterLink>
               </li> -->
               <li class="list-inline-item">
-                <a
-                  href="#"
+                <RouterLink
+                  :to="`/dashboard/${employee.id}`"
                   class="w-8 h-8 rounded-xl inline-flex items-center justify-center btn-link-success btn-pc-default"
                 >
                   <i class="ti ti-layout-dashboard text-lg leading-none"></i>
-                </a>
+                </RouterLink>
               </li>
             </ul>
           </td>

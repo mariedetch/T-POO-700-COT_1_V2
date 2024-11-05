@@ -52,7 +52,7 @@ defmodule TimeManagementWeb.Endpoint do
   #   max_age: 86400
 
   plug Corsica,
-    origins: ["https://time-manager-web-app-00d05b5e9a83.herokuapp.com"],
+    origins: ["http://localhost:5173"],
     allow_credentials: true,
     allow_headers: ["content-type", "authorization", "C-XSRF-TOKEN"],
     allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]

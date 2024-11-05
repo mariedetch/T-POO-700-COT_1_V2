@@ -3,7 +3,7 @@ defmodule TimeManagement.Mailer do
   import Swoosh.Email
 
   def send_reset_password_email(email, reset_token) do
-    reset_url = "https://time-manager-web-app-00d05b5e9a83.herokuapp.com/auth/resetpassword?email=#{email}&token=#{reset_token}"
+    reset_url = "http://localhost:5173/auth/resetpassword?email=#{email}&token=#{reset_token}"
 
     new()
     |> to(email)
@@ -14,7 +14,7 @@ defmodule TimeManagement.Mailer do
   end
 
   def send_activation_email(email, activation_token) do
-    activation_url = "https://time-manager-web-app-00d05b5e9a83.herokuapp.com/auth/activation?email=#{email}&token=#{activation_token}"
+    activation_url = "http://localhost:5173/auth/activation?email=#{email}&token=#{activation_token}"
 
     new()
     |> to(email)

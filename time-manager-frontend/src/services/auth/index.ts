@@ -4,7 +4,7 @@ import type { ActivateAccountRequest, LoginRequest } from "./types";
 import type { LoginResponse } from './types';
 
 async function login(data: LoginRequest) {
-  return await http.post<ApiResponse<LoginResponse>>(`auth/login`, data);
+  return await http.post<ApiResponse<LoginResponse>>(`auth/register`, data);
 }
 
 async function sendResetPasswordLink(data: Partial<LoginRequest>) {
